@@ -5,7 +5,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE profiles (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id TEXT NOT NULL UNIQUE, -- NextAuth user ID
-  email TEXT,
+  email TEXT UNIQUE, -- Email should also be unique
   name TEXT,
   avatar_url TEXT,
   wallet_address TEXT UNIQUE,
@@ -23,6 +23,7 @@ CREATE TABLE profiles (
 
 -- Indexes for better performance
 CREATE INDEX idx_profiles_user_id ON profiles(user_id);
+CREATE INDEX idx_profiles_email ON profiles(email);
 CREATE INDEX idx_profiles_wallet_address ON profiles(wallet_address);
 
 -- Enable RLS but no policies since we're using service key with NextAuth API routes

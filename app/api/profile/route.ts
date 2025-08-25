@@ -12,18 +12,18 @@ export async function GET() {
       name: session?.user?.name
     })
     
-    if (!session?.user) {
-      console.log('❌ Profile API - No session found')
+    if (!session?.user?.email) {
+      console.log('❌ Profile API - No session or email found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    console.log('🔍 Profile API - Looking for profile with user_id:', session.user.id)
+    console.log('🔍 Profile API - Looking for profile with email:', session.user.email)
 
-    // Get user profile
+    // Get user profile by email (more reliable than user_id)
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('email', session.user.email)
       .single()
 
     console.log('📊 Profile API - Supabase response:', {
@@ -40,17 +40,20 @@ export async function GET() {
     if (!profile) {
       console.log('🆕 Profile API - Profile not found, creating new one')
       const profileData = {
-        user_id: session.user.id!,
+        user_id: session.user.id || `email_${session.user.email?.replace(/[@.]/g, '_')}`,
         email: session.user.email,
         name: session.user.name,
         avatar_url: session.user.image,
       }
       console.log('📝 Profile API - Profile data to insert:', profileData)
 
-      // Create profile if doesn't exist
+      // Create profile if doesn't exist (upsert to handle race conditions)
       const { data: newProfile, error: createError } = await supabaseAdmin
         .from('profiles')
-        .insert([profileData])
+        .upsert([profileData], { 
+          onConflict: 'email',
+          ignoreDuplicates: false 
+        })
         .select('*')
         .single()
 
@@ -87,7 +90,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth()
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -109,7 +112,7 @@ export async function PUT(request: NextRequest) {
     const { data: updatedProfile, error: updateError } = await supabaseAdmin
       .from('profiles')
       .update(filteredUpdates)
-      .eq('user_id', session.user.id)
+      .eq('email', session.user.email)
       .select()
       .single()
 

@@ -17,11 +17,13 @@ import {
   Trophy,
   Coins,
   Star,
-  Lock
+  Lock,
+  Calendar
 } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { SignInModal } from "@/components/signin-modal";
+import DailyCheckin from "@/components/daily-checkin";
 
 // Mock additional game data - will come from Supabase
 const mockGameData = {
@@ -164,18 +166,7 @@ export default function BountyPage() {
     profileError: profileError
   });
 
-  // Manual debug function
-  const debugProfile = async () => {
-    console.log('🔍 Manual Debug - Calling profile API directly...')
-    try {
-      const response = await fetch('/api/profile')
-      console.log('📡 Manual Debug - Response:', response.status, response.statusText)
-      const data = await response.json()
-      console.log('📊 Manual Debug - Data:', data)
-    } catch (error) {
-      console.error('❌ Manual Debug - Error:', error)
-    }
-  };
+
 
   // Helper function to get display name
   const getDisplayName = () => {
@@ -236,22 +227,7 @@ export default function BountyPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
               <main className="flex-1 bg-gradient-to-br from-background via-background to-secondary/10 pt-24 pb-8">
-          <div className="container mx-auto px-4">
-            {/* Debug Panel */}
-            <div className="mb-8 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
-              <h3 className="text-lg font-bold mb-2 text-red-400">Debug Panel</h3>
-              <div className="flex gap-2">
-                <Button onClick={debugProfile} variant="outline" size="sm">
-                  Manual Profile API Call
-                </Button>
-                <Button onClick={() => refetch()} variant="outline" size="sm">
-                  Refetch Profile
-                </Button>
-              </div>
-              <div className="mt-2 text-sm text-muted-foreground">
-                Session Status: {status} | Profile Loading: {profileLoading ? 'true' : 'false'} | Profile Error: {profileError?.message || 'none'}
-              </div>
-            </div>
+                  <div className="container mx-auto px-4">
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
@@ -328,6 +304,15 @@ export default function BountyPage() {
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Complete quests to earn XP, tokens, and rare items. Level up your Trailblazer status!
                 </p>
+              </div>
+              
+              {/* Daily Check-in Quest */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <h2 className="text-2xl font-bold">Daily Quests</h2>
+                </div>
+                <DailyCheckin />
               </div>
 
               {questCategories.map((category) => (
