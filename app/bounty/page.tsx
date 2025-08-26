@@ -2,160 +2,34 @@
 
 import { useSession } from "next-auth/react";
 import { useProfile } from "@/hooks/useProfile";
+import { useUserStats, getLevelProgress } from "@/hooks/useUserStats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
-  CheckCircle2, 
-  Clock, 
-  Users, 
-  Gamepad2, 
-  Timer, 
-  ExternalLink,
   Trophy,
   Coins,
   Star,
   Lock,
-  Calendar
+  Calendar,
+  Gamepad2,
+  Clock
 } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { SignInModal } from "@/components/signin-modal";
 import DailyCheckin from "@/components/daily-checkin";
+import SocialQuests from "@/components/social-quests";
+import WalletQuest from "@/components/wallet-quest";
 
-// Mock additional game data - will come from Supabase
-const mockGameData = {
-  level: 12,
-  xp: 2840,
-  nextLevelXp: 3000,
-  totalQuests: 47,
-  completedQuests: 32,
-  tokens: 156,
-  rank: "#247"
-};
-
-// Mock quest data - will come from Supabase
-const questCategories = [
-  {
-    id: "social",
-    title: "Social Quests",
-    icon: Users,
-    color: "bg-blue-500/20 border-blue-500/30",
-    quests: [
-      {
-        id: 1,
-        title: "Follow Providence on X",
-        description: "Follow @playprovidence on X (Twitter) to stay updated",
-        reward: "25 XP + 10 Tokens",
-        status: "completed",
-        link: "https://x.com/playprovidence"
-      },
-      {
-        id: 2,
-        title: "Join Discord Community",
-        description: "Join the official Providence Discord server",
-        reward: "50 XP + 25 Tokens",
-        status: "completed",
-        link: "https://discord.com/invite/9mxcWFfzXh"
-      },
-      {
-        id: 3,
-        title: "Share Trailer with #ProvidenceQuest",
-        description: "Share the Providence game trailer with the hashtag #ProvidenceQuest",
-        reward: "75 XP + 50 Tokens",
-        status: "pending",
-        link: "https://playprovidence.io/"
-      },
-      {
-        id: 4,
-        title: "Create Providence Meme",
-        description: "Create and share a meme about Providence gameplay",
-        reward: "100 XP + 75 Tokens",
-        status: "pending"
-      }
-    ]
-  },
-  {
-    id: "timelocked",
-    title: "Time-Locked Quests",
-    icon: Timer,
-    color: "bg-purple-500/20 border-purple-500/30",
-    quests: [
-      {
-        id: 5,
-        title: "Daily Login Streak",
-        description: "Log in daily for 7 consecutive days",
-        reward: "200 XP + 150 Tokens",
-        status: "in-progress",
-        progress: 4,
-        maxProgress: 7
-      },
-      {
-        id: 6,
-        title: "Attend Live Stream",
-        description: "Join a live Providence development stream",
-        reward: "300 XP + 200 Tokens",
-        status: "pending",
-        timeLeft: "Next stream in 2 days"
-      }
-    ]
-  },
-  {
-    id: "game",
-    title: "Game Challenges",
-    icon: Gamepad2,
-    color: "bg-green-500/20 border-green-500/30",
-    quests: [
-      {
-        id: 7,
-        title: "First Game Session",
-        description: "Play Providence for the first time (on-chain verification)",
-        reward: "500 XP + 300 Tokens + Rare Item",
-        status: "pending"
-      },
-      {
-        id: 8,
-        title: "Craft Your First Item",
-        description: "Create your first item in the Providence universe",
-        reward: "250 XP + 200 Tokens",
-        status: "locked",
-        requirement: "Complete 'First Game Session'"
-      }
-    ]
-  }
-];
-
-function getStatusIcon(status: string) {
-  switch (status) {
-    case "completed":
-      return <CheckCircle2 className="h-5 w-5 text-green-400" />;
-    case "in-progress":
-      return <Clock className="h-5 w-5 text-yellow-400" />;
-    case "locked":
-      return <Clock className="h-5 w-5 text-gray-400" />;
-    default:
-      return <Clock className="h-5 w-5 text-blue-400" />;
-  }
-}
-
-function getStatusBadge(status: string) {
-  switch (status) {
-    case "completed":
-      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Completed</Badge>;
-    case "in-progress":
-      return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">In Progress</Badge>;
-    case "locked":
-      return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">Locked</Badge>;
-    default:
-      return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Available</Badge>;
-  }
-}
+// Real user stats from useUserStats hook and Supabase
 
 export default function BountyPage() {
   const { data: session, status } = useSession();
   const { data: profile, isLoading: profileLoading, error: profileError, refetch } = useProfile();
+  const { data: userStats, isLoading: statsLoading, error: statsError } = useUserStats();
 
   // Debug logging
   console.log('🐛 Bounty Page Debug:', {
@@ -163,8 +37,14 @@ export default function BountyPage() {
     session: session,
     profile: profile,
     profileLoading: profileLoading,
-    profileError: profileError
+    profileError: profileError,
+    userStats: userStats,
+    statsLoading: statsLoading,
+    statsError: statsError
   });
+
+  // Calculate level progress
+  const levelProgress = userStats ? getLevelProgress(userStats.total_xp) : null;
 
 
 
@@ -179,7 +59,7 @@ export default function BountyPage() {
     return "Anonymous Player";
   };
 
-  if (status === "loading" || profileLoading) {
+  if (status === "loading" || profileLoading || statsLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -252,27 +132,27 @@ export default function BountyPage() {
                   )}
                   <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                     <Trophy className="h-4 w-4" />
-                    Rank {profile?.rank || mockGameData.rank}
+                    Level {userStats?.level || 1} Trailblazer
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Level Progress */}
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>Level {profile?.level || mockGameData.level}</span>
-                      <span>{profile?.xp || mockGameData.xp}/{mockGameData.nextLevelXp} XP</span>
+                      <span>Level {levelProgress?.currentLevel || 1}</span>
+                      <span>{userStats?.total_xp || 0}/{levelProgress?.nextLevel ? Math.pow(levelProgress.nextLevel - 1, 2) * 100 : 100} XP</span>
                     </div>
-                    <Progress value={((profile?.xp || mockGameData.xp) / mockGameData.nextLevelXp) * 100} className="h-2" />
+                    <Progress value={levelProgress?.progressPercentage || 0} className="h-2" />
                   </div>
 
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-3 rounded-lg bg-primary/10">
-                      <div className="font-bold text-primary">{profile?.completed_quests || mockGameData.completedQuests}</div>
+                      <div className="font-bold text-primary">{userStats?.total_quests_completed || 0}</div>
                       <div className="text-xs text-muted-foreground">Completed</div>
                     </div>
                     <div className="p-3 rounded-lg bg-yellow-500/10">
-                      <div className="font-bold text-yellow-400">{profile?.tokens || mockGameData.tokens}</div>
+                      <div className="font-bold text-yellow-400">{userStats?.tokens || 0}</div>
                       <div className="text-xs text-muted-foreground">Tokens</div>
                     </div>
                   </div>
@@ -315,85 +195,37 @@ export default function BountyPage() {
                 <DailyCheckin />
               </div>
 
-              {questCategories.map((category) => (
-                <Card key={category.id} className="border-primary/20 bg-background/30 backdrop-blur-md">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${category.color}`}>
-                        <category.icon className="h-6 w-6" />
-                      </div>
-                      {category.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {category.quests.map((quest) => (
-                        <Card key={quest.id} className="border-white/10 bg-background/20">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex items-start gap-3 flex-1">
-                                {getStatusIcon(quest.status)}
-                                <div className="flex-1">
-                                  <h3 className="font-semibold mb-1">{quest.title}</h3>
-                                  <p className="text-sm text-muted-foreground mb-2">
-                                    {quest.description}
-                                  </p>
-                                  <div className="text-sm font-medium text-primary">
-                                    Reward: {quest.reward}
-                                  </div>
-                                  
-                                  {/* Progress Bar for in-progress quests */}
-                                  {quest.status === "in-progress" && quest.progress && quest.maxProgress && (
-                                    <div className="mt-3">
-                                      <div className="flex justify-between text-xs mb-1">
-                                        <span>Progress</span>
-                                        <span>{quest.progress}/{quest.maxProgress}</span>
-                                      </div>
-                                      <Progress value={(quest.progress / quest.maxProgress) * 100} className="h-2" />
-                                    </div>
-                                  )}
-                                  
-                                  {/* Time left for time-locked quests */}
-                                  {quest.timeLeft && (
-                                    <div className="mt-2 text-xs text-yellow-400">
-                                      {quest.timeLeft}
-                                    </div>
-                                  )}
-                                  
-                                  {/* Requirement for locked quests */}
-                                  {quest.requirement && (
-                                    <div className="mt-2 text-xs text-gray-400">
-                                      Requires: {quest.requirement}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="flex flex-col items-end gap-2">
-                                {getStatusBadge(quest.status)}
-                                {quest.link && quest.status !== "completed" && (
-                                  <Button size="sm" variant="outline" asChild>
-                                    <a href={quest.link} target="_blank" rel="noopener noreferrer">
-                                      <ExternalLink className="h-4 w-4 mr-2" />
-                                      Start
-                                    </a>
-                                  </Button>
-                                )}
-                                {quest.status === "completed" && (
-                                  <Button size="sm" disabled variant="outline">
-                                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                                    Done
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+              {/* Social Quests */}
+              <div className="space-y-4">
+                <SocialQuests />
+              </div>
+
+              {/* Wallet Quest */}
+              <div className="space-y-4">
+                <WalletQuest />
+              </div>
+
+              {/* Coming Soon Quests */}
+              <Card className="border-primary/20 bg-background/30 backdrop-blur-md opacity-75">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-slate-500/20 border-slate-500/30">
+                      <Gamepad2 className="h-6 w-6" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    Web3 & Game Challenges
+                    <Badge variant="secondary" className="ml-auto">Coming Soon</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-lg font-semibold mb-2">More Quests Coming Soon!</h3>
+                    <p className="text-muted-foreground">
+                      Web3 wallet integration and game challenges will be available soon.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

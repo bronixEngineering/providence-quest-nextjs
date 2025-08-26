@@ -5,71 +5,104 @@ import { nanoid } from 'nanoid'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔗 Wallet Connect API - Starting...')
+    
     const session = await auth()
-    if (!session?.user) {
+    if (!session?.user?.email) {
+      console.log('❌ Wallet Connect - No session or email')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { walletAddress } = await request.json()
-    
-    if (!walletAddress) {
-      return NextResponse.json({ error: 'Missing wallet address' }, { status: 400 })
+    console.log('💼 Wallet Connect - Request:', { walletAddress, userEmail: session.user.email })
+
+    if (!walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
+      return NextResponse.json({ error: 'Invalid wallet address' }, { status: 400 })
     }
 
-    // Get or create user profile
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('profiles')
+    // Check if user already has a verified wallet
+    const { data: existingWallet, error: existingError } = await supabaseAdmin
+      .from('wallet_accounts')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('user_email', session.user.email)
+      .eq('is_verified', true)
       .single()
 
-    if (profileError && profileError.code !== 'PGRST116') {
-      throw profileError
+    console.log('🔍 Wallet Connect - Existing wallet check:', {
+      existingWallet: existingWallet,
+      existingError: existingError
+    })
+
+    if (existingWallet) {
+      return NextResponse.json({ 
+        error: 'Wallet already connected',
+        wallet: {
+          address: existingWallet.wallet_address,
+          verifiedAt: existingWallet.verified_at
+        }
+      }, { status: 400 })
     }
 
-    let userProfile = profile
-    if (!userProfile) {
-      // Create profile if doesn't exist
-      const { data: newProfile, error: createError } = await supabaseAdmin
-        .from('profiles')
-        .insert([
-          {
-            user_id: session.user.id!,
-            email: session.user.email,
-            name: session.user.name,
-            avatar_url: session.user.image,
-          },
-        ])
-        .select()
-        .single()
+    // Check if this wallet is already connected to another user
+    const { data: walletOwner, error: ownerError } = await supabaseAdmin
+      .from('wallet_accounts')
+      .select('user_email, is_verified')
+      .eq('wallet_address', walletAddress.toLowerCase())
+      .eq('is_verified', true)
+      .single()
 
-      if (createError) throw createError
-      userProfile = newProfile
+    if (walletOwner && !ownerError) {
+      return NextResponse.json({ 
+        error: 'Wallet already connected to another account' 
+      }, { status: 400 })
     }
 
-    // Generate nonce for wallet verification
-    const nonce = nanoid(32)
+    // Generate nonce for signature verification
+    const nonce = nanoid(16)
+    const verificationMessage = `Connect wallet to Providence Quest\n\nNonce: ${nonce}\nAddress: ${walletAddress.toLowerCase()}\nUser: ${session.user.email}`
 
-    // Update profile with nonce (temporarily store for verification)
-    const { error: updateError } = await supabaseAdmin
-      .from('profiles')
-      .update({ 
-        wallet_nonce: nonce,
-        wallet_verified: false
+    console.log('🎲 Wallet Connect - Generated nonce:', { nonce, message: verificationMessage })
+
+    // Store pending wallet connection
+    const { data: pendingWallet, error: insertError } = await supabaseAdmin
+      .from('wallet_accounts')
+      .upsert([
+        {
+          user_email: session.user.email,
+          wallet_address: walletAddress.toLowerCase(),
+          nonce: nonce,
+          verification_message: verificationMessage,
+          is_verified: false,
+          is_primary: true,
+          network_chain_id: 1 // Ethereum mainnet
+        }
+      ], { 
+        onConflict: 'user_email,wallet_address',
+        ignoreDuplicates: false 
       })
-      .eq('id', userProfile.id)
+      .select('*')
+      .single()
 
-    if (updateError) throw updateError
+    if (insertError) {
+      console.log('❌ Wallet Connect - Failed to create pending connection:', insertError)
+      throw insertError
+    }
+
+    console.log('✅ Wallet Connect - Pending connection created:', pendingWallet)
 
     return NextResponse.json({
       success: true,
-      nonce,
-      message: `Please sign this message to verify your wallet ownership:\n\nNonce: ${nonce}`
+      data: {
+        nonce: nonce,
+        message: verificationMessage,
+        walletAddress: walletAddress.toLowerCase(),
+        requiresSignature: true
+      }
     })
   } catch (error) {
-    console.error('Wallet connection error:', error)
+    console.error('❌ Wallet Connect API Error:', error)
     return NextResponse.json(
-      { error: 'Failed to initialize wallet connection' },
+      { error: 'Failed to initiate wallet connection' },
       { status: 500 }
     )
   }

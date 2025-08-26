@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Web3Providers } from '@/components/web3-providers'
 import { Toaster } from 'sonner'
 import { useState } from 'react'
 
@@ -32,7 +33,9 @@ export function Providers({ children }: ProvidersProps) {
         disableTransitionOnChange
       >
         <SessionProvider>
-          {children}
+          <Web3Providers>
+            {children}
+          </Web3Providers>
         </SessionProvider>
       </ThemeProvider>
       <Toaster 

@@ -1,2 +1,3 @@
 Use shadcn components with typescript, check components folder for required components.
 For client side data fetching use tanstack react query and its states
+Use yarn for package manager

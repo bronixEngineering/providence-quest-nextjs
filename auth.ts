@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import Twitter from "next-auth/providers/twitter";
+import Discord from "next-auth/providers/discord";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -7,6 +9,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID ?? process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.AUTH_GOOGLE_SECRET ?? process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
+    Twitter({
+      clientId: process.env.AUTH_TWITTER_ID ?? "",
+      clientSecret: process.env.AUTH_TWITTER_SECRET ?? "",
+      version: "2.0", // Use Twitter API v2
+    }),
+    Discord({
+      clientId: process.env.AUTH_DISCORD_ID ?? "",
+      clientSecret: process.env.AUTH_DISCORD_SECRET ?? "",
     }),
   ],
   callbacks: {
