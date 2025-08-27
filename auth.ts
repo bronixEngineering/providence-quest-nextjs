@@ -171,7 +171,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               return "/bounty"
             }
 
-            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, ownerEmail);
+            // Resolve stable app user id (from profiles)
+            const { data: ownerProfile } = await supabaseAdmin
+              .from('profiles')
+              .select('user_id')
+              .eq('email', ownerEmail)
+              .single()
+            const ownerUserId = ownerProfile?.user_id || null
+
+            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, ownerEmail, 'user_id:', ownerUserId);
 
             // Update or create social connection
             const { data: socialConnection, error: socialError } = await supabaseAdmin
@@ -179,6 +187,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               .upsert([
                 {
                   user_email: ownerEmail,
+                  user_id: ownerUserId,
                   platform: account.provider,
                   platform_user_id: user.id,
                   platform_username: user.name || ownerEmail,
@@ -212,19 +221,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 .single()
 
               if (socialQuest && !questError) {
-                // Check if already completed (tolerate no-rows)
-                const { data: existingCompletion } = await supabaseAdmin
+                // Check if already completed (allow 0 rows without error)
+                const { data: existingCompletion, error: existingErr } = await supabaseAdmin
                   .from('user_quest_completions')
                   .select('id')
-                  .eq('user_email', ownerEmail)
+                  .eq(ownerUserId ? 'user_id' : 'user_email', ownerUserId || ownerEmail)
                   .eq('quest_id', socialQuest.id)
-                  .maybeSingle?.() ?? await supabaseAdmin
-                  .from('user_quest_completions')
-                  .select('id')
-                  .eq('user_email', ownerEmail)
-                  .eq('quest_id', socialQuest.id)
-                  .limit(1)
-                  .single()
+                  .maybeSingle()
 
                 if (!existingCompletion) {
                   // Complete the quest
@@ -233,6 +236,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     .insert([
                       {
                         user_email: ownerEmail,
+                        user_id: ownerUserId,
                         quest_id: socialQuest.id,
                         xp_earned: socialQuest.xp_reward,
                         tokens_earned: socialQuest.token_reward,
