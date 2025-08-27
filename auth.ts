@@ -168,7 +168,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const ownerEmail = user.email || (profile as any)?.email || null
             if (!ownerEmail) {
               console.log(`⚠️ NextAuth - Missing email for ${account.provider} verification; skipping DB write`)
-              return true
+              return "/bounty"
             }
 
             console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, ownerEmail);
@@ -248,6 +248,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           } catch (error) {
             console.error(`❌ NextAuth - Social quest processing error for ${account?.provider}:`, error);
           }
+          // Prevent provider from becoming the active session – bounce back to bounty
+          return "/bounty"
         } else {
           console.log(
             "⚠️ NextAuth - Skipping profile creation - missing required data:",
