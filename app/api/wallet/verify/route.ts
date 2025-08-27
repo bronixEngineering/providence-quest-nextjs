@@ -62,9 +62,10 @@ export async function POST(request: NextRequest) {
         console.log('❌ Wallet Verify - Address mismatch')
         return NextResponse.json({ error: 'Invalid signature - address mismatch' }, { status: 400 })
       }
-    } catch (signatureError) {
+    } catch (signatureError: unknown) {
+      const message = signatureError instanceof Error ? signatureError.message : String(signatureError)
       console.log('❌ Wallet Verify - Signature verification failed:', signatureError)
-      return NextResponse.json({ error: 'Signature verification failed: ' + signatureError.message }, { status: 400 })
+      return NextResponse.json({ error: 'Signature verification failed: ' + message }, { status: 400 })
     }
 
     // Update wallet as verified
