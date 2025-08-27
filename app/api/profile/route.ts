@@ -6,7 +6,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 export async function GET() {
   try {
     const session = await auth()
-    console.log('📊 Profile API - Session:', {
+    console.log('📊  Session:', {
       userId: session?.user?.id,
       email: session?.user?.email,
       name: session?.user?.name

@@ -246,6 +246,34 @@ export default function BountyPage() {
                       Token History
                     </Button>
                   </div>
+
+                  {/* Debug: Session vs Profile */}
+                  <div className="space-y-3 mt-2">
+                    <div>
+                      <div className="text-xs font-semibold text-muted-foreground mb-1">Session Debug</div>
+                      <pre className="text-[10px] leading-tight bg-muted/30 p-2 rounded border border-border overflow-x-auto">
+{JSON.stringify({
+  email: session?.user?.email,
+  name: session?.user?.name,
+  appUserId: (session?.user as any)?.appUserId,
+  provider: (session as any)?.authProvider
+}, null, 2)}
+                      </pre>
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-muted-foreground mb-1">Profile Debug</div>
+                      <pre className="text-[10px] leading-tight bg-muted/30 p-2 rounded border border-border overflow-x-auto">
+{JSON.stringify({
+  user_id: (profile as any)?.user_id,
+  email: profile?.email,
+  name: profile?.name,
+  avatar_url: profile?.avatar_url,
+  primary_wallet_address: (profile as any)?.primary_wallet_address,
+  wallet_verified_at: (profile as any)?.wallet_verified_at
+}, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
