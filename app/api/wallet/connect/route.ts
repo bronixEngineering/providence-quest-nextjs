@@ -64,9 +64,17 @@ export async function POST(request: NextRequest) {
     console.log('🎲 Wallet Connect - Generated nonce:', { nonce, message: verificationMessage })
 
     // Store pending wallet connection
+    // First, delete any existing unverified connections for this user
+    await supabaseAdmin
+      .from('wallet_accounts')
+      .delete()
+      .eq('user_email', session.user.email)
+      .eq('is_verified', false)
+
+    // Insert new pending connection
     const { data: pendingWallet, error: insertError } = await supabaseAdmin
       .from('wallet_accounts')
-      .upsert([
+      .insert([
         {
           user_email: session.user.email,
           wallet_address: walletAddress.toLowerCase(),
@@ -76,10 +84,7 @@ export async function POST(request: NextRequest) {
           is_primary: true,
           network_chain_id: 1 // Ethereum mainnet
         }
-      ], { 
-        onConflict: 'user_email,wallet_address',
-        ignoreDuplicates: false 
-      })
+      ])
       .select('*')
       .single()
 

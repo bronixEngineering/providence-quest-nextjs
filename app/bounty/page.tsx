@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react";
 import { useSession } from "next-auth/react";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserStats, getLevelProgress } from "@/hooks/useUserStats";
@@ -15,8 +16,11 @@ import {
   Lock,
   Calendar,
   Gamepad2,
-  Clock
+  Clock,
+  Twitter,
+  MessageSquare
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { SignInModal } from "@/components/signin-modal";
@@ -26,10 +30,30 @@ import WalletQuest from "@/components/wallet-quest";
 
 // Real user stats from useUserStats hook and Supabase
 
+// Social connections hook
+function useSocialConnections() {
+  const { data: session } = useSession()
+
+  return useQuery({
+    queryKey: ['social-connections'],
+    queryFn: async () => {
+      const response = await fetch('/api/social/status')
+      if (!response.ok) {
+        throw new Error('Failed to fetch social connections')
+      }
+      const result = await response.json()
+      return result.data.connections
+    },
+    enabled: !!session?.user,
+    staleTime: 30 * 1000,
+  })
+}
+
 export default function BountyPage() {
   const { data: session, status } = useSession();
-  const { data: profile, isLoading: profileLoading, error: profileError, refetch } = useProfile();
+  const { data: profile, isLoading: profileLoading, error: profileError } = useProfile();
   const { data: userStats, isLoading: statsLoading, error: statsError } = useUserStats();
+  const { data: socialConnections } = useSocialConnections();
 
   // Debug logging
   console.log('🐛 Bounty Page Debug:', {
@@ -40,7 +64,8 @@ export default function BountyPage() {
     profileError: profileError,
     userStats: userStats,
     statsLoading: statsLoading,
-    statsError: statsError
+    statsError: statsError,
+    socialConnections: socialConnections
   });
 
   // Calculate level progress
@@ -57,6 +82,38 @@ export default function BountyPage() {
       return session.user.email.split('@')[0];
     }
     return "Anonymous Player";
+  };
+
+  // Social badge component
+  const SocialBadge = ({ platform }: { platform: string, connection?: unknown }) => {
+    const getIcon = () => {
+      switch (platform) {
+        case 'twitter':
+          return <Twitter className="h-3 w-3" />
+        case 'discord':
+          return <MessageSquare className="h-3 w-3" />
+        default:
+          return null
+      }
+    }
+
+    const getColors = () => {
+      switch (platform) {
+        case 'twitter':
+          return 'bg-sky-500/20 text-sky-400 border-sky-500/30'
+        case 'discord':
+          return 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+        default:
+          return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+      }
+    }
+
+    return (
+      <Badge variant="outline" className={`${getColors()} text-xs flex items-center gap-1 px-2 py-1 border`}>
+        {getIcon()}
+        {platform.charAt(0).toUpperCase() + platform.slice(1)}
+      </Badge>
+    )
   };
 
   if (status === "loading" || profileLoading || statsLoading) {
@@ -125,6 +182,22 @@ export default function BountyPage() {
                   {profile?.email && (
                     <p className="text-sm text-muted-foreground mb-2">{profile.email}</p>
                   )}
+                  
+                  {/* Social Connections Badges */}
+                  {socialConnections && Object.keys(socialConnections).length > 0 ? (
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      {Object.entries(socialConnections).map(([platform]) => (
+                        <SocialBadge key={platform} platform={platform} />
+                      ))}
+                    </div>
+                  ) : (
+                    // Temporary test badges - remove this in production
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <SocialBadge platform="twitter" />
+                      <SocialBadge platform="discord" />
+                    </div>
+                  )}
+                  
                   {profile?.wallet_address && (
                     <p className="text-xs text-muted-foreground mb-2 font-mono">
                       {profile.wallet_address.slice(0, 6)}...{profile.wallet_address.slice(-4)}
