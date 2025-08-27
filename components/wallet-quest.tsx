@@ -1,188 +1,202 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
   Wallet,
   CheckCircle,
   Loader2,
   Shield,
   Copy,
-  ExternalLink
-} from 'lucide-react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
-import { useAccount, useConnect, useSignMessage } from 'wagmi'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { toast } from 'sonner'
+  ExternalLink,
+} from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { toast } from "sonner";
 
 interface WalletConnection {
-  address: string
-  verifiedAt: string
-  isPrimary: boolean
+  address: string;
+  verifiedAt: string;
+  isPrimary: boolean;
 }
 
 interface WalletQuest {
-  id: string
-  title: string
-  description: string
-  xpReward: number
-  tokenReward: number
-  specialReward?: string
-  isCompleted: boolean
-  wallet?: WalletConnection
+  id: string;
+  title: string;
+  description: string;
+  xpReward: number;
+  tokenReward: number;
+  specialReward?: string;
+  isCompleted: boolean;
+  wallet?: WalletConnection;
 }
 
 interface WalletStatusData {
-  hasWallet: boolean
-  wallet?: WalletConnection
-  quest: WalletQuest
+  hasWallet: boolean;
+  wallet?: WalletConnection;
+  quest: WalletQuest;
 }
 
 function useWalletStatus() {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
 
   return useQuery({
-    queryKey: ['wallet-status'],
+    queryKey: ["wallet-status"],
     queryFn: async (): Promise<WalletStatusData> => {
-      const response = await fetch('/api/wallet/status')
+      const response = await fetch("/api/wallet/status");
       if (!response.ok) {
-        throw new Error('Failed to fetch wallet status')
+        throw new Error("Failed to fetch wallet status");
       }
-      const result = await response.json()
-      return result.data
+      const result = await response.json();
+      return result.data;
     },
     enabled: !!session?.user,
     staleTime: 30 * 1000,
-  })
+  });
 }
 
 function useWalletConnect() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (walletAddress: string) => {
-      const response = await fetch('/api/wallet/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/wallet/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ walletAddress }),
-      })
-      
+      });
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to connect wallet')
+        const error = await response.json();
+        throw new Error(error.error || "Failed to connect wallet");
       }
-      
-      const result = await response.json()
-      return result.data
+
+      const result = await response.json();
+      return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallet-status'] })
+      queryClient.invalidateQueries({ queryKey: ["wallet-status"] });
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Connection failed')
-    }
-  })
+      toast.error(error instanceof Error ? error.message : "Connection failed");
+    },
+  });
 }
 
 function useWalletVerify() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ walletAddress, signature, message }: {
-      walletAddress: string
-      signature: string
-      message: string
+    mutationFn: async ({
+      walletAddress,
+      signature,
+      message,
+    }: {
+      walletAddress: string;
+      signature: string;
+      message: string;
     }) => {
-      const response = await fetch('/api/wallet/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/wallet/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ walletAddress, signature, message }),
-      })
-      
+      });
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to verify wallet')
+        const error = await response.json();
+        throw new Error(error.error || "Failed to verify wallet");
       }
-      
-      const result = await response.json()
-      return result.data
+
+      const result = await response.json();
+      return result.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['wallet-status'] })
-      queryClient.invalidateQueries({ queryKey: ['user-stats'] })
-      
+      queryClient.invalidateQueries({ queryKey: ["wallet-status"] });
+      queryClient.invalidateQueries({ queryKey: ["user-stats"] });
+
       if (data.questCompleted && data.rewards) {
-        toast.success(`Wallet connected! +${data.rewards.xp} XP, +${data.rewards.tokens} Tokens`)
+        toast.success(
+          `Wallet connected! +${data.rewards.xp} XP, +${data.rewards.tokens} Tokens`
+        );
       } else {
-        toast.success('Wallet connected successfully!')
+        toast.success("Wallet connected successfully!");
       }
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Verification failed')
-    }
-  })
+      toast.error(
+        error instanceof Error ? error.message : "Verification failed"
+      );
+    },
+  });
 }
 
 export default function WalletQuest() {
-  const { data: walletData, isLoading, error } = useWalletStatus()
-  const connectMutation = useWalletConnect()
-  const verifyMutation = useWalletVerify()
-  
+  const { data: walletData, isLoading, error } = useWalletStatus();
+  const connectMutation = useWalletConnect();
+  const verifyMutation = useWalletVerify();
+
   // Wagmi hooks
-  const { address, isConnected } = useAccount()
-  const { signMessage } = useSignMessage()
-  
+  const { address, isConnected } = useAccount();
+  const { signMessage } = useSignMessage();
+
   const [pendingConnection, setPendingConnection] = useState<{
-    nonce: string
-    message: string
-    walletAddress: string
-  } | null>(null)
-  const [showMessage, setShowMessage] = useState(false)
+    nonce: string;
+    message: string;
+    walletAddress: string;
+  } | null>(null);
+  const [showMessage, setShowMessage] = useState(false);
 
   const handleConnect = async () => {
     if (!address || !isConnected) {
-      toast.error('Please connect your wallet first')
-      return
+      toast.error("Please connect your wallet first");
+      return;
     }
-    
+
     try {
-      const result = await connectMutation.mutateAsync(address)
-      setPendingConnection(result)
-      setShowMessage(true)
+      const result = await connectMutation.mutateAsync(address);
+      setPendingConnection(result);
+      setShowMessage(true);
     } catch (error) {
       // Error handled by mutation
     }
-  }
+  };
 
   const handleSign = async () => {
-    if (!pendingConnection || !signMessage) return
-    
+    if (!pendingConnection || !signMessage) return;
+
     try {
       // Use Wagmi to sign the message
-      const signature = await signMessage({ message: pendingConnection.message })
-      
+      const signature = await signMessage({
+        message: pendingConnection.message,
+      });
+
       await verifyMutation.mutateAsync({
         walletAddress: pendingConnection.walletAddress,
-        signature: signature,
-        message: pendingConnection.message
-      })
-      setPendingConnection(null)
-      setShowMessage(false)
+        signature: signature ?? "",
+        message: pendingConnection.message,
+      } as {
+        walletAddress: string;
+        signature: string;
+        message: string;
+      });
+      setPendingConnection(null);
+      setShowMessage(false);
     } catch (error) {
-      toast.error('Failed to sign message')
-      console.error('Signing error:', error)
+      toast.error("Failed to sign message");
+      console.error("Signing error:", error);
     }
-  }
+  };
 
   const copyMessage = () => {
     if (pendingConnection) {
-      navigator.clipboard.writeText(pendingConnection.message)
-      toast.success('Message copied to clipboard')
+      navigator.clipboard.writeText(pendingConnection.message);
+      toast.success("Message copied to clipboard");
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -193,7 +207,7 @@ export default function WalletQuest() {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (error || !walletData) {
@@ -202,11 +216,11 @@ export default function WalletQuest() {
         <CardContent className="p-6 text-center">
           <div className="text-red-400 mb-2">Failed to load wallet quest</div>
           <div className="text-sm text-muted-foreground">
-            {error instanceof Error ? error.message : 'Unknown error'}
+            {error instanceof Error ? error.message : "Unknown error"}
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -215,7 +229,9 @@ export default function WalletQuest() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-slate-100">Web3 Quests</h3>
-          <p className="text-sm text-slate-400">Connect your wallet to unlock Web3 rewards</p>
+          <p className="text-sm text-slate-400">
+            Connect your wallet to unlock Web3 rewards
+          </p>
         </div>
       </div>
 
@@ -230,15 +246,20 @@ export default function WalletQuest() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="font-medium text-slate-100">{walletData.quest.title}</h4>
+                  <h4 className="font-medium text-slate-100">
+                    {walletData.quest.title}
+                  </h4>
                   {walletData.quest.isCompleted && (
                     <CheckCircle className="h-4 w-4 text-emerald-400" />
                   )}
                 </div>
-                <p className="text-sm text-slate-400">{walletData.quest.description}</p>
+                <p className="text-sm text-slate-400">
+                  {walletData.quest.description}
+                </p>
                 {walletData.wallet && (
                   <p className="text-xs text-slate-500 mt-1 font-mono">
-                    {walletData.wallet.address.slice(0, 6)}...{walletData.wallet.address.slice(-4)}
+                    {walletData.wallet.address.slice(0, 6)}...
+                    {walletData.wallet.address.slice(-4)}
                   </p>
                 )}
               </div>
@@ -248,16 +269,25 @@ export default function WalletQuest() {
             <div className="flex items-center gap-4">
               <div className="text-right text-sm">
                 <div className="flex items-center gap-2 text-slate-300">
-                  <span className="text-cyan-400">+{walletData.quest.xpReward} XP</span>
-                  <span className="text-amber-400">+{walletData.quest.tokenReward} Tokens</span>
+                  <span className="text-cyan-400">
+                    +{walletData.quest.xpReward} XP
+                  </span>
+                  <span className="text-amber-400">
+                    +{walletData.quest.tokenReward} Tokens
+                  </span>
                 </div>
                 {walletData.quest.specialReward && (
-                  <div className="text-xs text-slate-400 mt-1">{walletData.quest.specialReward}</div>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {walletData.quest.specialReward}
+                  </div>
                 )}
               </div>
 
               {walletData.quest.isCompleted ? (
-                <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                <Badge
+                  variant="secondary"
+                  className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                >
                   Completed
                 </Badge>
               ) : !isConnected ? (
@@ -311,7 +341,7 @@ export default function WalletQuest() {
             <p className="text-sm text-slate-300">
               Please sign this message to verify wallet ownership:
             </p>
-            
+
             <div className="bg-slate-800/50 p-3 rounded border border-slate-700/50">
               <pre className="text-xs text-slate-300 whitespace-pre-wrap font-mono">
                 {pendingConnection.message}
@@ -328,7 +358,7 @@ export default function WalletQuest() {
                 <Copy className="h-3 w-3" />
                 Copy Message
               </Button>
-              
+
               <Button
                 onClick={handleSign}
                 disabled={verifyMutation.isPending}
@@ -341,11 +371,11 @@ export default function WalletQuest() {
                     Verifying...
                   </div>
                 ) : (
-                  'Sign & Verify'
+                  "Sign & Verify"
                 )}
               </Button>
             </div>
-            
+
             <p className="text-xs text-slate-500">
               Connect your Web3 wallet and sign the message to verify ownership.
             </p>
@@ -353,5 +383,5 @@ export default function WalletQuest() {
         </Card>
       )}
     </div>
-  )
+  );
 }
