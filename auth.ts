@@ -7,6 +7,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: true,
+  session: { strategy: "jwt" },
   providers: [
     Google,
     Twitter,
@@ -16,6 +17,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     })
   ],
   callbacks: {
+    async jwt({ token, account, user }) {
+      // When linking a social provider while already logged in, keep current identity
+      if (account && ["discord", "twitter"].includes(account.provider) && token?.email) {
+        return token
+      }
+      // Populate token on initial login
+      if (user) {
+        token.email = (user as any).email ?? token.email
+        token.name = (user as any).name ?? token.name
+        token.picture = (user as any).image ?? (token as any).picture
+        token.sub = (user as any).id ?? token.sub
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (!session.user) session.user = {} as any
+      ;(session.user as any).email = (token as any).email
+      ;(session.user as any).name = (token as any).name
+      ;(session.user as any).image = (token as any).picture
+      return session
+    },
     async signIn({ user, account, profile }) {
       try {
         console.log("🔐 NextAuth SignIn Callback - FULL DEBUG:", {
