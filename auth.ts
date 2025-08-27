@@ -32,6 +32,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ;(token as any).authProvider = account.provider
         }
       }
+      // Ensure stable app user id on the token
+      if (!(token as any).appUserId && (token as any).email) {
+        const { data: prof } = await supabaseAdmin
+          .from('profiles')
+          .select('user_id')
+          .eq('email', (token as any).email)
+          .single()
+        if (prof?.user_id) {
+          ;(token as any).appUserId = prof.user_id
+        }
+      }
       return token
     },
     async session({ session, token }) {
@@ -40,6 +51,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       ;(session.user as any).name = (token as any).name
       ;(session.user as any).image = (token as any).picture
       ;(session as any).authProvider = (token as any).authProvider
+      ;(session.user as any).appUserId = (token as any).appUserId
       return session
     },
     async signIn({ user, account, profile }) {
@@ -165,19 +177,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Handle social verification for Twitter/Discord (tie to current user)
         if (account?.provider === "twitter" || account?.provider === "discord") {
           try {
-            const ownerEmail = user.email || (profile as any)?.email || null
+            // Pull current app session (Google) to get stable user_id
+            const current = await auth()
+            const ownerUserId = (current as any)?.user?.appUserId || null
+            const ownerEmail = current?.user?.email || (user as any)?.email || (profile as any)?.email || null
             if (!ownerEmail) {
               console.log(`⚠️ NextAuth - Missing email for ${account.provider} verification; skipping DB write`)
               return "/bounty"
             }
-
-            // Resolve stable app user id (from profiles)
-            const { data: ownerProfile } = await supabaseAdmin
-              .from('profiles')
-              .select('user_id')
-              .eq('email', ownerEmail)
-              .single()
-            const ownerUserId = ownerProfile?.user_id || null
 
             console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, ownerEmail, 'user_id:', ownerUserId);
 
@@ -200,7 +207,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   verified_at: new Date().toISOString(),
                 }
               ], { 
-                onConflict: 'user_email,platform',
+                onConflict: ownerUserId ? 'user_id,platform' : 'user_email,platform',
                 ignoreDuplicates: false 
               })
               .select('*')
