@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Twitter from "next-auth/providers/twitter";
@@ -135,23 +136,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         }
 
-        // Handle social verification for Twitter/Discord (user already logged in with Google)
-        if ((account?.provider === "twitter" || account?.provider === "discord") && user.email) {
+        // Handle social verification for Twitter/Discord (tie to current user)
+        if (account?.provider === "twitter" || account?.provider === "discord") {
           try {
-            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, user.email);
+            const ownerEmail = user.email || (profile as any)?.email || null
+            if (!ownerEmail) {
+              console.log(`⚠️ NextAuth - Missing email for ${account.provider} verification; skipping DB write`)
+              return true
+            }
+
+            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, ownerEmail);
 
             // Update or create social connection
             const { data: socialConnection, error: socialError } = await supabaseAdmin
               .from('user_social_connections')
               .upsert([
                 {
-                  user_email: user.email,
+                  user_email: ownerEmail,
                   platform: account.provider,
                   platform_user_id: user.id,
-                  platform_username: user.name || user.email,
+                  platform_username: user.name || ownerEmail,
                   platform_data: {
                     image: user.image,
-                    email: user.email,
+                    email: ownerEmail,
                     connectedAt: new Date().toISOString()
                   },
                   is_verified: true,
@@ -183,7 +190,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const { data: existingCompletion } = await supabaseAdmin
                   .from('user_quest_completions')
                   .select('*')
-                  .eq('user_email', user.email)
+                  .eq('user_email', ownerEmail)
                   .eq('quest_id', socialQuest.id)
                   .single()
 
@@ -193,7 +200,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     .from('user_quest_completions')
                     .insert([
                       {
-                        user_email: user.email,
+                        user_email: ownerEmail,
                         quest_id: socialQuest.id,
                         xp_earned: socialQuest.xp_reward,
                         tokens_earned: socialQuest.token_reward,
