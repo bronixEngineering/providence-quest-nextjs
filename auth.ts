@@ -212,12 +212,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 .single()
 
               if (socialQuest && !questError) {
-                // Check if already completed
+                // Check if already completed (tolerate no-rows)
                 const { data: existingCompletion } = await supabaseAdmin
                   .from('user_quest_completions')
-                  .select('*')
+                  .select('id')
                   .eq('user_email', ownerEmail)
                   .eq('quest_id', socialQuest.id)
+                  .maybeSingle?.() ?? await supabaseAdmin
+                  .from('user_quest_completions')
+                  .select('id')
+                  .eq('user_email', ownerEmail)
+                  .eq('quest_id', socialQuest.id)
+                  .limit(1)
                   .single()
 
                 if (!existingCompletion) {
