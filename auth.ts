@@ -28,6 +28,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = (user as any).name ?? token.name
         token.picture = (user as any).image ?? (token as any).picture
         token.sub = (user as any).id ?? token.sub
+        if (account?.provider) {
+          ;(token as any).authProvider = account.provider
+        }
       }
       return token
     },
@@ -36,6 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       ;(session.user as any).email = (token as any).email
       ;(session.user as any).name = (token as any).name
       ;(session.user as any).image = (token as any).picture
+      ;(session as any).authProvider = (token as any).authProvider
       return session
     },
     async signIn({ user, account, profile }) {

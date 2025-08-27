@@ -59,6 +59,7 @@ export default function BountyPage() {
   console.log('🐛 Bounty Page Debug:', {
     sessionStatus: status,
     session: session,
+    authProvider: (session as any)?.authProvider,
     profile: profile,
     profileLoading: profileLoading,
     profileError: profileError,
@@ -179,6 +180,9 @@ export default function BountyPage() {
                     </AvatarFallback>
                   </Avatar>
                   <CardTitle className="text-xl">{getDisplayName()}</CardTitle>
+                  {(session as any)?.authProvider && (
+                    <p className="text-xs text-muted-foreground mb-1">Provider: {(session as any).authProvider}</p>
+                  )}
                   {profile?.email && (
                     <p className="text-sm text-muted-foreground mb-2">{profile.email}</p>
                   )}
