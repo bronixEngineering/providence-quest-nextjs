@@ -15,12 +15,13 @@ export async function GET() {
     const userEmail = session.user.email
     console.log('🔍 Wallet Status - Checking for user:', userEmail)
 
-    // Get user's verified wallet
+    // Get user's wallet (verified or pending)
     const { data: wallet, error: walletError } = await supabaseAdmin
       .from('wallet_accounts')
       .select('*')
       .eq('user_email', userEmail)
-      .eq('is_verified', true)
+      .order('is_verified', { ascending: false }) // Verified first, then pending
+      .limit(1)
       .single()
 
     console.log('📊 Wallet Status - Wallet result:', {
@@ -61,10 +62,14 @@ export async function GET() {
 
     const responseData = {
       hasWallet: !!wallet && !walletError,
+      hasVerifiedWallet: !!wallet && wallet.is_verified,
       wallet: wallet ? {
         address: wallet.wallet_address,
         verifiedAt: wallet.verified_at,
-        isPrimary: wallet.is_primary
+        isPrimary: wallet.is_primary,
+        isVerified: wallet.is_verified,
+        nonce: wallet.nonce,
+        verificationMessage: wallet.verification_message
       } : null,
       quest: {
         id: walletQuest.id,
@@ -78,6 +83,8 @@ export async function GET() {
     }
 
     console.log('✅ Wallet Status - Final response:', responseData)
+    console.log('🔍 DEBUG - Raw wallet data:', wallet)
+    console.log('🔍 DEBUG - Wallet error:', walletError)
 
     return NextResponse.json({
       success: true,

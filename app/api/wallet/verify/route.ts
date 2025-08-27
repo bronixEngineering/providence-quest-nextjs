@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
     console.log('✍️ Wallet Verify - Request:', { 
       walletAddress, 
       signature: signature?.slice(0, 10) + '...', 
+      message: message?.slice(0, 50) + '...',
       userEmail: session.user.email 
     })
 
@@ -44,19 +45,26 @@ export async function POST(request: NextRequest) {
 
     // Verify the signature
     try {
+      console.log('🔍 Wallet Verify - Attempting signature verification with:', {
+        message: message,
+        signature: signature,
+        expectedAddress: walletAddress.toLowerCase()
+      })
+      
       const recoveredAddress = verifyMessage(message, signature)
-      console.log('🔍 Wallet Verify - Signature verification:', {
+      console.log('🔍 Wallet Verify - Signature verification result:', {
         expectedAddress: walletAddress.toLowerCase(),
         recoveredAddress: recoveredAddress.toLowerCase(),
         matches: recoveredAddress.toLowerCase() === walletAddress.toLowerCase()
       })
 
       if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
+        console.log('❌ Wallet Verify - Address mismatch')
+        return NextResponse.json({ error: 'Invalid signature - address mismatch' }, { status: 400 })
       }
     } catch (signatureError) {
       console.log('❌ Wallet Verify - Signature verification failed:', signatureError)
-      return NextResponse.json({ error: 'Signature verification failed' }, { status: 400 })
+      return NextResponse.json({ error: 'Signature verification failed: ' + signatureError.message }, { status: 400 })
     }
 
     // Update wallet as verified
@@ -108,7 +116,7 @@ export async function POST(request: NextRequest) {
         .eq('quest_id', walletQuest.id)
         .single()
 
-      if (!existingCompletion && (completionError?.code === 'PGRST116')) {
+      if (!existingCompletion) {
         // Complete the quest
         const { error: questCompletionError } = await supabaseAdmin
           .from('user_quest_completions')

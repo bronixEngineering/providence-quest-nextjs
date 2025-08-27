@@ -4,17 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Wallet,
-  CheckCircle,
-  Loader2,
-  Shield,
-  Copy,
-  ExternalLink,
-} from "lucide-react";
+import { Wallet, CheckCircle, Loader2, Shield } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { useAccount, useConnect, useSignMessage, useDisconnect } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 
@@ -22,6 +15,9 @@ interface WalletConnection {
   address: string;
   verifiedAt: string;
   isPrimary: boolean;
+  isVerified: boolean;
+  nonce?: string;
+  verificationMessage?: string;
 }
 
 interface WalletQuest {
@@ -37,6 +33,7 @@ interface WalletQuest {
 
 interface WalletStatusData {
   hasWallet: boolean;
+  hasVerifiedWallet: boolean;
   wallet?: WalletConnection;
   quest: WalletQuest;
 }
@@ -83,6 +80,33 @@ function useWalletConnect() {
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Connection failed");
+    },
+  });
+}
+
+function useWalletDisconnect() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/wallet/disconnect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to disconnect wallet");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallet-status"] });
+      toast.success("Wallet disconnected");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Disconnect failed");
     },
   });
 }
@@ -142,13 +166,13 @@ export default function WalletQuest() {
   // Wagmi hooks
   const { address, isConnected } = useAccount();
   const { signMessage } = useSignMessage();
+  const { disconnect } = useDisconnect();
 
   const [pendingConnection, setPendingConnection] = useState<{
     nonce: string;
     message: string;
     walletAddress: string;
   } | null>(null);
-  const [showMessage, setShowMessage] = useState(false);
 
   const handleConnect = async () => {
     if (!address || !isConnected) {
@@ -159,35 +183,93 @@ export default function WalletQuest() {
     try {
       const result = await connectMutation.mutateAsync(address);
       setPendingConnection(result);
-      setShowMessage(true);
+      // Auto-sign with the result to avoid stale/null state
+      handleSign(result);
     } catch (error) {
       // Error handled by mutation
     }
   };
 
-  const handleSign = async () => {
-    if (!pendingConnection || !signMessage) return;
+  const handleVerify = async () => {
+    if (!address || !isConnected) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    console.log("🔍 DEBUG - handleVerify called with address:", address);
+
+    // Always create new nonce and request signature
+    try {
+      console.log("🔍 DEBUG - Calling connectMutation...");
+      const result = await connectMutation.mutateAsync(address);
+      console.log(
+        "🔍 DEBUG - connectMutation result:",
+        JSON.stringify(result, null, 2)
+      );
+      setPendingConnection(result);
+
+      // Call handleSign directly with the result data
+      console.log("🔍 DEBUG - Calling handleSign with result data...");
+      handleSign(result);
+    } catch (error) {
+      console.error("🔍 DEBUG - handleVerify error:", error);
+      // Error handled by mutation
+    }
+  };
+
+  const handleSign = async (connectionData: {
+    nonce: string;
+    message: string;
+    walletAddress: string;
+  }) => {
+    const dataToUse = connectionData;
+
+    console.log("🔍 DEBUG - handleSign called");
+    console.log("🔍 DEBUG - dataToUse:", dataToUse);
+    console.log("🔍 DEBUG - signMessage:", !!signMessage);
+
+    if (!dataToUse?.message || !dataToUse?.walletAddress || !signMessage) {
+      console.log("🔍 DEBUG - handleSign early return - missing data");
+      toast.error("Missing signing data");
+      return;
+    }
 
     try {
-      // Use Wagmi to sign the message
-      const signature = await signMessage({
-        message: pendingConnection.message,
+      console.log("🔐 Wallet Quest - Starting signature process:", {
+        message: dataToUse.message,
+        walletAddress: dataToUse.walletAddress,
       });
 
-      await verifyMutation.mutateAsync({
-        walletAddress: pendingConnection.walletAddress,
-        signature: signature ?? "",
-        message: pendingConnection.message,
-      } as {
-        walletAddress: string;
-        signature: string;
-        message: string;
-      });
-      setPendingConnection(null);
-      setShowMessage(false);
+      // Use Wagmi to sign the message - it's a callback function!
+      signMessage(
+        {
+          message: dataToUse.message,
+        },
+        {
+          onSuccess: async (signature) => {
+            console.log("✍️ Wallet Quest - Signature received:", signature);
+
+            await verifyMutation.mutateAsync({
+              walletAddress: dataToUse.walletAddress,
+              signature: signature,
+              message: dataToUse.message,
+            });
+            setPendingConnection(null);
+          },
+          onError: (error) => {
+            console.error("Signing error:", error);
+            toast.error(
+              "Failed to sign message: " + (error.message || "Unknown error")
+            );
+          },
+        }
+      );
     } catch (error) {
-      toast.error("Failed to sign message");
       console.error("Signing error:", error);
+      toast.error(
+        "Failed to sign message: " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
     }
   };
 
@@ -256,11 +338,34 @@ export default function WalletQuest() {
                 <p className="text-sm text-slate-400">
                   {walletData.quest.description}
                 </p>
-                {walletData.wallet && (
+                {walletData.hasVerifiedWallet && walletData.wallet ? (
                   <p className="text-xs text-slate-500 mt-1 font-mono">
                     {walletData.wallet.address.slice(0, 6)}...
                     {walletData.wallet.address.slice(-4)}
                   </p>
+                ) : address ? (
+                  <p className="text-xs text-slate-500 mt-1 font-mono">
+                    {address.slice(0, 6)}...{address.slice(-4)}
+                  </p>
+                ) : null}
+                {isConnected && address && !walletData.hasVerifiedWallet && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded text-xs">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                      <span className="text-emerald-400 font-medium">
+                        Connected
+                      </span>
+                      <span className="text-emerald-300 font-mono">
+                        {address.slice(0, 6)}...{address.slice(-4)}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => disconnect()}
+                      className="text-xs text-red-400 hover:text-red-300 underline underline-offset-2"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -290,7 +395,8 @@ export default function WalletQuest() {
                 >
                   Completed
                 </Badge>
-              ) : !isConnected ? (
+              ) : !address ? (
+                // Wallet not connected - show Rainbow connect button
                 <ConnectButton.Custom>
                   {({ openConnectModal }) => (
                     <Button
@@ -303,85 +409,44 @@ export default function WalletQuest() {
                     </Button>
                   )}
                 </ConnectButton.Custom>
+              ) : address ? (
+                // Wallet connected - show verify/disconnect buttons
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleVerify}
+                    disabled={connectMutation.isPending || !!pendingConnection}
+                    className="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:opacity-90 border-0 text-white"
+                    size="sm"
+                  >
+                    {connectMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Verifying...
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-3 w-3" />
+                        Verify Wallet
+                      </div>
+                    )}
+                  </Button>
+                </div>
               ) : (
+                // Fallback - should not reach here
                 <Button
                   onClick={handleConnect}
                   disabled={connectMutation.isPending || !!pendingConnection}
-                  className="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:opacity-90 border-0 text-white"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 border-0 text-white"
                   size="sm"
                 >
-                  {connectMutation.isPending ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      Verifying...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-3 w-3" />
-                      Verify Wallet
-                    </div>
-                  )}
+                  <Wallet className="h-3 w-3 mr-2" />
+                  Connect Wallet
                 </Button>
               )}
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Signature Required Modal */}
-      {showMessage && pendingConnection && (
-        <Card className="border border-orange-500/20 bg-orange-500/5">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-400">
-              <Shield className="h-5 w-5" />
-              Signature Required
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-slate-300">
-              Please sign this message to verify wallet ownership:
-            </p>
-
-            <div className="bg-slate-800/50 p-3 rounded border border-slate-700/50">
-              <pre className="text-xs text-slate-300 whitespace-pre-wrap font-mono">
-                {pendingConnection.message}
-              </pre>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={copyMessage}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Copy className="h-3 w-3" />
-                Copy Message
-              </Button>
-
-              <Button
-                onClick={handleSign}
-                disabled={verifyMutation.isPending}
-                className="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:opacity-90"
-                size="sm"
-              >
-                {verifyMutation.isPending ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Verifying...
-                  </div>
-                ) : (
-                  "Sign & Verify"
-                )}
-              </Button>
-            </div>
-
-            <p className="text-xs text-slate-500">
-              Connect your Web3 wallet and sign the message to verify ownership.
-            </p>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

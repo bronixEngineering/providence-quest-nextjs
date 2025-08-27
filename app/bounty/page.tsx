@@ -268,14 +268,14 @@ export default function BountyPage() {
                 <DailyCheckin />
               </div>
 
-              {/* Social Quests */}
-              <div className="space-y-4">
-                <SocialQuests />
-              </div>
-
               {/* Wallet Quest */}
               <div className="space-y-4">
                 <WalletQuest />
+              </div>
+
+              {/* Social Quests */}
+              <div className="space-y-4">
+                <SocialQuests />
               </div>
 
               {/* Coming Soon Quests */}
