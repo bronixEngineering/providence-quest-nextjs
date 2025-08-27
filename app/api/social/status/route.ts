@@ -1,49 +1,51 @@
-import { NextResponse } from 'next/server'
-import { auth } from '@/auth'
-import { supabaseAdmin } from '@/lib/supabase'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log('📊 Social Status API - Starting...')
-    
-    const session = await auth()
+    console.log("📊 Social Status API - Starting...");
+
+    const session = await auth();
     if (!session?.user?.email) {
-      console.log('❌ Social Status - No session or email')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      console.log("❌ Social Status - No session or email");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userEmail = session.user.email
-    console.log('🔍 Social Status - Checking for user:', userEmail)
+    const userEmail = session.user.email;
+    console.log("🔍 Social Status - Checking for user:", userEmail);
 
     // Get all social connections for user
     const { data: connections, error: connectionsError } = await supabaseAdmin
-      .from('user_social_connections')
-      .select('*')
-      .eq('user_email', userEmail)
-      .eq('is_verified', true)
+      .from("user_social_connections")
+      .select("*")
+      .eq("user_email", userEmail)
+      .eq("is_verified", true);
 
-    console.log('📊 Social Status - Connections result:', {
+    console.log("📊 Social Status - Connections result:", {
       connections: connections,
-      connectionsError: connectionsError
-    })
+      connectionsError: connectionsError,
+    });
 
     // Get available social quests
     const { data: socialQuests, error: questsError } = await supabaseAdmin
-      .from('quest_definitions')
-      .select('*')
-      .eq('type', 'social')
-      .eq('is_active', true)
-      .order('sort_order')
+      .from("quest_definitions")
+      .select("*")
+      .eq("type", "social")
+      .eq("is_active", true)
+      .order("sort_order");
 
-    console.log('📊 Social Status - Social quests:', {
+    console.log("📊 Social Status - Social quests:", {
       socialQuests: socialQuests,
-      questsError: questsError
-    })
+      questsError: questsError,
+    });
 
     // Get completed social quests
     const { data: completedQuests, error: completedError } = await supabaseAdmin
-      .from('user_quest_completions')
-      .select(`
+      .from("user_quest_completions")
+      .select(
+        `
         *,
         quest_definitions!inner(
           type,
@@ -52,14 +54,15 @@ export async function GET() {
           xp_reward,
           token_reward
         )
-      `)
-      .eq('user_email', userEmail)
-      .eq('quest_definitions.type', 'social')
+      `
+      )
+      .eq("user_email", userEmail)
+      .eq("quest_definitions.type", "social");
 
-    console.log('📊 Social Status - Completed quests:', {
+    console.log("📊 Social Status - Completed quests:", {
       completedQuests: completedQuests,
-      completedError: completedError
-    })
+      completedError: completedError,
+    });
 
     // Process connections by platform
     const connectionsByPlatform = (connections || []).reduce((acc, conn) => {
@@ -70,18 +73,20 @@ export async function GET() {
         userId: conn.platform_user_id,
         connectedAt: conn.connected_at,
         verifiedAt: conn.verified_at,
-        data: conn.platform_data
-      }
-      return acc
-    }, {} as Record<string, any>)
+        data: conn.platform_data,
+      };
+      return acc;
+    }, {} as Record<string, any>);
 
     // Process quests with completion status
-    const questsWithStatus = (socialQuests || []).map(quest => {
-      const completion = (completedQuests || []).find(c => c.quest_id === quest.id)
-      
+    const questsWithStatus = (socialQuests || []).map((quest) => {
+      const completion = (completedQuests || []).find(
+        (c) => c.quest_id === quest.id
+      );
+
       // Extract platform from category (twitter_link -> twitter, discord_member -> discord)
-      const platform = quest.category.split('_')[0]
-      const isConnected = connectionsByPlatform[platform]
+      const platform = quest.category.split("_")[0];
+      const isConnected = connectionsByPlatform[platform];
 
       return {
         id: quest.id,
@@ -96,9 +101,9 @@ export async function GET() {
         isAvailable: !completion,
         completedAt: completion?.completed_at || null,
         requirements: quest.requirements,
-        connection: isConnected || null
-      }
-    })
+        connection: isConnected || null,
+      };
+    });
 
     const responseData = {
       connections: connectionsByPlatform,
@@ -106,21 +111,21 @@ export async function GET() {
       stats: {
         totalConnections: Object.keys(connectionsByPlatform).length,
         completedQuests: (completedQuests || []).length,
-        availableQuests: questsWithStatus.filter(q => q.isAvailable).length
-      }
-    }
+        availableQuests: questsWithStatus.filter((q) => q.isAvailable).length,
+      },
+    };
 
-    console.log('✅ Social Status - Final response:', responseData)
+    console.log("✅ Social Status - Final response:", responseData);
 
     return NextResponse.json({
       success: true,
-      data: responseData
-    })
+      data: responseData,
+    });
   } catch (error) {
-    console.error('❌ Social Status API Error:', error)
+    console.error("❌ Social Status API Error:", error);
     return NextResponse.json(
-      { error: 'Failed to get social status' },
+      { error: "Failed to get social status" },
       { status: 500 }
-    )
+    );
   }
 }
