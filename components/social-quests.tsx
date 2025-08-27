@@ -13,7 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { toast } from "sonner";
 
 interface SocialConnection {
@@ -126,10 +126,8 @@ export default function SocialQuests() {
   const verifyMutation = useSocialVerify();
 
   const handleVerify = (platform: string) => {
-    // Direct link to NextAuth signin - bypass our API
-    window.location.href = `/api/auth/signin/${platform}?callbackUrl=${encodeURIComponent(
-      "/bounty?verified=" + platform
-    )}`;
+    // Start Auth.js OAuth and come back to /bounty
+    signIn(platform, { callbackUrl: "/bounty?verified=" + platform });
   };
 
   if (isLoading) {
