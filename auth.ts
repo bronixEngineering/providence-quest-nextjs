@@ -14,45 +14,49 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Discord({
       clientId: process.env.AUTH_DISCORD_ID!,
       clientSecret: process.env.AUTH_DISCORD_SECRET!,
-    })
+    }),
   ],
   callbacks: {
     async jwt({ token, account, user }) {
       // When linking a social provider while already logged in, keep current identity
-      if (account && ["discord", "twitter"].includes(account.provider) && token?.email) {
-        return token
+      if (
+        account &&
+        ["discord", "twitter"].includes(account.provider) &&
+        token?.email
+      ) {
+        return token;
       }
       // Populate token on initial login
       if (user) {
-        token.email = (user as any).email ?? token.email
-        token.name = (user as any).name ?? token.name
-        token.picture = (user as any).image ?? (token as any).picture
-        token.sub = (user as any).id ?? token.sub
+        token.email = (user as any).email ?? token.email;
+        token.name = (user as any).name ?? token.name;
+        token.picture = (user as any).image ?? (token as any).picture;
+        token.sub = (user as any).id ?? token.sub;
         if (account?.provider) {
-          ;(token as any).authProvider = account.provider
+          (token as any).authProvider = account.provider;
         }
       }
       // Ensure stable app user id on the token
       if (!(token as any).appUserId && (token as any).email) {
         const { data: prof } = await supabaseAdmin
-          .from('profiles')
-          .select('user_id')
-          .eq('email', (token as any).email)
-          .single()
+          .from("profiles")
+          .select("user_id")
+          .eq("email", (token as any).email)
+          .single();
         if (prof?.user_id) {
-          ;(token as any).appUserId = prof.user_id
+          (token as any).appUserId = prof.user_id;
         }
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
-      if (!session.user) session.user = {} as any
-      ;(session.user as any).email = (token as any).email
-      ;(session.user as any).name = (token as any).name
-      ;(session.user as any).image = (token as any).picture
-      ;(session as any).authProvider = (token as any).authProvider
-      ;(session.user as any).appUserId = (token as any).appUserId
-      return session
+      if (!session.user) session.user = {} as any;
+      (session.user as any).email = (token as any).email;
+      (session.user as any).name = (token as any).name;
+      (session.user as any).image = (token as any).picture;
+      (session as any).authProvider = (token as any).authProvider;
+      (session.user as any).appUserId = (token as any).appUserId;
+      return session;
     },
     async signIn({ user, account, profile }) {
       try {
@@ -155,82 +159,122 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Handle social verification for Twitter/Discord (tie to current user)
-        if (account?.provider === "twitter" || account?.provider === "discord") {
+        if (
+          account?.provider === "twitter" ||
+          account?.provider === "discord"
+        ) {
           try {
             // Pull current app session (Google) to get stable user_id
-            const current = await auth()
-            const ownerUserId = (current as any)?.user?.appUserId || null
-            const ownerEmail = current?.user?.email || (user as any)?.email || (profile as any)?.email || null
+            const current = await auth();
+            const ownerUserId = (current as any)?.user?.appUserId || null;
+            const ownerEmail =
+              current?.user?.email ||
+              (user as any)?.email ||
+              (profile as any)?.email ||
+              null;
             if (!ownerEmail) {
-              console.log(`⚠️ NextAuth - Missing email for ${account.provider} verification; skipping DB write`)
-              return "/bounty"
+              console.log(
+                `⚠️ NextAuth - Missing email for ${account.provider} verification; skipping DB write`
+              );
+              return "/bounty";
             }
 
             // Get the real platform user ID from the account object
-            const platformUserId = account.provider === "discord" 
-              ? (account as any).providerAccountId  // Discord's real user ID
-              : user.id  // For Twitter, use user.id
+            const platformUserId =
+              account.provider === "discord"
+                ? (account as any).providerAccountId // Discord's real user ID
+                : user.id; // For Twitter, use user.id
 
-            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, {
-              ownerEmail,
-              ownerUserId,
-              platformUserId,
-              userFromProvider: user.id,
-              accountProviderAccountId: (account as any).providerAccountId
-            });
+            // Get the correct platform username
+            let platformUsername = user.name || ownerEmail;
+            if (account.provider === "twitter") {
+              // For Twitter, use the screen_name (handle) without @ prefix
+              platformUsername =
+                (account as any).screen_name || user.name || ownerEmail;
+            }
+
+            console.log(
+              `🎯 NextAuth - Verifying ${account.provider} account for existing user:`,
+              {
+                ownerEmail,
+                ownerUserId,
+                platformUserId,
+                platformUsername,
+                userFromProvider: user.id,
+                accountProviderAccountId: (account as any).providerAccountId,
+                accountScreenName: (account as any).screen_name,
+              }
+            );
 
             // Update or create social connection
-            const { data: socialConnection, error: socialError } = await supabaseAdmin
-              .from('user_social_connections')
-              .upsert([
-                {
-                  user_email: ownerEmail,
-                  user_id: ownerUserId,
-                  platform: account.provider,
-                  platform_user_id: platformUserId, // Use the real platform user ID
-                  platform_username: user.name || ownerEmail,
-                  platform_data: {
-                    image: user.image,
-                    email: ownerEmail,
-                    connectedAt: new Date().toISOString()
-                  },
-                  is_verified: true,
-                  verified_at: new Date().toISOString(),
-                }
-              ], { 
-                onConflict: ownerUserId ? 'user_id,platform' : 'user_email,platform',
-                ignoreDuplicates: false 
-              })
-              .select('*')
-              .single()
+            const { data: socialConnection, error: socialError } =
+              await supabaseAdmin
+                .from("user_social_connections")
+                .upsert(
+                  [
+                    {
+                      user_email: ownerEmail,
+                      user_id: ownerUserId,
+                      platform: account.provider,
+                      platform_user_id: platformUserId, // Use the real platform user ID
+                      platform_username: platformUsername, // Use the correct platform username
+                      platform_data: {
+                        image: user.image,
+                        email: ownerEmail,
+                        connectedAt: new Date().toISOString(),
+                      },
+                      is_verified: true,
+                      verified_at: new Date().toISOString(),
+                    },
+                  ],
+                  {
+                    onConflict: ownerUserId
+                      ? "user_id,platform"
+                      : "user_email,platform",
+                    ignoreDuplicates: false,
+                  }
+                )
+                .select("*")
+                .single();
 
             if (socialError) {
-              console.log(`❌ NextAuth - Failed to create ${account.provider} connection:`, socialError);
+              console.log(
+                `❌ NextAuth - Failed to create ${account.provider} connection:`,
+                socialError
+              );
             } else {
-              console.log(`✅ NextAuth - ${account.provider} connection created:`, socialConnection);
+              console.log(
+                `✅ NextAuth - ${account.provider} connection created:`,
+                socialConnection
+              );
 
               // Check and complete social quest
-              const { data: socialQuest, error: questError } = await supabaseAdmin
-                .from('quest_definitions')
-                .select('*')
-                .eq('type', 'social')
-                .eq('category', `${account.provider}_link`)
-                .eq('is_active', true)
-                .single()
+              const { data: socialQuest, error: questError } =
+                await supabaseAdmin
+                  .from("quest_definitions")
+                  .select("*")
+                  .eq("type", "social")
+                  .eq("category", `${account.provider}_link`)
+                  .eq("is_active", true)
+                  .single();
 
               if (socialQuest && !questError) {
                 // Check if already completed (allow 0 rows without error)
-                const { data: existingCompletion, error: existingErr } = await supabaseAdmin
-                  .from('user_quest_completions')
-                  .select('id')
-                  .eq(ownerUserId ? 'user_id' : 'user_email', ownerUserId || ownerEmail)
-                  .eq('quest_id', socialQuest.id)
-                  .maybeSingle()
+                const { data: existingCompletion, error: existingErr } =
+                  await supabaseAdmin
+                    .from("user_quest_completions")
+                    .select("id")
+                    .eq(
+                      ownerUserId ? "user_id" : "user_email",
+                      ownerUserId || ownerEmail
+                    )
+                    .eq("quest_id", socialQuest.id)
+                    .maybeSingle();
 
                 if (!existingCompletion) {
                   // Complete the quest
                   const { error: completionError } = await supabaseAdmin
-                    .from('user_quest_completions')
+                    .from("user_quest_completions")
                     .insert([
                       {
                         user_email: ownerEmail,
@@ -242,22 +286,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         completion_data: {
                           platform: account.provider,
                           platform_username: user.name,
-                          connected_at: new Date().toISOString()
-                        }
-                      }
-                    ])
+                          connected_at: new Date().toISOString(),
+                        },
+                      },
+                    ]);
 
                   if (!completionError) {
-                    console.log(`🎉 NextAuth - ${account.provider} social quest completed!`);
+                    console.log(
+                      `🎉 NextAuth - ${account.provider} social quest completed!`
+                    );
                   }
                 }
               }
             }
           } catch (error) {
-            console.error(`❌ NextAuth - Social quest processing error for ${account?.provider}:`, error);
+            console.error(
+              `❌ NextAuth - Social quest processing error for ${account?.provider}:`,
+              error
+            );
           }
           // Prevent provider from becoming the active session – bounce back to bounty
-          return "/bounty"
+          return "/bounty";
         } else {
           console.log(
             "⚠️ NextAuth - Skipping profile creation - missing required data:",
