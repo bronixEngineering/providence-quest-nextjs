@@ -148,29 +148,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               "✅ NextAuth - Profile already exists:",
               existingProfile.id,
               "for email:",
-              existingProfile.email
+              existingProfile.email,
+              "- skipping update"
             );
-
-            // Update existing profile with latest info from Google
-            const { error: updateError } = await supabaseAdmin
-              .from("profiles")
-              .update({
-                user_id: user.id || existingProfile.user_id, // Update user_id if we have it
-                name: user.name,
-                avatar_url: user.image,
-              })
-              .eq("email", user.email);
-
-            if (updateError) {
-              console.error(
-                "❌ NextAuth - Failed to update existing profile:",
-                updateError
-              );
-            } else {
-              console.log(
-                "✅ NextAuth - Updated existing profile with latest Google info"
-              );
-            }
           }
         }
 
@@ -186,7 +166,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               return "/bounty"
             }
 
-            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, ownerEmail, 'user_id:', ownerUserId);
+            // Get the real platform user ID from the account object
+            const platformUserId = account.provider === "discord" 
+              ? (account as any).providerAccountId  // Discord's real user ID
+              : user.id  // For Twitter, use user.id
+
+            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, {
+              ownerEmail,
+              ownerUserId,
+              platformUserId,
+              userFromProvider: user.id,
+              accountProviderAccountId: (account as any).providerAccountId
+            });
 
             // Update or create social connection
             const { data: socialConnection, error: socialError } = await supabaseAdmin
@@ -196,7 +187,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   user_email: ownerEmail,
                   user_id: ownerUserId,
                   platform: account.provider,
-                  platform_user_id: user.id,
+                  platform_user_id: platformUserId, // Use the real platform user ID
                   platform_username: user.name || ownerEmail,
                   platform_data: {
                     image: user.image,
