@@ -196,18 +196,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 ownerEmail;
             }
 
-            console.log(
-              `🎯 NextAuth - Verifying ${account.provider} account for existing user:`,
-              {
-                ownerEmail,
-                ownerUserId,
-                platformUserId,
-                platformUsername,
-                userFromProvider: user.id,
-                accountProviderAccountId: (account as any).providerAccountId,
-                accountScreenName: (account as any).screen_name,
-              }
-            );
+                         console.log(
+               `🎯 NextAuth - Verifying ${account.provider} account for existing user:`,
+               {
+                 ownerEmail,
+                 ownerUserId,
+                 platformUserId,
+                 platformUsername,
+                 userFromProvider: user.id,
+                 accountProviderAccountId: (account as any).providerAccountId,
+                 accountScreenName: (account as any).screen_name,
+                 profileDataUsername: (profile as any)?.data?.username,
+               }
+             );
 
             // Update or create social connection
             const { data: socialConnection, error: socialError } =
