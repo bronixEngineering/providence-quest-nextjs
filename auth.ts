@@ -188,9 +188,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // Get the correct platform username
             let platformUsername = user.name || ownerEmail;
             if (account.provider === "twitter") {
-              // For Twitter, use the screen_name (handle) without @ prefix
+              // Twitter v2 API puts the username under profile.data.username
               platformUsername =
-                (account as any).screen_name || user.name || ownerEmail;
+                (profile as any)?.data?.username || 
+                (account as any).screen_name || 
+                user.name || 
+                ownerEmail;
             }
 
             console.log(

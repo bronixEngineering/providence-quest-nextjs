@@ -11,7 +11,7 @@ export default function Hero() {
       {/* Spline 3D Background */}
       <div className="absolute inset-0 w-full h-full">
         <Spline
-          scene="https://prod.spline.design/xZJihbNtCTYgkGAh/scene.splinecode"
+          scene="https://prod.spline.design/KPRd9BKgEYWvp8qh/scene.splinecode"
           className="w-full h-full opacity-60"
         />
       </div>
