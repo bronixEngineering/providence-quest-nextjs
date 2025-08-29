@@ -31,7 +31,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       },
       token: "https://api.epicgames.dev/epic/oauth/v1/token",
-      userinfo: "https://api.epicgames.dev/epic/oauth/v1/userinfo",
+      userinfo: "https://api.epicgames.dev/epic/oauth/v1/userInfo",
+
       profile(profile) {
         return {
           id: profile.sub,
