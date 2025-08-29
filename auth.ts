@@ -28,6 +28,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         params: {
           response_type: "code",
           scope: "openid basic_profile",
+          client_id: process.env.EPIC_CLIENT_ID, // Explicit client_id parameter
         },
       },
       token: {
@@ -45,9 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: `Basic ${Buffer.from(
-                `${process.env.EPIC_CLIENT_ID}:${process.env.EPIC_CLIENT_SECRET}`
-              ).toString("base64")}`,
+              "Authorization": `Basic ${btoa(`${process.env.EPIC_CLIENT_ID}:${process.env.EPIC_CLIENT_SECRET}`)}`,
             },
             body: new URLSearchParams({
               grant_type: "authorization_code",
