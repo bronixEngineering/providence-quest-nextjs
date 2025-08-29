@@ -22,6 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       id: "epic",
       name: "Epic Games",
       type: "oauth",
+
       authorization: {
         url: "https://www.epicgames.com/id/authorize",
         params: {
@@ -45,22 +46,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, account, user }) {
-      console.log('🔑 JWT Callback Debug:', {
+      console.log("🔑 JWT Callback Debug:", {
         hasAccount: !!account,
         provider: account?.provider,
         hasAccessToken: !!account?.access_token,
-        accessTokenPreview: account?.access_token?.slice(0, 20) + '...',
-        tokenKeys: Object.keys(token || {})
+        accessTokenPreview: account?.access_token?.slice(0, 20) + "...",
+        tokenKeys: Object.keys(token || {}),
       });
 
       // Store Twitter access token if available
       if (account?.provider === "twitter" && account.access_token) {
         (token as any).twitterAccessToken = account.access_token;
-        console.log('🔑 JWT - Twitter access token stored successfully');
-        console.log('🔑 JWT - Token keys after storing:', Object.keys(token));
+        console.log("🔑 JWT - Twitter access token stored successfully");
+        console.log("🔑 JWT - Token keys after storing:", Object.keys(token));
       } else if (account?.provider === "twitter") {
-        console.log('❌ JWT - Twitter login but no access token found');
-        console.log('❌ JWT - Account object:', account);
+        console.log("❌ JWT - Twitter login but no access token found");
+        console.log("❌ JWT - Account object:", account);
       }
 
       // When linking a social provider while already logged in, keep current identity
@@ -95,10 +96,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      console.log('🔑 Session Callback Debug:', {
+      console.log("🔑 Session Callback Debug:", {
         tokenKeys: Object.keys(token || {}),
         hasTwitterToken: !!(token as any).twitterAccessToken,
-        twitterTokenPreview: (token as any).twitterAccessToken?.slice(0, 20) + '...'
+        twitterTokenPreview:
+          (token as any).twitterAccessToken?.slice(0, 20) + "...",
       });
 
       if (!session.user) session.user = {} as any;
@@ -107,10 +109,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       (session.user as any).image = (token as any).picture;
       (session as any).authProvider = (token as any).authProvider;
       (session.user as any).appUserId = (token as any).appUserId;
-      (session.user as any).twitterAccessToken = (token as any).twitterAccessToken;
-      
-      console.log('🔑 Session Callback - Final session keys:', Object.keys(session.user));
-      
+      (session.user as any).twitterAccessToken = (
+        token as any
+      ).twitterAccessToken;
+
+      console.log(
+        "🔑 Session Callback - Final session keys:",
+        Object.keys(session.user)
+      );
+
       return session;
     },
     async signIn({ user, account, profile }) {
@@ -219,11 +226,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           account?.provider === "discord" ||
           account?.provider === "epic"
         ) {
-          console.log('🔑 SignIn - Account debug:', {
+          console.log("🔑 SignIn - Account debug:", {
             provider: account.provider,
             hasAccessToken: !!account.access_token,
-            accessTokenPreview: account.access_token?.slice(0, 20) + '...',
-            accountKeys: Object.keys(account)
+            accessTokenPreview: account.access_token?.slice(0, 20) + "...",
+            accountKeys: Object.keys(account),
           });
           try {
             // Pull current app session (Google) to get stable user_id
@@ -252,28 +259,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (account.provider === "twitter") {
               // Twitter v2 API puts the username under profile.data.username
               platformUsername =
-                (profile as any)?.data?.username || 
-                (account as any).screen_name || 
-                user.name || 
+                (profile as any)?.data?.username ||
+                (account as any).screen_name ||
+                user.name ||
                 ownerEmail;
             } else if (account.provider === "epic") {
               // Epic uses preferred_username or name
               platformUsername = user.name || ownerEmail;
             }
 
-                         console.log(
-               `🎯 NextAuth - Verifying ${account.provider} account for existing user:`,
-               {
-                 ownerEmail,
-                 ownerUserId,
-                 platformUserId,
-                 platformUsername,
-                 userFromProvider: user.id,
-                 accountProviderAccountId: (account as any).providerAccountId,
-                 accountScreenName: (account as any).screen_name,
-                 profileDataUsername: (profile as any)?.data?.username,
-               }
-             );
+            console.log(
+              `🎯 NextAuth - Verifying ${account.provider} account for existing user:`,
+              {
+                ownerEmail,
+                ownerUserId,
+                platformUserId,
+                platformUsername,
+                userFromProvider: user.id,
+                accountProviderAccountId: (account as any).providerAccountId,
+                accountScreenName: (account as any).screen_name,
+                profileDataUsername: (profile as any)?.data?.username,
+              }
+            );
 
             // Update or create social connection
             const { data: socialConnection, error: socialError } =

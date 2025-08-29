@@ -149,7 +149,7 @@ export default function Header() {
           ) : (
             <SignInModal>
               <Button size="sm" className="cursor-pointer">
-                Sign In
+                Login
               </Button>
             </SignInModal>
           )}
