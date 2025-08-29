@@ -98,6 +98,18 @@ export default function Header() {
 
         {/* Auth Section */}
         <div className="flex items-center space-x-4">
+          {/* Wishlist Now Button */}
+          <Button 
+            size="sm" 
+            className="bg-black text-white border border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-mono text-xs tracking-wider"
+            style={{
+              clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))'
+            }}
+            onClick={() => window.open('https://store.epicgames.com/tr/p/providence-2bff8d', '_blank')}
+          >
+            WISHLIST NOW
+          </Button>
+          
           {session?.user ? (
             <div className="flex items-center space-x-3">
               <Avatar className="h-8 w-8">
@@ -109,14 +121,14 @@ export default function Header() {
               <span className="hidden sm:inline-block text-sm font-medium text-white drop-shadow-md">
                 {session.user.name || session.user.email}
               </span>
-                                  <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="cursor-pointer"
-                      onClick={() => signOut()}
-                    >
-                      Sign Out
-                    </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="cursor-pointer"
+                onClick={() => signOut()}
+              >
+                Sign Out
+              </Button>
             </div>
           ) : (
             <SignInModal>
