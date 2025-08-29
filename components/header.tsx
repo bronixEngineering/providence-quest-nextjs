@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { SignInModal } from "@/components/signin-modal";
 import { useSession, signOut } from "next-auth/react";
@@ -26,12 +24,13 @@ export default function Header() {
   };
 
   const getNavLinkClasses = (path: string) => {
-    const baseClasses = "group inline-flex h-10 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none disabled:pointer-events-none disabled:opacity-50 drop-shadow-md";
-    
+    const baseClasses =
+      "group inline-flex h-10 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none disabled:pointer-events-none disabled:opacity-50 drop-shadow-md";
+
     if (isActivePage(path)) {
       return `${baseClasses} bg-primary/20 text-white border border-primary/30`;
     }
-    
+
     return `${baseClasses} text-white/90 hover:bg-white/10 hover:text-white hover:scale-105 focus:bg-white/10 focus:text-white`;
   };
 
@@ -41,7 +40,9 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <div className="h-8 w-8 bg-primary rounded-lg shadow-lg"></div>
-          <span className="font-bold text-xl text-white drop-shadow-lg">Providence</span>
+          <span className="font-bold text-xl text-white drop-shadow-lg">
+            Providence
+          </span>
         </Link>
 
         {/* Navigation */}
@@ -56,7 +57,9 @@ export default function Header() {
                 </Link>
               ) : (
                 <SignInModal>
-                  <span className={getNavLinkClasses("/bounty") + " cursor-pointer"}>
+                  <span
+                    className={getNavLinkClasses("/bounty") + " cursor-pointer"}
+                  >
                     Bounty
                   </span>
                 </SignInModal>
@@ -64,7 +67,9 @@ export default function Header() {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/leaderboard" legacyBehavior passHref>
-                <NavigationMenuLink className={getNavLinkClasses("/leaderboard")}>
+                <NavigationMenuLink
+                  className={getNavLinkClasses("/leaderboard")}
+                >
                   Chronicles
                 </NavigationMenuLink>
               </Link>
@@ -99,31 +104,42 @@ export default function Header() {
         {/* Auth Section */}
         <div className="flex items-center space-x-4">
           {/* Wishlist Now Button */}
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="bg-black text-white border border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-mono text-xs tracking-wider"
             style={{
-              clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))'
+              clipPath:
+                "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
             }}
-            onClick={() => window.open('https://store.epicgames.com/tr/p/providence-2bff8d', '_blank')}
+            onClick={() =>
+              window.open(
+                "https://store.epicgames.com/tr/p/providence-2bff8d",
+                "_blank"
+              )
+            }
           >
             WISHLIST NOW
           </Button>
-          
+
           {session?.user ? (
             <div className="flex items-center space-x-3">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
+                <AvatarImage
+                  src={session.user.image || ""}
+                  alt={session.user.name || ""}
+                />
                 <AvatarFallback>
-                  {session.user.name?.charAt(0) || session.user.email?.charAt(0) || "U"}
+                  {session.user.name?.charAt(0) ||
+                    session.user.email?.charAt(0) ||
+                    "U"}
                 </AvatarFallback>
               </Avatar>
               <span className="hidden sm:inline-block text-sm font-medium text-white drop-shadow-md">
                 {session.user.name || session.user.email}
               </span>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="cursor-pointer"
                 onClick={() => signOut()}
               >
