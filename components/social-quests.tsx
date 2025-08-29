@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   ExternalLink,
@@ -102,7 +101,7 @@ function useSocialVerify() {
 
 function useCompleteFollowQuest() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async () => {
       const response = await fetch("/api/social/complete-follow-quest", {
@@ -124,15 +123,13 @@ function useCompleteFollowQuest() {
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : "Failed to complete follow quest"
+        error instanceof Error
+          ? error.message
+          : "Failed to complete follow quest"
       );
     },
   });
 }
-
-
-
-
 
 function getPlatformIcon(platform: string) {
   switch (platform) {
@@ -172,8 +169,11 @@ export default function SocialQuests() {
 
   const handleFollow = () => {
     // Open Twitter follow modal in new tab
-    window.open('https://x.com/intent/follow?screen_name=PlayProvidence', '_blank');
-    
+    window.open(
+      "https://x.com/intent/follow?screen_name=PlayProvidence",
+      "_blank"
+    );
+
     // Complete quest after 3 seconds
     setTimeout(() => {
       completeFollowMutation.mutate();
@@ -286,7 +286,7 @@ export default function SocialQuests() {
                     >
                       Completed
                     </Badge>
-                  ) : quest.category === 'twitter_follow' ? (
+                  ) : quest.category === "twitter_follow" ? (
                     <Button
                       onClick={handleFollow}
                       disabled={completeFollowMutation.isPending}
