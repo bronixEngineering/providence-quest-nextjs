@@ -187,9 +187,7 @@ export default function BountyPage() {
                     </AvatarFallback>
                   </Avatar>
                   <CardTitle className="text-xl">{getDisplayName()}</CardTitle>
-                  {(session as any)?.authProvider && (
-                    <p className="text-xs text-muted-foreground mb-1">Provider: {(session as any).authProvider}</p>
-                  )}
+                 
                   {profile?.email && (
                     <p className="text-sm text-muted-foreground mb-2">{profile.email}</p>
                   )}
@@ -214,28 +212,43 @@ export default function BountyPage() {
                     <div className="mt-3">
                       <p className="text-xs text-muted-foreground mb-2 text-center">Discord Badges</p>
                       <div className="flex flex-wrap justify-center gap-1">
-                        {userBadges.map((badge) => (
-                          <Badge 
-                            key={badge.id} 
-                            variant="outline" 
-                            className="text-xs px-2 py-1 border"
-                            style={{ 
-                              borderColor: badge.badges.color + '40',
-                              color: badge.badges.color,
-                              backgroundColor: badge.badges.color + '10'
-                            }}
-                            title={badge.badges.description}
-                          >
-                            {badge.badges.icon_url && (
-                              <img 
-                                src={badge.badges.icon_url} 
-                                alt={badge.badges.name}
-                                className="w-3 h-3 mr-1 rounded-full"
-                              />
-                            )}
-                            {badge.badges.name}
-                          </Badge>
-                        ))}
+                        {userBadges.map((badge, index) => {
+                          // Sabit badge renkleri - okunabilir kontrast ile
+                          const badgeColors = [
+                            { bg: '#3B82F6', text: '#FFFFFF', border: '#2563EB' }, // Blue
+                            { bg: '#10B981', text: '#FFFFFF', border: '#059669' }, // Green
+                            { bg: '#F59E0B', text: '#FFFFFF', border: '#D97706' }, // Amber
+                            { bg: '#EF4444', text: '#FFFFFF', border: '#DC2626' }, // Red
+                            { bg: '#8B5CF6', text: '#FFFFFF', border: '#7C3AED' }, // Purple
+                            { bg: '#06B6D4', text: '#FFFFFF', border: '#0891B2' }, // Cyan
+                          ];
+                          
+                          const colorIndex = index % badgeColors.length;
+                          const colors = badgeColors[colorIndex];
+                          
+                          return (
+                            <Badge 
+                              key={badge.id} 
+                              variant="outline" 
+                              className="text-xs px-2 py-1 border font-medium"
+                              style={{ 
+                                borderColor: colors.border,
+                                color: colors.text,
+                                backgroundColor: colors.bg
+                              }}
+                              title={badge.badges.description}
+                            >
+                              {badge.badges.icon_url && (
+                                <img 
+                                  src={badge.badges.icon_url} 
+                                  alt={badge.badges.name}
+                                  className="w-3 h-3 mr-1 rounded-full"
+                                />
+                              )}
+                              {badge.badges.name}
+                            </Badge>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
