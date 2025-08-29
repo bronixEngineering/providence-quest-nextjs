@@ -22,49 +22,86 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       id: "epic",
       name: "Epic Games",
       type: "oauth",
-
+      checks: ["pkce", "state"],
       authorization: {
         url: "https://www.epicgames.com/id/authorize",
         params: {
-          scope: "basic_profile",
           response_type: "code",
+          scope: "openid basic_profile",
         },
       },
-      token: "https://api.epicgames.dev/epic/oauth/v1/token",
-      userinfo: "https://api.epicgames.dev/epic/oauth/v1/userInfo",
+      token: {
+        url: "https://api.epicgames.dev/epic/oauth/v2/token",
+        async request({
+          params,
+          checks,
+          provider,
+        }: {
+          params: any;
+          checks: any;
+          provider: any;
+        }) {
+          const response = await fetch(provider.token.url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: `Basic ${Buffer.from(
+                `${process.env.EPIC_CLIENT_ID}:${process.env.EPIC_CLIENT_SECRET}`
+              ).toString("base64")}`,
+            },
+            body: new URLSearchParams({
+              grant_type: "authorization_code",
+              code: String(params.code || ""),
+              redirect_uri: String(params.redirect_uri || provider.callbackUrl),
+              code_verifier: String((checks as any)?.code_verifier || ""),
+            }),
+          });
 
+          const tokens = await response.json();
+          if (!response.ok) {
+            throw new Error(`Token exchange failed: ${JSON.stringify(tokens)}`);
+          }
+          return { tokens };
+        },
+      },
+      userinfo: {
+        url: "https://api.epicgames.dev/epic/oauth/v2/userInfo",
+        async request({
+          tokens,
+          provider,
+        }: {
+          tokens: any;
+          provider: any;
+        }) {
+          const response = await fetch(provider.userinfo.url, {
+            headers: {
+              Authorization: `Bearer ${tokens.access_token}`,
+            },
+          });
+          const profile = await response.json();
+          if (!response.ok) {
+            throw new Error(
+              `UserInfo request failed: ${JSON.stringify(profile)}`
+            );
+          }
+          return profile;
+        },
+      },
+      clientId: process.env.EPIC_CLIENT_ID,
+      clientSecret: process.env.EPIC_CLIENT_SECRET,
       profile(profile) {
         return {
           id: profile.sub,
-          name: profile.preferred_username || profile.name,
+          name:
+            profile.preferred_username || profile.name || profile.display_name,
           email: profile.email,
-          image: null, // Epic doesn't provide profile images via OAuth
+          image: null,
         };
       },
-      clientId: process.env.AUTH_EPIC_ID,
-      clientSecret: process.env.AUTH_EPIC_SECRET,
     },
   ],
   callbacks: {
     async jwt({ token, account, user }) {
-      console.log("🔑 JWT Callback Debug:", {
-        hasAccount: !!account,
-        provider: account?.provider,
-        hasAccessToken: !!account?.access_token,
-        accessTokenPreview: account?.access_token?.slice(0, 20) + "...",
-        tokenKeys: Object.keys(token || {}),
-      });
-
-      // Store Twitter access token if available
-      if (account?.provider === "twitter" && account.access_token) {
-        (token as any).twitterAccessToken = account.access_token;
-        console.log("🔑 JWT - Twitter access token stored successfully");
-        console.log("🔑 JWT - Token keys after storing:", Object.keys(token));
-      } else if (account?.provider === "twitter") {
-        console.log("❌ JWT - Twitter login but no access token found");
-        console.log("❌ JWT - Account object:", account);
-      }
-
       // When linking a social provider while already logged in, keep current identity
       if (
         account &&
@@ -97,13 +134,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      console.log("🔑 Session Callback Debug:", {
-        tokenKeys: Object.keys(token || {}),
-        hasTwitterToken: !!(token as any).twitterAccessToken,
-        twitterTokenPreview:
-          (token as any).twitterAccessToken?.slice(0, 20) + "...",
-      });
-
       if (!session.user) session.user = {} as any;
       (session.user as any).email = (token as any).email;
       (session.user as any).name = (token as any).name;
@@ -114,29 +144,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token as any
       ).twitterAccessToken;
 
-      console.log(
-        "🔑 Session Callback - Final session keys:",
-        Object.keys(session.user)
-      );
-
       return session;
     },
     async signIn({ user, account, profile }) {
       try {
-        console.log("🔐 NextAuth SignIn Callback - FULL DEBUG:", {
-          userId: user.id,
-          userEmail: user.email,
-          userName: user.name,
-          accountProvider: account?.provider,
-          profileEmail: profile?.email,
-        });
-
         if (account?.provider === "google" && user.email) {
-          console.log(
-            "🔍 NextAuth - Checking for existing profile with email:",
-            user.email
-          );
-
           // Check if profile already exists by email (primary identifier)
           const { data: existingProfile, error: fetchError } =
             await supabaseAdmin
@@ -144,13 +156,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               .select("*")
               .eq("email", user.email)
               .single();
-
-          console.log("📊 NextAuth - Profile check result:", {
-            existingProfile: existingProfile,
-            fetchError: fetchError,
-            errorCode: fetchError?.code,
-            errorMessage: fetchError?.message,
-          });
 
           // PGRST116 = no rows returned (profile doesn't exist)
           if (fetchError && fetchError.code !== "PGRST116") {
