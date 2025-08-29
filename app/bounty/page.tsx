@@ -5,6 +5,7 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserStats, getLevelProgress } from "@/hooks/useUserStats";
+import { useUserBadges } from "@/hooks/useUserBadges";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -55,6 +56,7 @@ export default function BountyPage() {
   const { data: profile, isLoading: profileLoading, error: profileError } = useProfile();
   const { data: userStats, isLoading: statsLoading, error: statsError } = useUserStats();
   const { data: socialConnections } = useSocialConnections();
+  const { data: userBadges } = useUserBadges();
 
   // Debug logging
   console.log('🐛 Bounty Page Debug:', {
@@ -202,6 +204,37 @@ export default function BountyPage() {
                       <SocialBadge platform="discord" />
                     </div>
                   )}
+
+                  {/* Discord Badges */}
+                  {userBadges && userBadges.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs text-muted-foreground mb-2 text-center">Discord Badges</p>
+                      <div className="flex flex-wrap justify-center gap-1">
+                        {userBadges.map((badge) => (
+                          <Badge 
+                            key={badge.id} 
+                            variant="outline" 
+                            className="text-xs px-2 py-1 border"
+                            style={{ 
+                              borderColor: badge.badges.color + '40',
+                              color: badge.badges.color,
+                              backgroundColor: badge.badges.color + '10'
+                            }}
+                            title={badge.badges.description}
+                          >
+                            {badge.badges.icon_url && (
+                              <img 
+                                src={badge.badges.icon_url} 
+                                alt={badge.badges.name}
+                                className="w-3 h-3 mr-1 rounded-full"
+                              />
+                            )}
+                            {badge.badges.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   {profile?.wallet_address && (
                     <p className="text-xs text-muted-foreground mb-2 font-mono">
@@ -247,33 +280,7 @@ export default function BountyPage() {
                     </Button>
                   </div>
 
-                  {/* Debug: Session vs Profile */}
-                  <div className="space-y-3 mt-2">
-                    <div>
-                      <div className="text-xs font-semibold text-muted-foreground mb-1">Session Debug</div>
-                      <pre className="text-[10px] leading-tight bg-muted/30 p-2 rounded border border-border overflow-x-auto">
-{JSON.stringify({
-  email: session?.user?.email,
-  name: session?.user?.name,
-  appUserId: (session?.user as any)?.appUserId,
-  provider: (session as any)?.authProvider
-}, null, 2)}
-                      </pre>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-muted-foreground mb-1">Profile Debug</div>
-                      <pre className="text-[10px] leading-tight bg-muted/30 p-2 rounded border border-border overflow-x-auto">
-{JSON.stringify({
-  user_id: (profile as any)?.user_id,
-  email: profile?.email,
-  name: profile?.name,
-  avatar_url: profile?.avatar_url,
-  primary_wallet_address: (profile as any)?.primary_wallet_address,
-  wallet_verified_at: (profile as any)?.wallet_verified_at
-}, null, 2)}
-                      </pre>
-                    </div>
-                  </div>
+
                 </CardContent>
               </Card>
             </div>

@@ -7,12 +7,12 @@ import Spline from '@splinetool/react-spline/next';
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-secondary/20 min-h-screen -mt-16 pt-16">
+    <section className="relative overflow-hidden min-h-screen -mt-16 pt-16">
       {/* Spline 3D Background */}
       <div className="absolute inset-0 w-full h-full">
         <Spline
           scene="https://prod.spline.design/KPRd9BKgEYWvp8qh/scene.splinecode"
-          className="w-full h-full opacity-60"
+          className="w-full h-full"
         />
       </div>
       
@@ -25,7 +25,7 @@ export default function Hero() {
           </div>
 
           {/* Main Heading */}
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          <h1 className="mb-6 text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl drop-shadow-2xl">
             Complete Quests,{" "}
             <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
               Earn Epic Loot
@@ -47,7 +47,7 @@ export default function Hero() {
             <p className="mb-4 text-sm text-muted-foreground">
               Your AI friend in a futuristic digital world
             </p>
-            <div className="flex gap-2 backdrop-blur-sm bg-background/20 p-4 rounded-xl border border-white/10">
+            <div className="flex gap-2 backdrop-blur-sm bg-background/10 p-4 rounded-xl border border-white/10">
               <Input 
                 placeholder="Ask Arya-4 about your next quest..." 
                 className="flex-1 h-12 text-base bg-background/50 border-white/20"
@@ -74,7 +74,7 @@ export default function Hero() {
 
           {/* Feature Cards */}
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="border-white/20 bg-background/30 backdrop-blur-md">
+            <Card className="border-white/20 bg-background/20 backdrop-blur-md">
               <CardContent className="p-6 text-center">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20 mx-auto backdrop-blur-sm">
                   <Zap className="h-6 w-6 text-primary" />
@@ -86,7 +86,7 @@ export default function Hero() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/20 bg-background/30 backdrop-blur-md">
+            <Card className="border-white/20 bg-background/20 backdrop-blur-md">
               <CardContent className="p-6 text-center">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20 mx-auto backdrop-blur-sm">
                   <Trophy className="h-6 w-6 text-primary" />
@@ -98,7 +98,7 @@ export default function Hero() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/20 bg-background/30 backdrop-blur-md sm:col-span-2 lg:col-span-1">
+            <Card className="border-white/20 bg-background/20 backdrop-blur-md sm:col-span-2 lg:col-span-1">
               <CardContent className="p-6 text-center">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20 mx-auto backdrop-blur-sm">
                   <Users className="h-6 w-6 text-primary" />
@@ -113,7 +113,7 @@ export default function Hero() {
 
           {/* Web3 Asset Discovery - Minimalist */}
           <div className="mt-12 mx-auto max-w-lg">
-            <Card className="border-white/20 bg-background/30 backdrop-blur-md">
+            <Card className="border-white/20 bg-background/20 backdrop-blur-md">
               <CardContent className="p-6 text-center">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20 mx-auto backdrop-blur-sm">
                   <Wallet className="h-6 w-6 text-primary" />
