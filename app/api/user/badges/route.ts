@@ -44,9 +44,9 @@ export async function GET() {
         badges (
           discord_role_id,
           name,
-          description,
           color,
-          icon_url
+          position,
+          permissions
         )
       `)
       .eq('user_discord_id', discordUserId)

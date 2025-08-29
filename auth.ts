@@ -10,7 +10,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
   providers: [
     Google,
-    Twitter,
+    Twitter({
+      clientId: process.env.AUTH_TWITTER_ID,
+      clientSecret: process.env.AUTH_TWITTER_SECRET,
+    }),
     Discord({
       clientId: process.env.AUTH_DISCORD_ID!,
       clientSecret: process.env.AUTH_DISCORD_SECRET!,
@@ -42,6 +45,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, account, user }) {
+      console.log('🔑 JWT Callback Debug:', {
+        hasAccount: !!account,
+        provider: account?.provider,
+        hasAccessToken: !!account?.access_token,
+        accessTokenPreview: account?.access_token?.slice(0, 20) + '...',
+        tokenKeys: Object.keys(token || {})
+      });
+
+      // Store Twitter access token if available
+      if (account?.provider === "twitter" && account.access_token) {
+        (token as any).twitterAccessToken = account.access_token;
+        console.log('🔑 JWT - Twitter access token stored successfully');
+        console.log('🔑 JWT - Token keys after storing:', Object.keys(token));
+      } else if (account?.provider === "twitter") {
+        console.log('❌ JWT - Twitter login but no access token found');
+        console.log('❌ JWT - Account object:', account);
+      }
+
       // When linking a social provider while already logged in, keep current identity
       if (
         account &&
@@ -74,12 +95,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
+      console.log('🔑 Session Callback Debug:', {
+        tokenKeys: Object.keys(token || {}),
+        hasTwitterToken: !!(token as any).twitterAccessToken,
+        twitterTokenPreview: (token as any).twitterAccessToken?.slice(0, 20) + '...'
+      });
+
       if (!session.user) session.user = {} as any;
       (session.user as any).email = (token as any).email;
       (session.user as any).name = (token as any).name;
       (session.user as any).image = (token as any).picture;
       (session as any).authProvider = (token as any).authProvider;
       (session.user as any).appUserId = (token as any).appUserId;
+      (session.user as any).twitterAccessToken = (token as any).twitterAccessToken;
+      
+      console.log('🔑 Session Callback - Final session keys:', Object.keys(session.user));
+      
       return session;
     },
     async signIn({ user, account, profile }) {
@@ -188,6 +219,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           account?.provider === "discord" ||
           account?.provider === "epic"
         ) {
+          console.log('🔑 SignIn - Account debug:', {
+            provider: account.provider,
+            hasAccessToken: !!account.access_token,
+            accessTokenPreview: account.access_token?.slice(0, 20) + '...',
+            accountKeys: Object.keys(account)
+          });
           try {
             // Pull current app session (Google) to get stable user_id
             const current = await auth();

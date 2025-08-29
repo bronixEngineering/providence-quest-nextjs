@@ -100,6 +100,40 @@ function useSocialVerify() {
   });
 }
 
+function useCompleteFollowQuest() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/social/complete-follow-quest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to complete follow quest");
+      }
+
+      const result = await response.json();
+      return result;
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Follow quest completed!");
+      queryClient.invalidateQueries({ queryKey: ["social-status"] });
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to complete follow quest"
+      );
+    },
+  });
+}
+
+
+
+
+
 function getPlatformIcon(platform: string) {
   switch (platform) {
     case "twitter":
@@ -129,10 +163,21 @@ function getPlatformColor(platform: string) {
 export default function SocialQuests() {
   const { data: socialData, isLoading, error } = useSocialStatus();
   const verifyMutation = useSocialVerify();
+  const completeFollowMutation = useCompleteFollowQuest();
 
   const handleVerify = (platform: string) => {
     // Start Auth.js OAuth and come back to /bounty
     signIn(platform, { callbackUrl: "/bounty?verified=" + platform });
+  };
+
+  const handleFollow = () => {
+    // Open Twitter follow modal in new tab
+    window.open('https://x.com/intent/follow?screen_name=PlayProvidence', '_blank');
+    
+    // Complete quest after 3 seconds
+    setTimeout(() => {
+      completeFollowMutation.mutate();
+    }, 3000);
   };
 
   if (isLoading) {
@@ -241,6 +286,25 @@ export default function SocialQuests() {
                     >
                       Completed
                     </Badge>
+                  ) : quest.category === 'twitter_follow' ? (
+                    <Button
+                      onClick={handleFollow}
+                      disabled={completeFollowMutation.isPending}
+                      className="bg-gradient-to-r from-sky-600 to-blue-600 hover:opacity-90 border-0 text-white"
+                      size="sm"
+                    >
+                      {completeFollowMutation.isPending ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Completing...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Twitter className="h-3 w-3" />
+                          Follow
+                        </div>
+                      )}
+                    </Button>
                   ) : (
                     <Button
                       onClick={() => handleVerify(quest.platform)}
