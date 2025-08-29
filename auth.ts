@@ -15,6 +15,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientId: process.env.AUTH_DISCORD_ID!,
       clientSecret: process.env.AUTH_DISCORD_SECRET!,
     }),
+    {
+      id: "epic",
+      name: "Epic Games",
+      type: "oauth",
+      authorization: {
+        url: "https://www.epicgames.com/id/authorize",
+        params: {
+          scope: "basic_profile",
+          response_type: "code",
+        },
+      },
+      token: "https://api.epicgames.dev/epic/oauth/v1/token",
+      userinfo: "https://api.epicgames.dev/epic/oauth/v1/userinfo",
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.preferred_username || profile.name,
+          email: profile.email,
+          image: null, // Epic doesn't provide profile images via OAuth
+        };
+      },
+      clientId: process.env.AUTH_EPIC_ID,
+      clientSecret: process.env.AUTH_EPIC_SECRET,
+    },
   ],
   callbacks: {
     async jwt({ token, account, user }) {
@@ -158,10 +182,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         }
 
-        // Handle social verification for Twitter/Discord (tie to current user)
+        // Handle social verification for Twitter/Discord/Epic (tie to current user)
         if (
           account?.provider === "twitter" ||
-          account?.provider === "discord"
+          account?.provider === "discord" ||
+          account?.provider === "epic"
         ) {
           try {
             // Pull current app session (Google) to get stable user_id
@@ -183,7 +208,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const platformUserId =
               account.provider === "discord"
                 ? (account as any).providerAccountId // Discord's real user ID
-                : user.id; // For Twitter, use user.id
+                : user.id; // For Twitter/Epic, use user.id
 
             // Get the correct platform username
             let platformUsername = user.name || ownerEmail;
@@ -194,6 +219,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 (account as any).screen_name || 
                 user.name || 
                 ownerEmail;
+            } else if (account.provider === "epic") {
+              // Epic uses preferred_username or name
+              platformUsername = user.name || ownerEmail;
             }
 
                          console.log(

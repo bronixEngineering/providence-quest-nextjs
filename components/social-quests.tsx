@@ -11,6 +11,7 @@ import {
   Twitter,
   MessageSquare,
   Loader2,
+  Gamepad2,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession, signIn } from "next-auth/react";
@@ -105,6 +106,8 @@ function getPlatformIcon(platform: string) {
       return <Twitter className="h-4 w-4" />;
     case "discord":
       return <MessageSquare className="h-4 w-4" />;
+    case "epic":
+      return <Gamepad2 className="h-4 w-4" />;
     default:
       return <ExternalLink className="h-4 w-4" />;
   }
@@ -116,6 +119,8 @@ function getPlatformColor(platform: string) {
       return "from-sky-600 to-blue-600";
     case "discord":
       return "from-indigo-600 to-purple-600";
+    case "epic":
+      return "from-orange-600 to-red-600";
     default:
       return "from-slate-600 to-slate-700";
   }

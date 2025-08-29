@@ -96,6 +96,8 @@ export default function BountyPage() {
           return <Twitter className="h-3 w-3" />
         case 'discord':
           return <MessageSquare className="h-3 w-3" />
+        case 'epic':
+          return <Gamepad2 className="h-3 w-3" />
         default:
           return null
       }
@@ -107,6 +109,8 @@ export default function BountyPage() {
           return 'bg-sky-500/20 text-sky-400 border-sky-500/30'
         case 'discord':
           return 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+        case 'epic':
+          return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
         default:
           return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
       }
