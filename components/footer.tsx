@@ -76,17 +76,26 @@ export default function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Game</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="https://playprovidence.io/" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="https://playprovidence.io/"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   The Game
                 </Link>
               </li>
               <li>
-                <Link href="/bounty" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/bounty"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   Bounty
                 </Link>
               </li>
               <li>
-                <Link href="/chronicles" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/chronicles"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   Chronicles
                 </Link>
               </li>
