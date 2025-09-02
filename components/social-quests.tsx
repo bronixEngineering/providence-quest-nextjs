@@ -182,7 +182,7 @@ export default function SocialQuests() {
 
   if (isLoading) {
     return (
-      <Card className="border border-slate-700/50 bg-slate-900/95 shadow-xl">
+      <Card className="border border-border bg-card shadow-xl">
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -194,7 +194,7 @@ export default function SocialQuests() {
 
   if (error || !socialData) {
     return (
-      <Card className="border border-red-500/20 bg-red-500/5">
+      <Card className="border border-red-500/20 bg-card">
         <CardContent className="p-6 text-center">
           <div className="text-red-400 mb-2">Failed to load social quests</div>
           <div className="text-sm text-muted-foreground">
@@ -226,10 +226,10 @@ export default function SocialQuests() {
       {/* Quest Cards */}
       <div className="grid gap-3">
         {socialData.quests.map((quest) => (
-          <Card
-            key={quest.id}
-            className="border border-slate-700/50 bg-slate-900/95 shadow-lg"
-          >
+                      <Card
+              key={quest.id}
+              className="border border-border bg-card shadow-lg"
+            >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 {/* Quest Info */}
@@ -335,7 +335,7 @@ export default function SocialQuests() {
       </div>
 
       {socialData.quests.length === 0 && (
-        <Card className="border border-slate-700/50 bg-slate-900/95">
+        <Card className="border border-border bg-card">
           <CardContent className="p-6 text-center">
             <div className="text-slate-400">No social quests available</div>
           </CardContent>

@@ -282,7 +282,7 @@ export default function WalletQuest() {
 
   if (isLoading) {
     return (
-      <Card className="border border-slate-700/50 bg-slate-900/95 shadow-xl">
+      <Card className="border border-border bg-card shadow-xl">
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -294,7 +294,7 @@ export default function WalletQuest() {
 
   if (error || !walletData) {
     return (
-      <Card className="border border-red-500/20 bg-red-500/5">
+      <Card className="border border-red-500/20 bg-card">
         <CardContent className="p-6 text-center">
           <div className="text-red-400 mb-2">Failed to load wallet quest</div>
           <div className="text-sm text-muted-foreground">
@@ -318,7 +318,7 @@ export default function WalletQuest() {
       </div>
 
       {/* Wallet Quest Card */}
-      <Card className="border border-slate-700/50 bg-slate-900/95 shadow-lg">
+      <Card className="border border-border bg-card shadow-lg">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             {/* Quest Info */}

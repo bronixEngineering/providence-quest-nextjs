@@ -47,9 +47,9 @@
   --radius: 0.625rem;
   --background: #000000;
   --foreground: #FFFFFF;
-  --card: #090F1A;
+  --card: #0A0A0A;
   --card-foreground: #FFFFFF;
-  --popover: #090F1A;
+  --popover: #0A0A0A;
   --popover-foreground: #FFFFFF;
   --primary: #FFFFFF;
   --primary-foreground: #000000;
@@ -68,7 +68,7 @@
   --chart-3: #CCCCCC;
   --chart-4: #B3B3B3;
   --chart-5: #999999;
-  --sidebar: #090F1A;
+  --sidebar: #0A0A0A;
   --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #FFFFFF;
   --sidebar-primary-foreground: #000000;
@@ -81,9 +81,9 @@
 .dark {
   --background: #000000;
   --foreground: #FFFFFF;
-  --card: #090F1A;
+  --card: #0A0A0A;
   --card-foreground: #FFFFFF;
-  --popover: #090F1A;
+  --popover: #0A0A0A;
   --popover-foreground: #FFFFFF;
   --primary: #FFFFFF;
   --primary-foreground: #000000;
@@ -102,7 +102,7 @@
   --chart-3: #CCCCCC;
   --chart-4: #B3B3B3;
   --chart-5: #999999;
-  --sidebar: #090F1A;
+  --sidebar: #0A0A0A;
   --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #FFFFFF;
   --sidebar-primary-foreground: #000000;

@@ -65,7 +65,7 @@ export default function DailyCheckin() {
 
   if (isLoading) {
     return (
-      <Card className="border-primary/20 bg-background/50 backdrop-blur-md">
+      <Card className="border-primary/20 bg-card backdrop-blur-md">
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -77,7 +77,7 @@ export default function DailyCheckin() {
 
   if (error || !status) {
     return (
-      <Card className="border-red-500/20 bg-red-500/5 backdrop-blur-md">
+      <Card className="border-red-500/20 bg-card backdrop-blur-md">
         <CardContent className="p-6 text-center">
           <div className="text-red-400 mb-2">Failed to load check-in status</div>
           <div className="text-sm text-muted-foreground">
@@ -110,7 +110,7 @@ export default function DailyCheckin() {
     : 100
 
   return (
-    <Card className="border border-slate-700/50 bg-slate-900/95 shadow-xl">
+    <Card className="border border-border bg-card shadow-xl">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>

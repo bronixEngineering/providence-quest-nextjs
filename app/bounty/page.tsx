@@ -323,7 +323,7 @@ export default function BountyPage() {
               </div>
 
               {/* Coming Soon Quests */}
-              <Card className="border-primary/20 bg-background/30 backdrop-blur-md opacity-75">
+              <Card className="border-primary/20 bg-card backdrop-blur-md opacity-75">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-slate-500/20 border-slate-500/30">
