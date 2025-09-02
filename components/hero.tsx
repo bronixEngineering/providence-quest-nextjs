@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Send, Zap, Trophy, Users, Wallet } from "lucide-react";
+import { Send, Zap, Trophy, Users } from "lucide-react";
 import { SignInModal } from "@/components/signin-modal";
 import Spline from "@splinetool/react-spline/next";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -69,11 +70,11 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <SignInModal>
+            <Link href="/bounty">
               <Button size="lg" className="h-12 px-8 text-lg cursor-pointer">
                 Start Your Quest
               </Button>
-            </SignInModal>
+            </Link>
             <Button variant="outline" size="lg" className="h-12 px-8 text-lg">
               View Leaderboard
             </Button>
@@ -119,26 +120,6 @@ export default function Hero() {
                   Join the ranks of top questers and compete for dominance on
                   the leaderboards.
                 </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Web3 Asset Discovery - Minimalist */}
-          <div className="mt-12 mx-auto max-w-lg pb-16">
-            <Card className="border-white/20 bg-background/20 backdrop-blur-md">
-              <CardContent className="p-6 text-center">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20 mx-auto backdrop-blur-sm">
-                  <Wallet className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold">Own Web3 Assets?</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Connect your wallet to earn bonus points from your existing
-                  NFTs and tokens.
-                </p>
-                <Button size="sm" variant="outline" className="w-full">
-                  <Wallet className="h-4 w-4 mr-2" />
-                  Connect Wallet
-                </Button>
               </CardContent>
             </Card>
           </div>
