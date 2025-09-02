@@ -53,16 +53,16 @@
   --popover-foreground: #FFFFFF;
   --primary: #FFFFFF;
   --primary-foreground: #000000;
-  --secondary: #1A1A1A;
+  --secondary: #d9624b;
   --secondary-foreground: #FFFFFF;
   --muted: #1F1F1F;
   --muted-foreground: #A1A1AA;
-  --accent: #FFFFFF;
-  --accent-foreground: #000000;
+  --accent: #d9624b;
+  --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --border: #2A2A2A;
   --input: #2A2A2A;
-  --ring: #FFFFFF;
+  --ring: #d9624b;
   --chart-1: #FFFFFF;
   --chart-2: #E5E5E5;
   --chart-3: #CCCCCC;
@@ -75,7 +75,7 @@
   --sidebar-accent: #1A1A1A;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #2A2A2A;
-  --sidebar-ring: #FFFFFF;
+  --sidebar-ring: #d9624b;
 }
 
 .dark {
@@ -87,16 +87,16 @@
   --popover-foreground: #FFFFFF;
   --primary: #FFFFFF;
   --primary-foreground: #000000;
-  --secondary: #1A1A1A;
+  --secondary: #d9624b;
   --secondary-foreground: #FFFFFF;
   --muted: #1F1F1F;
   --muted-foreground: #A1A1AA;
-  --accent: #FFFFFF;
-  --accent-foreground: #000000;
+  --accent: #d9624b;
+  --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --border: #2A2A2A;
   --input: #2A2A2A;
-  --ring: #FFFFFF;
+  --ring: #d9624b;
   --chart-1: #FFFFFF;
   --chart-2: #E5E5E5;
   --chart-3: #CCCCCC;
@@ -109,7 +109,7 @@
   --sidebar-accent: #1A1A1A;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #2A2A2A;
-  --sidebar-ring: #FFFFFF;
+  --sidebar-ring: #d9624b;
 }
 
 @layer base {

@@ -67,11 +67,9 @@ export default function Header() {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/leaderboard" legacyBehavior passHref>
-                <span
-                  className={getNavLinkClasses("/leaderboard")}
-                >
+                <NavigationMenuLink className={getNavLinkClasses("/leaderboard")}>
                   Chronicles
-                </span>
+                </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>

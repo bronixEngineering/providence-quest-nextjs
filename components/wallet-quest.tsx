@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -84,32 +85,32 @@ function useWalletConnect() {
   });
 }
 
-function useWalletDisconnect() {
-  const queryClient = useQueryClient();
+// function useWalletDisconnect() {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/wallet/disconnect", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
+//   return useMutation({
+//     mutationFn: async () => {
+//       const response = await fetch("/api/wallet/disconnect", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to disconnect wallet");
-      }
+//       if (!response.ok) {
+//         const error = await response.json();
+//         throw new Error(error.error || "Failed to disconnect wallet");
+//       }
 
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet-status"] });
-      toast.success("Wallet disconnected");
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Disconnect failed");
-    },
-  });
-}
+//       return response.json();
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ["wallet-status"] });
+//       toast.success("Wallet disconnected");
+//     },
+//     onError: (error) => {
+//       toast.error(error instanceof Error ? error.message : "Disconnect failed");
+//     },
+//   });
+// }
 
 function useWalletVerify() {
   const queryClient = useQueryClient();
@@ -185,7 +186,8 @@ export default function WalletQuest() {
       setPendingConnection(result);
       // Auto-sign with the result to avoid stale/null state
       handleSign(result);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("🔍 DEBUG - handleConnect error:", error);
       // Error handled by mutation
     }
   };
@@ -270,13 +272,6 @@ export default function WalletQuest() {
         "Failed to sign message: " +
           (error instanceof Error ? error.message : "Unknown error")
       );
-    }
-  };
-
-  const copyMessage = () => {
-    if (pendingConnection) {
-      navigator.clipboard.writeText(pendingConnection.message);
-      toast.success("Message copied to clipboard");
     }
   };
 
