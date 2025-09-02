@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Send, Zap, Trophy, Users } from "lucide-react";
-import { SignInModal } from "@/components/signin-modal";
+import { Zap, Trophy, Users } from "lucide-react";
 import Spline from "@splinetool/react-spline/next";
 import Link from "next/link";
 
@@ -45,28 +43,6 @@ export default function Hero() {
             Providence Game universe. Every quest completed brings you closer to
             legendary status.
           </p>
-
-          {/* Arya-4 Chat Interface */}
-          <div className="mx-auto mb-8 max-w-2xl">
-            <div className="mb-4 flex items-center justify-center gap-2">
-              <div className="h-3 w-3 bg-primary rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-primary">
-                Interact with Arya-4
-              </span>
-            </div>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Your AI friend in a futuristic digital world
-            </p>
-            <div className="flex gap-2 backdrop-blur-sm bg-background/10 p-4 rounded-xl border border-white/10">
-              <Input
-                placeholder="Ask Arya-4 about your next quest..."
-                className="flex-1 h-12 text-base bg-background/50 border-white/20"
-              />
-              <Button size="icon" className="h-12 w-12">
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
