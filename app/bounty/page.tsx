@@ -280,23 +280,10 @@ export default function BountyPage() {
                       <div className="text-xs text-muted-foreground">Completed</div>
                     </div>
                     <div className="p-3 rounded-lg bg-yellow-500/10">
-                      <div className="font-bold text-yellow-400">{userStats?.tokens || 0}</div>
-                      <div className="text-xs text-muted-foreground">Tokens</div>
+                      <div className="font-bold text-yellow-400">{userStats?.total_xp || 0}</div>
+                      <div className="text-xs text-muted-foreground">Total XP</div>
                     </div>
                   </div>
-
-                  {/* Quick Actions */}
-                  <div className="space-y-2">
-                    <Button className="w-full" size="sm">
-                      <Star className="h-4 w-4 mr-2" />
-                      View Rewards
-                    </Button>
-                    <Button variant="outline" className="w-full" size="sm">
-                      <Coins className="h-4 w-4 mr-2" />
-                      Token History
-                    </Button>
-                  </div>
-
 
                 </CardContent>
               </Card>

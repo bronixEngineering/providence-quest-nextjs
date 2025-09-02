@@ -83,23 +83,23 @@ function getRankBadgeVariant(rank: number) {
 
 export default function LeaderboardPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-black">
       <Header />
-      <main className="flex-1 bg-gradient-to-br from-background via-background to-secondary/10 py-8 pt-24">
+      <main className="flex-1 py-8 pt-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl">
           {/* Header */}
           <div className="mb-8 text-center">
-            <div className="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-6 py-2 text-sm font-medium text-primary">
+            <div className="mb-4 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-6 py-2 text-sm font-medium text-white">
               🏆 Hall of Fame
             </div>
-            <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            <h1 className="mb-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
               Elite Questers{" "}
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white via-gray-300 to-white bg-clip-text text-transparent">
                 Leaderboard
               </span>
             </h1>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-lg text-gray-400">
               Witness the legends who dominate Providence Quest. Climb the ranks, earn legendary status, 
               and claim your place among the greatest questers.
             </p>
@@ -107,40 +107,40 @@ export default function LeaderboardPage() {
 
           {/* Stats Cards */}
           <div className="mb-8 grid gap-4 sm:grid-cols-3">
-            <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+            <Card className="border-gray-800 bg-card">
               <CardContent className="p-6 text-center">
                 <div className="mb-2 flex items-center justify-center">
-                  <Zap className="h-8 w-8 text-primary" />
+                  <Zap className="h-8 w-8 text-white" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">1,247</div>
-                <div className="text-sm text-muted-foreground">Active Questers</div>
+                <div className="text-2xl font-bold text-white">1,247</div>
+                <div className="text-sm text-gray-400">Active Questers</div>
               </CardContent>
             </Card>
-            <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+            <Card className="border-gray-800 bg-card">
               <CardContent className="p-6 text-center">
                 <div className="mb-2 flex items-center justify-center">
-                  <Trophy className="h-8 w-8 text-primary" />
+                  <Trophy className="h-8 w-8 text-white" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">89,420</div>
-                <div className="text-sm text-muted-foreground">Quests Completed</div>
+                <div className="text-2xl font-bold text-white">89,420</div>
+                <div className="text-sm text-gray-400">Quests Completed</div>
               </CardContent>
             </Card>
-            <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+            <Card className="border-gray-800 bg-card">
               <CardContent className="p-6 text-center">
                 <div className="mb-2 flex items-center justify-center">
-                  <Star className="h-8 w-8 text-primary" />
+                  <Star className="h-8 w-8 text-white" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">2,156</div>
-                <div className="text-sm text-muted-foreground">Legendary Items Earned</div>
+                <div className="text-2xl font-bold text-white">2,156</div>
+                <div className="text-sm text-gray-400">Legendary Items Earned</div>
               </CardContent>
             </Card>
           </div>
 
           {/* Leaderboard */}
-          <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+          <Card className="border-gray-800 bg-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Trophy className="h-5 w-5 text-white" />
                 Top Questers
               </CardTitle>
             </CardHeader>
@@ -149,8 +149,8 @@ export default function LeaderboardPage() {
                 {leaderboardData.map((player, index) => (
                   <div
                     key={player.rank}
-                    className={`flex items-center gap-4 p-6 transition-colors hover:bg-accent/5 ${
-                      index !== leaderboardData.length - 1 ? "border-b border-border/50" : ""
+                    className={`flex items-center gap-4 p-6 transition-colors hover:bg-gray-900/50 ${
+                      index !== leaderboardData.length - 1 ? "border-b border-gray-800/50" : ""
                     }`}
                   >
                     {/* Rank */}
@@ -162,18 +162,18 @@ export default function LeaderboardPage() {
                     <div className="flex flex-1 items-center gap-3">
                       <Avatar className="h-12 w-12">
                         <AvatarImage src={player.avatar} alt={player.name} />
-                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                        <AvatarFallback className="bg-white/20 text-white font-semibold">
                           {player.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-foreground">{player.name}</h3>
+                          <h3 className="font-semibold text-white">{player.name}</h3>
                           <Badge variant={getRankBadgeVariant(player.rank) as any} className="text-xs">
                             {player.title}
                           </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-gray-400">
                           {player.questsCompleted} quests • {player.legendaryItems} legendary items
                         </div>
                       </div>
@@ -181,10 +181,10 @@ export default function LeaderboardPage() {
 
                     {/* Points */}
                     <div className="text-right">
-                      <div className="text-xl font-bold text-primary">
+                      <div className="text-xl font-bold text-white">
                         {player.totalPoints.toLocaleString()}
                       </div>
-                      <div className="text-xs text-muted-foreground">XP</div>
+                      <div className="text-xs text-gray-400">XP</div>
                     </div>
                   </div>
                 ))}
@@ -194,12 +194,12 @@ export default function LeaderboardPage() {
 
           {/* Call to Action */}
           <div className="mt-8 text-center">
-            <p className="mb-4 text-muted-foreground">
+            <p className="mb-4 text-gray-400">
               Ready to climb the ranks? Start your quest journey today!
             </p>
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
-              <Card className="inline-block border-primary/20 bg-primary/5 p-4">
-                <p className="text-sm font-medium text-primary">
+              <Card className="inline-block border-white/20 bg-white/10 p-4">
+                <p className="text-sm font-medium text-white">
                   💡 Pro Tip: Complete daily quests for bonus XP and rare item drops!
                 </p>
               </Card>
