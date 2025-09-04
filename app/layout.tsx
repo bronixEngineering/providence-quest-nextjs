@@ -21,7 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${exo2.variable} antialiased`}
+        className={`${exo2.variable} antialiased font-exo2`}
+        style={{ fontFamily: 'var(--font-exo2), system-ui, sans-serif' }}
       >
         <Providers>
           {children}

@@ -145,8 +145,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return session;
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile, url }) {
       try {
+        // Extract referral code from URL if present
+        let referralCode = null;
+        if (url) {
+          try {
+            const urlObj = new URL(url);
+            referralCode = urlObj.searchParams.get('ref');
+            if (referralCode) {
+              console.log('🎯 NextAuth - Referral code detected:', referralCode);
+            }
+          } catch (e) {
+            console.log('⚠️ NextAuth - Could not parse URL for referral code');
+          }
+        }
+
         if (account?.provider === "google" && user.email) {
           // Check if profile already exists by email (primary identifier)
           const { data: existingProfile, error: fetchError } =
@@ -213,6 +227,83 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 "✅ NextAuth - Profile created/updated successfully:",
                 newProfile?.id
               );
+
+              // If referral code exists and this is a new profile, process referral
+              if (referralCode && newProfile) {
+                try {
+                  console.log('🎯 NextAuth - Processing referral for new user:', referralCode);
+                  
+                  // Find the referrer profile
+                  const { data: referrerProfile, error: referrerError } = await supabaseAdmin
+                    .from('referral_codes')
+                    .select('profile_id')
+                    .eq('referral_code', referralCode)
+                    .single();
+
+                  if (!referrerError && referrerProfile) {
+                    // Get referrer email
+                    const { data: referrerData } = await supabaseAdmin
+                      .from('profiles')
+                      .select('email')
+                      .eq('id', referrerProfile.profile_id)
+                      .single();
+
+                    if (referrerData && referrerData.email !== user.email) {
+                      // Record referral usage
+                      const { error: usageError } = await supabaseAdmin
+                        .from('referral_usage')
+                        .insert({
+                          referrer_profile_id: referrerProfile.profile_id,
+                          referred_profile_id: newProfile.id
+                        });
+
+                      if (!usageError) {
+                        console.log('✅ NextAuth - Referral usage recorded successfully');
+                        
+                        // Award XP to both users
+                        // Referrer gets +100 XP
+                        const { data: referrerStats } = await supabaseAdmin
+                          .from('user_stats')
+                          .select('total_xp, total_quests_completed')
+                          .eq('user_email', referrerData.email)
+                          .single();
+
+                        if (referrerStats) {
+                          await supabaseAdmin
+                            .from('user_stats')
+                            .update({ 
+                              total_xp: (referrerStats.total_xp || 0) + 100,
+                              total_quests_completed: (referrerStats.total_quests_completed || 0) + 1
+                            })
+                            .eq('user_email', referrerData.email);
+                        }
+
+                        // New user gets +50 XP bonus
+                        await supabaseAdmin
+                          .from('user_stats')
+                          .upsert({
+                            user_email: user.email,
+                            total_xp: 50,
+                            total_quests_completed: 1,
+                            level: 1
+                          }, {
+                            onConflict: 'user_email'
+                          });
+
+                        console.log('🎉 NextAuth - Referral rewards distributed!');
+                      } else {
+                        console.error('❌ NextAuth - Failed to record referral usage:', usageError);
+                      }
+                    } else {
+                      console.log('⚠️ NextAuth - Self-referral or referrer not found, skipping');
+                    }
+                  } else {
+                    console.log('⚠️ NextAuth - Invalid referral code:', referralCode);
+                  }
+                } catch (referralError) {
+                  console.error('❌ NextAuth - Referral processing error:', referralError);
+                }
+              }
             }
           } else {
             console.log(

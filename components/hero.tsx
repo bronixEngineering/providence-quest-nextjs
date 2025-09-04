@@ -10,7 +10,7 @@ export default function Hero() {
       {/* Spline 3D Background */}
       <div className="absolute inset-0 w-screen max-h-[calc(100vh+4rem)]">
         <Spline
-          scene="https://prod.spline.design/KPRd9BKgEYWvp8qh/scene.splinecode"
+          scene="https://prod.spline.design/D2KCukBqt4CrY67p/scene.splinecode"
           className="w-full h-full"
           style={{
             objectFit: "cover",
