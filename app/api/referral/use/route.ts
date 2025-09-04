@@ -32,11 +32,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Referrer'ı bul
-    const { data: referrerProfile } = await supabase
+    const { data: referrerProfile, error: referrerError } = await supabase
       .from('profiles')
       .select('id, email')
       .eq('id', referralData.profile_id)
       .single();
+
+    if (referrerError || !referrerProfile) {
+      return NextResponse.json({ error: 'Referrer profile not found' }, { status: 404 });
+    }
 
     // Current user'ın profile'ını bul
     const { data: currentProfile } = await supabase
@@ -78,11 +82,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Referrer'a +100 XP ekle
+    const { data: referrerStats } = await supabase
+      .from('user_stats')
+      .select('total_xp, total_quests_completed')
+      .eq('user_email', referrerProfile.email)
+      .single();
+
     const { error: xpError } = await supabase
       .from('user_stats')
       .update({ 
-        total_xp: supabase.sql`total_xp + 100`,
-        total_quests_completed: supabase.sql`total_quests_completed + 1`
+        total_xp: (referrerStats?.total_xp || 0) + 100,
+        total_quests_completed: (referrerStats?.total_quests_completed || 0) + 1
       })
       .eq('user_email', referrerProfile.email);
 
@@ -91,11 +101,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Referred user'a da +50 XP bonus
+    const { data: referredStats } = await supabase
+      .from('user_stats')
+      .select('total_xp, total_quests_completed')
+      .eq('user_email', currentProfile.email)
+      .single();
+
     const { error: bonusError } = await supabase
       .from('user_stats')
       .update({ 
-        total_xp: supabase.sql`total_xp + 50`,
-        total_quests_completed: supabase.sql`total_quests_completed + 1`
+        total_xp: (referredStats?.total_xp || 0) + 50,
+        total_quests_completed: (referredStats?.total_quests_completed || 0) + 1
       })
       .eq('user_email', currentProfile.email);
 
