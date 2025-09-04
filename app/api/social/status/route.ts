@@ -5,16 +5,12 @@ import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log("📊 Social Status API - Starting...");
-
     const session = await auth();
     if (!session?.user?.email) {
-      console.log("❌ Social Status - No session or email");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userEmail = session.user.email;
-    console.log("🔍 Social Status - Checking for user:", userEmail);
 
     // Get all social connections for user
     const { data: connections, error: connectionsError } = await supabaseAdmin
@@ -23,11 +19,6 @@ export async function GET() {
       .eq("user_email", userEmail)
       .eq("is_verified", true);
 
-    console.log("📊 Social Status - Connections result:", {
-      connections: connections,
-      connectionsError: connectionsError,
-    });
-
     // Get available social quests
     const { data: socialQuests, error: questsError } = await supabaseAdmin
       .from("quest_definitions")
@@ -35,11 +26,6 @@ export async function GET() {
       .eq("type", "social")
       .eq("is_active", true)
       .order("sort_order");
-
-    console.log("📊 Social Status - Social quests:", {
-      socialQuests: socialQuests,
-      questsError: questsError,
-    });
 
     // Get completed social quests
     const { data: completedQuests, error: completedError } = await supabaseAdmin
@@ -58,11 +44,6 @@ export async function GET() {
       )
       .eq("user_email", userEmail)
       .eq("quest_definitions.type", "social");
-
-    console.log("📊 Social Status - Completed quests:", {
-      completedQuests: completedQuests,
-      completedError: completedError,
-    });
 
     // Process connections by platform
     const connectionsByPlatform = (connections || []).reduce((acc, conn) => {
@@ -114,8 +95,6 @@ export async function GET() {
         availableQuests: questsWithStatus.filter((q) => q.isAvailable).length,
       },
     };
-
-    console.log("✅ Social Status - Final response:", responseData);
 
     return NextResponse.json({
       success: true,

@@ -139,7 +139,14 @@ export default function Header() {
                 variant="outline"
                 size="sm"
                 className="cursor-pointer"
-                onClick={() => signOut()}
+                onClick={() => {
+                  console.log('Sign out clicked');
+                  try {
+                    signOut({ callbackUrl: '/' });
+                  } catch (error) {
+                    console.error('Sign out error:', error);
+                  }
+                }}
               >
                 Sign Out
               </Button>

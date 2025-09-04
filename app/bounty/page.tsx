@@ -350,6 +350,18 @@ export default function BountyPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Referral Section */}
+                  <div className="pt-4 border-t border-border">
+                    <Button 
+                      variant="outline" 
+                      className="w-full bg-secondary/10 hover:bg-secondary/20 border-secondary/30 text-secondary hover:text-secondary"
+                      onClick={() => window.location.href = '/referral'}
+                    >
+                      <Trophy className="h-4 w-4 mr-2" />
+                      Referral Program
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>

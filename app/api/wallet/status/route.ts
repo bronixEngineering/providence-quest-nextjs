@@ -4,16 +4,12 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    console.log('💼 Wallet Status API - Starting...')
-    
     const session = await auth()
     if (!session?.user?.email) {
-      console.log('❌ Wallet Status - No session or email')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const userEmail = session.user.email
-    console.log('🔍 Wallet Status - Checking for user:', userEmail)
 
     // Get user's wallet (verified or pending)
     const { data: wallet, error: walletError } = await supabaseAdmin
@@ -24,11 +20,6 @@ export async function GET() {
       .limit(1)
       .single()
 
-    console.log('📊 Wallet Status - Wallet result:', {
-      wallet: wallet,
-      walletError: walletError
-    })
-
     // Get wallet connect quest
     const { data: walletQuest, error: questError } = await supabaseAdmin
       .from('quest_definitions')
@@ -37,11 +28,6 @@ export async function GET() {
       .eq('category', 'wallet_connect')
       .eq('is_active', true)
       .single()
-
-    console.log('📊 Wallet Status - Quest result:', {
-      walletQuest: walletQuest,
-      questError: questError
-    })
 
     if (!walletQuest || questError) {
       return NextResponse.json({ error: 'Wallet quest not found' }, { status: 404 })
@@ -55,10 +41,7 @@ export async function GET() {
       .eq('quest_id', walletQuest.id)
       .single()
 
-    console.log('📊 Wallet Status - Completion result:', {
-      questCompletion: questCompletion,
-      completionError: completionError
-    })
+
 
     const responseData = {
       hasWallet: !!wallet && !walletError,
@@ -82,9 +65,7 @@ export async function GET() {
       }
     }
 
-    console.log('✅ Wallet Status - Final response:', responseData)
-    console.log('🔍 DEBUG - Raw wallet data:', wallet)
-    console.log('🔍 DEBUG - Wallet error:', walletError)
+
 
     return NextResponse.json({
       success: true,

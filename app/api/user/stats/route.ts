@@ -4,16 +4,12 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    console.log('📊 User Stats API - Starting...')
-    
     const session = await auth()
     if (!session?.user?.email) {
-      console.log('❌ User Stats - No session or email')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const userEmail = session.user.email
-    console.log('🔍 User Stats - Fetching for:', userEmail)
 
     // Get user stats
     const { data: userStats, error: statsError } = await supabaseAdmin
@@ -22,15 +18,10 @@ export async function GET() {
       .eq('user_email', userEmail)
       .single()
 
-    console.log('📊 User Stats - Result:', {
-      userStats: userStats,
-      statsError: statsError,
-      errorCode: statsError?.code
-    })
+
 
     // If user stats don't exist, create them (same logic as daily checkin)
     if (!userStats && statsError?.code === 'PGRST116') {
-      console.log('🆕 User Stats - Creating initial stats...')
       const { data: newUserStats, error: createError } = await supabaseAdmin
         .from('user_stats')
         .insert([{
@@ -51,11 +42,9 @@ export async function GET() {
         .single()
 
       if (createError) {
-        console.log('❌ User Stats - Failed to create:', createError)
         throw createError
       }
 
-      console.log('✅ User Stats - Created:', newUserStats)
       return NextResponse.json({
         success: true,
         data: newUserStats
