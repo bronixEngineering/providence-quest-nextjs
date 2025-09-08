@@ -36,6 +36,7 @@ export default function ReferralPage() {
   );
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [referralInput, setReferralInput] = useState("");
   const [usingReferral, setUsingReferral] = useState(false);
   const [referralMessage, setReferralMessage] = useState("");
@@ -77,7 +78,7 @@ export default function ReferralPage() {
       const shareData = {
         title: "Join Providence Quest!",
         text: `Use my referral code: ${referralStats.referralCode}`,
-        url: `${window.location.origin}?ref=${referralStats.referralCode}`,
+        url: `${window.location.origin}/refferral-signin/${referralStats.referralCode}`,
       };
 
       if (navigator.share) {
@@ -119,6 +120,7 @@ export default function ReferralPage() {
         setReferralMessage(`❌ ${data.error}`);
       }
     } catch (error) {
+      console.error("Failed to use referral code:", error);
       setReferralMessage("❌ Failed to use referral code");
     } finally {
       setUsingReferral(false);
@@ -354,18 +356,35 @@ export default function ReferralPage() {
                       </p>
                       <div className="flex items-center gap-2">
                         <code className="flex-1 p-2 rounded bg-background border text-sm font-mono">
-                          {`${window.location.origin}?ref=${referralStats.referralCode}`}
+                          {`${window.location.origin}/refferral-signin/${referralStats.referralCode}`}
                         </code>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() =>
-                            navigator.clipboard.writeText(
-                              `${window.location.origin}?ref=${referralStats.referralCode}`
-                            )
-                          }
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(
+                                `${window.location.origin}/refferral-signin/${referralStats.referralCode}`
+                              )
+                              setLinkCopied(true)
+                              setTimeout(() => setLinkCopied(false), 2000)
+                            } catch (error) {
+                              console.error("Failed to copy link:", error);
+                              // noop
+                            }
+                          }}
                         >
-                          <Copy className="h-4 w-4" />
+                          {linkCopied ? (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-4 w-4 mr-1" />
+                              Copy
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
