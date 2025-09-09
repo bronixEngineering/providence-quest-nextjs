@@ -6,14 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Trophy,
-  Users,
-  Copy,
-  Share2,
-  CheckCircle,
-  Calendar,
-} from "lucide-react";
+import { Trophy, Users, Copy, Share2, CheckCircle, Calendar } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
@@ -31,9 +24,7 @@ interface ReferralStats {
 
 export default function ReferralPage() {
   const { data: session } = useSession();
-  const [referralStats, setReferralStats] = useState<ReferralStats | null>(
-    null
-  );
+  const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -110,9 +101,7 @@ export default function ReferralPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setReferralMessage(
-          `✅ ${data.message} You earned ${data.rewards.referred}!`
-        );
+        setReferralMessage(`✅ ${data.message} You earned ${data.rewards.referred}!`);
         setReferralInput("");
         // Refresh stats
         fetchReferralStats();
@@ -129,13 +118,11 @@ export default function ReferralPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <div className="container mx-auto px-4 py-16 text-center">
+        <div className="container mx-auto px-4 py-16 text-center flex flex-col justify-center items-center flex-1">
           <h1 className="text-4xl font-bold mb-4">Referral Program</h1>
-          <p className="text-lg text-muted-foreground">
-            Please sign in to view your referral program.
-          </p>
+          <p className="text-lg text-muted-foreground">Please sign in to view your referral program.</p>
         </div>
         <Footer />
       </div>
@@ -292,8 +279,8 @@ export default function ReferralPage() {
             </span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Invite friends to Providence Quest and earn rewards together! Share
-            your referral code and watch your network grow.
+            Invite friends to Providence Quest and earn rewards together! Share your referral code and watch your
+            network grow.
           </p>
         </div>
 
@@ -316,9 +303,7 @@ export default function ReferralPage() {
                       <div className="text-6xl font-bold text-secondary mb-4 font-mono tracking-wider">
                         {referralStats.referralCode}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-6">
-                        Share this code with friends to earn rewards
-                      </p>
+                      <p className="text-sm text-muted-foreground mb-6">Share this code with friends to earn rewards</p>
 
                       <div className="flex gap-3 justify-center">
                         <Button
@@ -339,10 +324,7 @@ export default function ReferralPage() {
                           )}
                         </Button>
 
-                        <Button
-                          onClick={shareReferralCode}
-                          className="bg-secondary hover:bg-secondary/90 text-white"
-                        >
+                        <Button onClick={shareReferralCode} className="bg-secondary hover:bg-secondary/90 text-white">
                           <Share2 className="h-4 w-4 mr-2" />
                           Share
                         </Button>
@@ -351,9 +333,7 @@ export default function ReferralPage() {
 
                     {/* Referral Link */}
                     <div className="p-4 rounded-lg bg-secondary/5 border border-secondary/20">
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Referral Link:
-                      </p>
+                      <p className="text-sm text-muted-foreground mb-2">Referral Link:</p>
                       <div className="flex items-center gap-2">
                         <code className="flex-1 p-2 rounded bg-background border text-sm font-mono">
                           {`${window.location.origin}/refferral-signin/${referralStats.referralCode}`}
@@ -365,9 +345,9 @@ export default function ReferralPage() {
                             try {
                               await navigator.clipboard.writeText(
                                 `${window.location.origin}/refferral-signin/${referralStats.referralCode}`
-                              )
-                              setLinkCopied(true)
-                              setTimeout(() => setLinkCopied(false), 2000)
+                              );
+                              setLinkCopied(true);
+                              setTimeout(() => setLinkCopied(false), 2000);
                             } catch (error) {
                               console.error("Failed to copy link:", error);
                               // noop
@@ -391,9 +371,7 @@ export default function ReferralPage() {
                   </>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-muted-foreground">
-                      Loading your referral code...
-                    </p>
+                    <p className="text-muted-foreground">Loading your referral code...</p>
                   </div>
                 )}
               </CardContent>
@@ -411,12 +389,8 @@ export default function ReferralPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-secondary">
-                  {referralStats?.totalReferrals || 0}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Friends joined with your code
-                </p>
+                <div className="text-3xl font-bold text-secondary">{referralStats?.totalReferrals || 0}</div>
+                <p className="text-sm text-muted-foreground">Friends joined with your code</p>
               </CardContent>
             </Card>
 
@@ -429,12 +403,8 @@ export default function ReferralPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-secondary">
-                  {referralStats?.totalEarnedXP || 0} XP
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  From referral rewards
-                </p>
+                <div className="text-3xl font-bold text-secondary">{referralStats?.totalEarnedXP || 0} XP</div>
+                <p className="text-sm text-muted-foreground">From referral rewards</p>
               </CardContent>
             </Card>
 
@@ -449,28 +419,19 @@ export default function ReferralPage() {
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Per Referral:</span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-secondary/20 text-secondary"
-                  >
+                  <Badge variant="secondary" className="bg-secondary/20 text-secondary">
                     +100 XP
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Bonus at 5:</span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-secondary/20 text-secondary"
-                  >
+                  <Badge variant="secondary" className="bg-secondary/20 text-secondary">
                     +500 XP
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Bonus at 10:</span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-secondary/20 text-secondary"
-                  >
+                  <Badge variant="secondary" className="bg-secondary/20 text-secondary">
                     +1000 XP
                   </Badge>
                 </div>
@@ -499,29 +460,21 @@ export default function ReferralPage() {
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={referral.avatar_url || ""} />
                         <AvatarFallback className="bg-secondary/20 text-secondary">
-                          {referral.name?.charAt(0) ||
-                            referral.email?.charAt(0) ||
-                            "?"}
+                          {referral.name?.charAt(0) || referral.email?.charAt(0) || "?"}
                         </AvatarFallback>
                       </Avatar>
 
                       <div className="flex-1">
                         <div className="font-medium">
-                          {referral.name ||
-                            referral.email?.split("@")[0] ||
-                            "Anonymous"}
+                          {referral.name || referral.email?.split("@")[0] || "Anonymous"}
                         </div>
                         <div className="text-sm text-muted-foreground flex items-center gap-2">
                           <Calendar className="h-3 w-3" />
-                          Joined{" "}
-                          {new Date(referral.joinedAt).toLocaleDateString()}
+                          Joined {new Date(referral.joinedAt).toLocaleDateString()}
                         </div>
                       </div>
 
-                      <Badge
-                        variant="secondary"
-                        className="bg-secondary/20 text-secondary"
-                      >
+                      <Badge variant="secondary" className="bg-secondary/20 text-secondary">
                         +100 XP
                       </Badge>
                     </div>
@@ -536,14 +489,11 @@ export default function ReferralPage() {
         <div className="mt-12">
           <Card className="border-secondary/20 bg-card">
             <CardHeader>
-              <CardTitle className="text-2xl text-center">
-                Use a Referral Code
-              </CardTitle>
+              <CardTitle className="text-2xl text-center">Use a Referral Code</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-center text-muted-foreground">
-                Have a friend&apos;s referral code? Enter it below to earn bonus
-                XP!
+                Have a friend&apos;s referral code? Enter it below to earn bonus XP!
               </p>
 
               <div className="flex gap-3 max-w-md mx-auto">
@@ -551,9 +501,7 @@ export default function ReferralPage() {
                   type="text"
                   placeholder="Enter referral code..."
                   value={referralInput}
-                  onChange={(e) =>
-                    setReferralInput(e.target.value.toUpperCase())
-                  }
+                  onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
                   className="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground"
                   maxLength={8}
                 />
@@ -585,9 +533,7 @@ export default function ReferralPage() {
         <div className="mt-12">
           <Card className="border-secondary/20 bg-card">
             <CardHeader>
-              <CardTitle className="text-2xl text-center">
-                How It Works
-              </CardTitle>
+              <CardTitle className="text-2xl text-center">How It Works</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6 text-center">
@@ -596,9 +542,7 @@ export default function ReferralPage() {
                     <span className="text-2xl font-bold text-secondary">1</span>
                   </div>
                   <h3 className="font-semibold">Share Your Code</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Copy and share your unique referral code with friends
-                  </p>
+                  <p className="text-sm text-muted-foreground">Copy and share your unique referral code with friends</p>
                 </div>
 
                 <div className="space-y-3">
@@ -616,9 +560,7 @@ export default function ReferralPage() {
                     <span className="text-2xl font-bold text-secondary">3</span>
                   </div>
                   <h3 className="font-semibold">Earn Together</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Complete quests together and unlock bonus rewards
-                  </p>
+                  <p className="text-sm text-muted-foreground">Complete quests together and unlock bonus rewards</p>
                 </div>
               </div>
             </CardContent>
