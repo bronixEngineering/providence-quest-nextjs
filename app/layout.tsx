@@ -9,8 +9,8 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  title: "Providence Quest",
-  description: "Begin your extraordinary journey with Providence Quest",
+  title: "Providence Hub",
+  description: "Begin your extraordinary journey with Providence Hub",
 };
 
 export default function RootLayout({
@@ -22,11 +22,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${exo2.variable} antialiased font-exo2`}
-        style={{ fontFamily: 'var(--font-exo2), system-ui, sans-serif' }}
+        style={{ fontFamily: "var(--font-exo2), system-ui, sans-serif" }}
       >
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
