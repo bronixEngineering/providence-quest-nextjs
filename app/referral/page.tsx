@@ -102,11 +102,7 @@ export default function ReferralPage() {
       const data = await response.json();
 
       if (response.ok) {
-        let message = `✅ ${data.message} You earned ${data.rewards.referred}!`;
-        if (data.milestone) {
-          message += `\n\n${data.milestone}`;
-        }
-        setReferralMessage(message);
+        setReferralMessage(`✅ ${data.message} You earned ${data.rewards.referred}!`);
         setReferralInput("");
         // Refresh stats
         fetchReferralStats();
