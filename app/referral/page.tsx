@@ -475,7 +475,7 @@ export default function ReferralPage() {
                       </div>
 
                       <Badge variant="secondary" className="bg-secondary/20 text-secondary">
-                        +100 XP
+                        +20 XP
                       </Badge>
                     </div>
                   ))}

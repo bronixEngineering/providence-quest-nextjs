@@ -117,8 +117,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Referral code used successfully!",
       rewards: {
-        referrer: "+100 XP",
-        referred: "+50 XP",
+        referrer: "+20 XP",
+        referred: "+10 XP",
       },
     });
   } catch (error) {
