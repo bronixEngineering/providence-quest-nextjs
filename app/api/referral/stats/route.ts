@@ -63,8 +63,15 @@ export async function GET() {
       referredProfiles = profiles || [];
     }
 
-    // Toplam kazanılan XP'yi hesapla
-    const totalEarnedXP = (referrals?.length || 0) * 20;
+    const referralCount = referrals?.length || 0;
+    let totalEarnedXP = referralCount * 20;
+
+    if (referralCount >= 5) {
+      totalEarnedXP += 100;
+    }
+    if (referralCount >= 10) {
+      totalEarnedXP += 200;
+    }
 
     // Current user'ın daha önce referral kullanıp kullanmadığını kontrol et
     const { data: hasUsedReferral } = await supabase
