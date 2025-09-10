@@ -102,7 +102,11 @@ export default function ReferralPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setReferralMessage(`✅ ${data.message} You earned ${data.rewards.referred}!`);
+        let message = `✅ ${data.message} You earned ${data.rewards.referred}!`;
+        if (data.milestone) {
+          message += `\n\n${data.milestone}`;
+        }
+        setReferralMessage(message);
         setReferralInput("");
         // Refresh stats
         fetchReferralStats();
@@ -539,7 +543,11 @@ export default function ReferralPage() {
                           : "bg-red-500/10 text-red-600 border border-red-500/20"
                       }`}
                     >
-                      {referralMessage}
+                      {referralMessage.split("\n").map((line, index) => (
+                        <div key={index} className={line.includes("🎉") ? "font-bold text-lg mt-2" : ""}>
+                          {line}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </>

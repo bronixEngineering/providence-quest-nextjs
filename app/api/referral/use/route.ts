@@ -76,6 +76,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to record referral usage" }, { status: 500 });
     }
 
+    // Referrer'ın mevcut referral sayısını al
+    const { data: currentReferrals } = await supabase
+      .from("referral_usage")
+      .select("id")
+      .eq("referrer_profile_id", referralData.profile_id);
+
+    const currentReferralCount = currentReferrals?.length || 0;
+    const newReferralCount = currentReferralCount + 1;
+
     // Referrer'a +20 XP ekle
     const { data: referrerStats } = await supabase
       .from("user_stats")
@@ -83,10 +92,25 @@ export async function POST(request: NextRequest) {
       .eq("user_email", referrerProfile.email)
       .single();
 
+    let totalXpToAdd = 20;
+    let milestoneBonus = 0;
+    let milestoneMessage = "";
+
+    // Milestone bonus kontrolü
+    if (newReferralCount === 5) {
+      milestoneBonus = 100;
+      totalXpToAdd += milestoneBonus;
+      milestoneMessage = "🎉 5th referral milestone! +100 XP bonus!";
+    } else if (newReferralCount === 10) {
+      milestoneBonus = 200;
+      totalXpToAdd += milestoneBonus;
+      milestoneMessage = "🎉 10th referral milestone! +200 XP bonus!";
+    }
+
     const { error: xpError } = await supabase
       .from("user_stats")
       .update({
-        total_xp: (referrerStats?.total_xp || 0) + 20,
+        total_xp: (referrerStats?.total_xp || 0) + totalXpToAdd,
         total_quests_completed: (referrerStats?.total_quests_completed || 0) + 1,
       })
       .eq("user_email", referrerProfile.email);
@@ -117,9 +141,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Referral code used successfully!",
       rewards: {
-        referrer: "+20 XP",
+        referrer: `+${totalXpToAdd} XP${milestoneBonus > 0 ? ` (${milestoneBonus} bonus)` : ""}`,
         referred: "+10 XP",
       },
+      milestone: milestoneMessage || null,
+      newReferralCount,
     });
   } catch (error) {
     console.error("Referral usage error:", error);
