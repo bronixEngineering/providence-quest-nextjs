@@ -14,6 +14,7 @@ interface ReferralStats {
   referralCode: string | null;
   totalReferrals: number;
   totalEarnedXP: number;
+  hasUsedReferral: boolean;
   referrals: Array<{
     name: string | null;
     email: string | null;
@@ -487,43 +488,61 @@ export default function ReferralPage() {
 
         {/* Use Referral Code */}
         <div className="mt-12">
-          <Card className="border-secondary/20 bg-card">
+          <Card className={`border-secondary/20 bg-card ${referralStats?.hasUsedReferral ? "opacity-60" : ""}`}>
             <CardHeader>
-              <CardTitle className="text-2xl text-center">Use a Referral Code</CardTitle>
+              <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
+                {referralStats?.hasUsedReferral && <CheckCircle className="h-6 w-6 text-green-500" />}
+                Use a Referral Code
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-center text-muted-foreground">
-                Have a friend&apos;s referral code? Enter it below to earn bonus XP!
-              </p>
-
-              <div className="flex gap-3 max-w-md mx-auto">
-                <input
-                  type="text"
-                  placeholder="Enter referral code..."
-                  value={referralInput}
-                  onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
-                  className="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground"
-                  maxLength={8}
-                />
-                <Button
-                  onClick={useReferralCode}
-                  disabled={usingReferral || !referralInput.trim()}
-                  className="bg-secondary hover:bg-secondary/90 text-white"
-                >
-                  {usingReferral ? "Using..." : "Use Code"}
-                </Button>
-              </div>
-
-              {referralMessage && (
-                <div
-                  className={`text-center p-3 rounded-md ${
-                    referralMessage.includes("✅")
-                      ? "bg-green-500/10 text-green-600 border border-green-500/20"
-                      : "bg-red-500/10 text-red-600 border border-red-500/20"
-                  }`}
-                >
-                  {referralMessage}
+              {referralStats?.hasUsedReferral ? (
+                <div className="text-center space-y-4">
+                  <p className="text-center text-green-600 font-medium">
+                    ✅ You have already used a referral code and earned bonus XP!
+                  </p>
+                  <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <p className="text-sm text-green-600">
+                      Thanks for joining with a friend&apos;s referral code! You&apos;ve earned your bonus rewards.
+                    </p>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  <p className="text-center text-muted-foreground">
+                    Have a friend&apos;s referral code? Enter it below to earn bonus XP!
+                  </p>
+
+                  <div className="flex gap-3 max-w-md mx-auto">
+                    <input
+                      type="text"
+                      placeholder="Enter referral code..."
+                      value={referralInput}
+                      onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
+                      className="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground"
+                      maxLength={8}
+                    />
+                    <Button
+                      onClick={useReferralCode}
+                      disabled={usingReferral || !referralInput.trim()}
+                      className="bg-secondary hover:bg-secondary/90 text-white"
+                    >
+                      {usingReferral ? "Using..." : "Use Code"}
+                    </Button>
+                  </div>
+
+                  {referralMessage && (
+                    <div
+                      className={`text-center p-3 rounded-md ${
+                        referralMessage.includes("✅")
+                          ? "bg-green-500/10 text-green-600 border border-green-500/20"
+                          : "bg-red-500/10 text-red-600 border border-red-500/20"
+                      }`}
+                    >
+                      {referralMessage}
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>

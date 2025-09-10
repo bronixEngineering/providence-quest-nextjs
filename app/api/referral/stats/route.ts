@@ -66,10 +66,18 @@ export async function GET() {
     // Toplam kazanılan XP'yi hesapla
     const totalEarnedXP = (referrals?.length || 0) * 20;
 
+    // Current user'ın daha önce referral kullanıp kullanmadığını kontrol et
+    const { data: hasUsedReferral } = await supabase
+      .from("referral_usage")
+      .select("id")
+      .eq("referred_profile_id", profile.id)
+      .single();
+
     return NextResponse.json({
       referralCode: referralCode?.referral_code || null,
       totalReferrals: referrals?.length || 0,
       totalEarnedXP,
+      hasUsedReferral: !!hasUsedReferral,
       referrals: referredProfiles.map((profile, index) => ({
         ...profile,
         joinedAt: referrals?.[index]?.used_at,
