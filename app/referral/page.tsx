@@ -420,19 +420,19 @@ export default function ReferralPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Per Referral:</span>
                   <Badge variant="secondary" className="bg-secondary/20 text-secondary">
-                    +100 XP
+                    +20 XP
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Bonus at 5:</span>
                   <Badge variant="secondary" className="bg-secondary/20 text-secondary">
-                    +500 XP
+                    +100 XP
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Bonus at 10:</span>
                   <Badge variant="secondary" className="bg-secondary/20 text-secondary">
-                    +1000 XP
+                    +200 XP
                   </Badge>
                 </div>
               </CardContent>
