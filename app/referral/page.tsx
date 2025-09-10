@@ -425,14 +425,38 @@ export default function ReferralPage() {
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Bonus at 5:</span>
-                  <Badge variant="secondary" className="bg-secondary/20 text-secondary">
+                  <span className="text-sm flex items-center gap-2">
+                    Bonus at 5:
+                    {referralStats && referralStats.totalReferrals >= 5 && (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    )}
+                  </span>
+                  <Badge
+                    variant="secondary"
+                    className={`${
+                      referralStats && referralStats.totalReferrals >= 5
+                        ? "bg-green-500/20 text-green-600 border-green-500/30"
+                        : "bg-secondary/20 text-secondary"
+                    }`}
+                  >
                     +100 XP
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Bonus at 10:</span>
-                  <Badge variant="secondary" className="bg-secondary/20 text-secondary">
+                  <span className="text-sm flex items-center gap-2">
+                    Bonus at 10:
+                    {referralStats && referralStats.totalReferrals >= 10 && (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    )}
+                  </span>
+                  <Badge
+                    variant="secondary"
+                    className={`${
+                      referralStats && referralStats.totalReferrals >= 10
+                        ? "bg-green-500/20 text-green-600 border-green-500/30"
+                        : "bg-secondary/20 text-secondary"
+                    }`}
+                  >
                     +200 XP
                   </Badge>
                 </div>
