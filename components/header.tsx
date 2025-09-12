@@ -104,7 +104,7 @@ export default function Header() {
         </div>
 
         {/* Desktop Auth Section */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center justify-end space-x-4">
           {/* Wishlist Now Button */}
           <Button
             size="sm"
