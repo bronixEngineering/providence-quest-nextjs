@@ -44,15 +44,16 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 z-50 w-full backdrop-blur-md bg-background/10 border-b border-white/10">
-      <div className="container mx-auto h-16 items-center grid grid-cols-3 px-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="h-8 w-8 bg-primary rounded-lg shadow-lg"></div>
-          <span className="font-bold text-xl text-white drop-shadow-lg">Providence</span>
-        </Link>
+      <div className="container mx-auto h-16 items-center flex justify-between px-4">
+        {/* Logo and Navigation */}
+        <div className="flex items-center space-x-8">
+          <Link href="/" className="flex items-center space-x-3">
+            <img src="/sigil.png" alt="Providence" className="h-8 w-8 rounded-lg shadow-lg" />
+            <span className="font-bold text-xl text-white drop-shadow-lg">Providence</span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <NavigationMenu className="hidden md:flex">
+          {/* Desktop Navigation */}
+          <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
             <NavigationMenuItem>
               {session ? (
@@ -99,7 +100,8 @@ export default function Header() {
               </span>
             </NavigationMenuItem>
           </NavigationMenuList>
-        </NavigationMenu>
+          </NavigationMenu>
+        </div>
 
         {/* Desktop Auth Section */}
         <div className="hidden md:flex items-center space-x-4">
@@ -214,10 +216,10 @@ export default function Header() {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/20">
-                <div className="flex items-center space-x-3">
-                  <div className="h-8 w-8 bg-primary rounded-lg shadow-lg"></div>
-                  <span className="font-bold text-lg text-white">Menu</span>
-                </div>
+              <div className="flex items-center space-x-3">
+                <img src="/sigil.png" alt="Providence" className="h-8 w-8 rounded-lg shadow-lg" />
+                <span className="font-bold text-lg text-white">Menu</span>
+              </div>
                 <Button
                   variant="ghost"
                   size="sm"

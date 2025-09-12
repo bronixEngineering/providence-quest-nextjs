@@ -8,7 +8,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-primary rounded-lg"></div>
+              <img src="/sigil.png" alt="Providence" className="h-8 w-8 rounded-lg" />
               <span className="font-bold text-xl">Providence</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">
