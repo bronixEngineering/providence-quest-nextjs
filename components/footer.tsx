@@ -93,7 +93,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/chronicles"
+                  href="/leaderboard"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Chronicles
@@ -205,7 +205,7 @@ export default function Footer() {
               </Link>
               <span>•</span>
               <Link
-                href="https://playprovidence.io/"
+                href="https://store.epicgames.com/tr/p/providence-2bff8d"
                 className="hover:text-primary transition-colors"
               >
                 Early Access

@@ -51,9 +51,11 @@ export default function Hero() {
                 Start Your Quest
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="h-12 px-8 text-lg">
-              View Leaderboard
-            </Button>
+            <Link href="/leaderboard">
+              <Button variant="outline" size="lg" className="h-12 px-8 text-lg">
+                View Leaderboard
+              </Button>
+            </Link>
           </div>
 
           {/* Feature Cards */}
