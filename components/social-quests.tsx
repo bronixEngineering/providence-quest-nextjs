@@ -100,7 +100,9 @@ function useSocialVerify() {
     },
     onSuccess: (data) => {
       // Redirect to NextAuth verification
-      window.location.href = data.verifyUrl;
+      if (typeof window !== 'undefined') {
+        window.location.href = data.verifyUrl;
+      }
     },
     onError: (error) => {
       toast.error(
