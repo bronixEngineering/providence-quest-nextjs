@@ -313,7 +313,7 @@ export default function SocialQuests() {
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <Twitter className="h-3 w-3" />
+                          <XIcon className="h-3 w-3" />
                           Follow
                         </div>
                       )}
