@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Lock, Calendar, Gamepad2, Clock, Twitter, MessageSquare } from "lucide-react";
+import { Trophy, Lock, Calendar, Gamepad2, Clock, MessageSquare } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -20,6 +20,19 @@ import { SignInModal } from "@/components/signin-modal";
 import DailyCheckin from "@/components/daily-checkin";
 import SocialQuests from "@/components/social-quests";
 import WalletQuest from "@/components/wallet-quest";
+import TweetQuest from "@/components/tweet-quest";
+
+// X (Twitter) Icon Component
+const XIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 // Real user stats from useUserStats hook and Supabase
 
@@ -82,7 +95,7 @@ export default function BountyPage() {
     const getIcon = () => {
       switch (platform) {
         case "twitter":
-          return <Twitter className="h-3 w-3" />;
+          return <XIcon className="h-3 w-3" />;
         case "discord":
           return <MessageSquare className="h-3 w-3" />;
         case "epic":
@@ -95,7 +108,7 @@ export default function BountyPage() {
     const getColors = () => {
       switch (platform) {
         case "twitter":
-          return "bg-sky-500/20 text-sky-400 border-sky-500/30";
+          return "bg-gray-800/20 text-gray-300 border-gray-800/30";
         case "discord":
           return "bg-indigo-500/20 text-indigo-400 border-indigo-500/30";
         case "epic":
@@ -329,6 +342,9 @@ export default function BountyPage() {
                   Complete quests to earn XP, tokens, and rare items. Level up your Trailblazer status!
                 </p>
               </div>
+
+              {/* Tweet Quest - Featured at the top */}
+              <TweetQuest />
 
               {/* Daily Check-in Quest */}
               <div className="space-y-4">

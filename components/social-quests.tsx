@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   ExternalLink,
   CheckCircle,
-  Twitter,
   MessageSquare,
   Loader2,
   Gamepad2,
@@ -15,6 +14,18 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession, signIn } from "next-auth/react";
 import { toast } from "sonner";
+
+// X (Twitter) Icon Component
+const XIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 interface SocialConnection {
   id: string;
@@ -134,7 +145,7 @@ function useCompleteFollowQuest() {
 function getPlatformIcon(platform: string) {
   switch (platform) {
     case "twitter":
-      return <Twitter className="h-4 w-4" />;
+      return <XIcon className="h-4 w-4" />;
     case "discord":
       return <MessageSquare className="h-4 w-4" />;
     case "epic":
@@ -147,7 +158,7 @@ function getPlatformIcon(platform: string) {
 function getPlatformColor(platform: string) {
   switch (platform) {
     case "twitter":
-      return "from-sky-600 to-blue-600";
+      return "from-gray-800 to-black";
     case "discord":
       return "from-indigo-600 to-purple-600";
     case "epic":

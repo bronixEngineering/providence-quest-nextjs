@@ -19,15 +19,16 @@ export async function GET() {
       .eq("user_email", userEmail)
       .eq("is_verified", true);
 
-    // Get available social quests
+    // Get available social quests (exclude twitter_share as it has its own component)
     const { data: socialQuests, error: questsError } = await supabaseAdmin
       .from("quest_definitions")
       .select("*")
       .eq("type", "social")
+      .neq("category", "twitter_share")
       .eq("is_active", true)
       .order("sort_order");
 
-    // Get completed social quests
+    // Get completed social quests (exclude twitter_share)
     const { data: completedQuests, error: completedError } = await supabaseAdmin
       .from("user_quest_completions")
       .select(
@@ -43,7 +44,8 @@ export async function GET() {
       `
       )
       .eq("user_email", userEmail)
-      .eq("quest_definitions.type", "social");
+      .eq("quest_definitions.type", "social")
+      .neq("quest_definitions.category", "twitter_share");
 
     // Process connections by platform
     const connectionsByPlatform = (connections || []).reduce((acc, conn) => {
