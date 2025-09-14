@@ -157,7 +157,8 @@ export default function TweetQuest() {
     // Use a fallback for SSR compatibility
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const referralUrl = `${origin}/refferral-signin/${referralStats.referralCode}`;
-    return `Come join me at Providence ${referralUrl}`;
+    const defaultXUrl = "https://x.com/PlayProvidence/status/1965873649082315261";
+    return `Come join me at Providence ${referralUrl}\n${defaultXUrl}`;
   };
 
 
