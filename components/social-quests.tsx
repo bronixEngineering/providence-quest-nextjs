@@ -221,7 +221,7 @@ export default function SocialQuests() {
   return (
     <div className="space-y-4">
       {/* Header with stats */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h3 className="text-lg font-semibold text-slate-100">
             Social Quests
@@ -244,7 +244,7 @@ export default function SocialQuests() {
               className="border border-border bg-card shadow-lg"
             >
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 {/* Quest Info */}
                 <div className="flex items-center gap-3">
                   <div
@@ -276,7 +276,7 @@ export default function SocialQuests() {
 
                 {/* Action & Rewards */}
                 <div className="flex items-center gap-4">
-                  <div className="text-right text-sm">
+                  <div className="text-left sm:text-right text-sm">
                     <div className="flex items-center gap-2 text-slate-300">
                       <span className="text-cyan-400">
                         +{quest.xpReward} XP

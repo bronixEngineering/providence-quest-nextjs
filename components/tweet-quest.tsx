@@ -152,6 +152,11 @@ export default function TweetQuest() {
   const [hasPostedTweet, setHasPostedTweet] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  // Client-side validators
+  const tweetUrlPattern = /^https?:\/\/(twitter\.com|x\.com)\/\w+\/status\/\d+/i;
+  const isValidTweetUrl = (url: string) => tweetUrlPattern.test(url.trim());
+  const isValidWallet = (addr: string) => /^0x[a-fA-F0-9]{40}$/.test(addr.trim());
+
   const generateTweetText = () => {
     if (!referralStats?.referralCode) return "";
     // Use a fallback for SSR compatibility
@@ -169,14 +174,24 @@ export default function TweetQuest() {
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
       window.open(twitterUrl, "_blank");
       setHasPostedTweet(true);
+      setIsDialogOpen(true);
     } else {
       toast.error("Referral code not available");
     }
   };
 
+
   const handleSubmit = () => {
     if (!tweetUrl.trim() || !walletAddress.trim()) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+    if (!isValidTweetUrl(tweetUrl)) {
+      toast.error("Please enter a valid tweet link (twitter.com/x.com)");
+      return;
+    }
+    if (!isValidWallet(walletAddress)) {
+      toast.error("Please enter a valid wallet address (0x... 42 chars)");
       return;
     }
 
@@ -225,13 +240,13 @@ export default function TweetQuest() {
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-radial from-white/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       <CardHeader className="relative z-10">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gray-800/20 border-gray-800/30 group-hover:bg-gray-800/30 transition-colors">
               <XIcon className="h-6 w-6 text-gray-100" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
                 <CardTitle className="text-xl">{quest.title}</CardTitle>
                 {completed && (
                   <CheckCircle className="h-5 w-5 text-green-400" />
@@ -240,10 +255,10 @@ export default function TweetQuest() {
                   Time Limited
                 </Badge>
               </div>
-              <p className="text-muted-foreground mt-1">{quest.description}</p>
+              <p className="text-muted-foreground">{quest.description}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="bg-gray-800/20 text-gray-300 border-gray-800/30">
               <Zap className="h-3 w-3 mr-1" />
               {quest.xp_reward} XP
@@ -266,7 +281,7 @@ export default function TweetQuest() {
 
       <CardContent className="relative z-10">
         {!completed && (
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex-1">
               <p className="text-muted-foreground">
                 Post your tweet on X and submit your wallet address

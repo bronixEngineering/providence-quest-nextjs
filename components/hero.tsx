@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Zap, Trophy, Users } from "lucide-react";
@@ -8,7 +9,7 @@ export default function Hero() {
   return (
     <section className="relative overflow-visible w-full -mt-16 pt-16">
       {/* Spline 3D Background */}
-      <div className="absolute inset-0 w-screen max-h-[calc(100vh+4rem)]">
+      <div className="absolute inset-0 w-screen max-h-[calc(100vh+4rem)] pointer-events-auto">
         <Spline
           scene="https://prod.spline.design/BNEF76NZdN2aN7JY/scene.splinecode"
           className="w-full h-full"
@@ -17,6 +18,15 @@ export default function Hero() {
             objectPosition: "center",
             width: "100vw",
             height: "100%",
+            pointerEvents: "auto",
+          }}
+          onLoad={(splineApp) => {
+            // Enable mouse interactions
+            if (splineApp) {
+              splineApp.setVariable('mouseEnabled', true);
+              // Force enable mouse look
+              splineApp.setVariable('enableMouseLook', true);
+            }
           }}
         />
       </div>

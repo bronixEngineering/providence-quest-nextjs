@@ -154,7 +154,7 @@ export default function DailyCheckin() {
         {/* Check-in Status - Compact */}
         <div>
           {status.hasCheckedInToday ? (
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-2 text-emerald-400 font-medium text-sm">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
                 <span>Completed</span>
@@ -183,7 +183,7 @@ export default function DailyCheckin() {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <Button
                 onClick={handleCheckin}
                 disabled={checkinMutation.isPending || !status.canCheckinToday}
@@ -202,7 +202,7 @@ export default function DailyCheckin() {
                 )}
               </Button>
 
-              <div className="flex items-center gap-3 text-xs text-slate-400">
+              <div className="flex items-center flex-wrap gap-3 text-xs text-slate-400">
                 <span className="flex items-center gap-1">
                   <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
                   10 XP

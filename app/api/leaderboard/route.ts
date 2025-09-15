@@ -8,12 +8,12 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    // Fetch all user stats ordered by total XP descending
+    // Fetch top user stats ordered by total XP descending (limit to top 20)
     const { data: userStats, error } = await supabase
       .from('user_stats')
       .select('user_email, total_xp, level, total_quests_completed, current_daily_streak, longest_daily_streak, badges')
       .order('total_xp', { ascending: false })
-      .limit(100); // Top 100 users
+      .limit(20); // Top 20 users
 
     if (error) {
       console.error('Supabase error:', error);

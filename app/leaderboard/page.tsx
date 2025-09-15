@@ -161,69 +161,64 @@ export default function LeaderboardPage() {
                 {leaderboardData?.map((user) => (
                   <div
                     key={user.rank}
-                    className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-200 ${
+                    className={`flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 rounded-lg transition-all duration-200 ${
                       user.rank <= 3
                         ? "bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20"
                         : "bg-muted/30 hover:bg-muted/50"
                     }`}
                   >
-                    {/* Rank */}
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-card border border-border">
-                      {getRankIcon(user.rank)}
-                    </div>
+                    {/* Left cluster: Rank + User */}
+                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                      {/* Rank */}
+                      <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-card border border-border shrink-0">
+                        {getRankIcon(user.rank)}
+                      </div>
 
-                    {/* User Info */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
+                      {/* User Info */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar className="h-9 w-9 sm:h-10 sm:w-10 shrink-0">
                           <AvatarFallback className="bg-primary/20 text-primary font-semibold">
                             {user.email.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <div className="font-semibold text-foreground">
+                        <div className="min-w-0">
+                          <div className="font-semibold text-foreground truncate max-w-[200px] sm:max-w-none">
                             {user.email}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            Level {user.level} • {user.questsCompleted} quests
-                            completed
+                          <div className="text-sm text-muted-foreground whitespace-nowrap">
+                            Level {user.level} • {user.questsCompleted} quests completed
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Stats */}
-                    <div className="flex items-center gap-6 text-right">
-                      <div>
-                        <div className="text-lg font-bold text-primary">
+                    {/* Right cluster: Stats + Badge */}
+                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-6 w-full sm:w-auto">
+                      <div className="text-left sm:text-right">
+                        <div className="text-base sm:text-lg font-bold text-primary leading-tight">
                           {user.totalXp.toLocaleString()}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          Total XP
-                        </div>
+                        <div className="text-xs text-muted-foreground">Total XP</div>
                       </div>
 
-                      <div>
-                        <div className="text-sm font-semibold text-foreground">
+                      <div className="text-left sm:text-right">
+                        <div className="text-sm font-semibold text-foreground leading-tight">
                           {user.dailyStreak}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          Day Streak
-                        </div>
+                        <div className="text-xs text-muted-foreground">Day Streak</div>
                       </div>
-                    </div>
 
-                    {/* Rank Badge */}
-                    <Badge
-                      variant="secondary"
-                      className={`${
-                        user.rank <= 3
-                          ? "bg-gradient-to-r from-secondary/20 to-secondary/60 text-secondary border-secondary/30"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {getRankBadge(user.rank)}
-                    </Badge>
+                      <Badge
+                        variant="secondary"
+                        className={`${
+                          user.rank <= 3
+                            ? "bg-gradient-to-r from-secondary/20 to-secondary/60 text-secondary border-secondary/30"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {getRankBadge(user.rank)}
+                      </Badge>
+                    </div>
                   </div>
                 ))}
               </div>

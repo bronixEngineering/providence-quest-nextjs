@@ -315,7 +315,7 @@ export default function WalletQuest() {
       {/* Wallet Quest Card */}
       <Card className="border border-border bg-card shadow-lg">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             {/* Quest Info */}
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600">
@@ -366,8 +366,8 @@ export default function WalletQuest() {
             </div>
 
             {/* Action & Rewards */}
-            <div className="flex items-center gap-4">
-              <div className="text-right text-sm">
+            <div className="flex items-center justify-between sm:justify-end gap-4">
+              <div className="text-left sm:text-right text-sm">
                 <div className="flex items-center gap-2 text-slate-300">
                   <span className="text-cyan-400">
                     +{walletData.quest.xpReward} XP
