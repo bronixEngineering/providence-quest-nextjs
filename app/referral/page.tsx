@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Users, Copy, Share2, CheckCircle, Calendar } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { LootboxCard } from "@/components/lootbox-card";
+import { CometLootboxCard } from "@/components/comet-lootbox-card";
 
 interface ReferralStats {
   referralCode: string | null;
@@ -460,6 +462,29 @@ export default function ReferralPage() {
                   >
                     +200 XP
                   </Badge>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Special Milestone Reward - Lootbox Comparison */}
+            <Card className="border-secondary/20 bg-card">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-secondary" />
+                  Milestone Reward
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground">Unlock at 5 referrals - Choose your style!</p>
+                </div>
+                
+                <div className="flex justify-center">
+                  <CometLootboxCard 
+                    isCompleted={referralStats && referralStats.totalReferrals >= 5}
+                    specialReward="Exclusive Lootbox"
+                    className="py-2 scale-75"
+                  />
                 </div>
               </CardContent>
             </Card>

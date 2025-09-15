@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   CheckCircle,
+  Gift,
   Loader2,
   Trophy,
   Zap,
@@ -24,6 +25,9 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { LootboxCard } from "@/components/lootbox-card";
+import { CometLootboxCard } from "@/components/comet-lootbox-card";
+import { CompactLootboxCard } from "@/components/compact-lootbox-card";
 
 // X (Twitter) Icon Component
 const XIcon = ({ className }: { className?: string }) => (
@@ -235,7 +239,8 @@ export default function TweetQuest() {
   const { quest, completed } = questData;
 
   return (
-    <Card className="relative border border-border bg-card shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
+    <div className="space-y-6">
+      <Card className="relative border border-border bg-card shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
       {/* Light effect from top-left */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-radial from-white/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -267,6 +272,12 @@ export default function TweetQuest() {
               <Trophy className="h-3 w-3 mr-1" />
               {quest.token_reward} Tokens
             </Badge>
+            {quest.special_reward && (
+              <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                <Gift className="h-3 w-3 mr-1" />
+                {quest.special_reward}
+              </Badge>
+            )}
             {completed && (
               <Badge
                 variant="secondary"
@@ -281,97 +292,115 @@ export default function TweetQuest() {
 
       <CardContent className="relative z-10">
         {!completed && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex-1">
-              <p className="text-muted-foreground">
-                Post your tweet on X and submit your wallet address
-              </p>
-              {!referralStats?.referralCode && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Loading your referral code...
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-muted-foreground">
+                  Post your tweet on X and submit your wallet address
                 </p>
-              )}
+                {!referralStats?.referralCode && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Loading your referral code...
+                  </p>
+                )}
+              </div>
+            
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleOpenTwitter}
+                  disabled={!referralStats?.referralCode}
+                  className="bg-gray-900 hover:bg-black text-white px-4 py-2 border border-gray-700"
+                >
+                  <XIcon className="h-4 w-4 mr-2" />
+                  Post on X
+                </Button>
+                
+                {hasPostedTweet && (
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-4 py-2"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Complete Quest
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Complete Tweet Quest</DialogTitle>
+                        <DialogDescription>
+                          Please provide your tweet URL and wallet address to complete the quest.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <label className="text-sm font-medium">
+                            Tweet URL *
+                          </label>
+                          <Input
+                            type="url"
+                            placeholder="https://twitter.com/username/status/1234567890"
+                            value={tweetUrl}
+                            onChange={(e) => setTweetUrl(e.target.value)}
+                            className="bg-background/50"
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <label className="text-sm font-medium">
+                            Wallet Address *
+                          </label>
+                          <Input
+                            type="text"
+                            placeholder="0x..."
+                            value={walletAddress}
+                            onChange={(e) => setWalletAddress(e.target.value)}
+                            className="bg-background/50 font-mono"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button
+                          onClick={handleSubmit}
+                          disabled={completeMutation.isPending || !tweetUrl.trim() || !walletAddress.trim()}
+                          className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white"
+                        >
+                          {completeMutation.isPending ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Completing Quest...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Complete Quest
+                            </>
+                          )}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleOpenTwitter}
-                disabled={!referralStats?.referralCode}
-                className="bg-gray-900 hover:bg-black text-white px-4 py-2 border border-gray-700"
-              >
-                <XIcon className="h-4 w-4 mr-2" />
-                Post on X
-              </Button>
-              
-              {hasPostedTweet && (
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-4 py-2"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Complete Quest
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Complete Tweet Quest</DialogTitle>
-                      <DialogDescription>
-                        Please provide your tweet URL and wallet address to complete the quest.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid gap-2">
-                        <label className="text-sm font-medium">
-                          Tweet URL *
-                        </label>
-                        <Input
-                          type="url"
-                          placeholder="https://twitter.com/username/status/1234567890"
-                          value={tweetUrl}
-                          onChange={(e) => setTweetUrl(e.target.value)}
-                          className="bg-background/50"
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <label className="text-sm font-medium">
-                          Wallet Address *
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="0x..."
-                          value={walletAddress}
-                          onChange={(e) => setWalletAddress(e.target.value)}
-                          className="bg-background/50 font-mono"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        onClick={handleSubmit}
-                        disabled={completeMutation.isPending || !tweetUrl.trim() || !walletAddress.trim()}
-                        className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white"
-                      >
-                        {completeMutation.isPending ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Completing Quest...
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Complete Quest
-                          </>
-                        )}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </div>
+            {/* Lootbox Preview - Alt Satır */}
+            {quest.special_reward && (
+              <div className="border-t border-border pt-4">
+                <div className="flex justify-center">
+                  <CompactLootboxCard 
+                    isCompleted={false}
+                    specialReward={quest.special_reward}
+                    className=""
+                  />
+                </div>
+              </div>
+            )}
+            
           </div>
         )}
       </CardContent>
     </Card>
+    
+    </div>
   );
 }
