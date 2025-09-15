@@ -48,58 +48,68 @@ export default function Header() {
         {/* Logo and Navigation */}
         <div className="flex items-center space-x-8">
           <Link href="/" className="flex items-center space-x-3">
-            <img src="/sigil.png" alt="Providence" className="h-8 w-8 rounded-lg shadow-lg" />
-            <span className="font-bold text-xl text-white drop-shadow-lg">Providence</span>
+            <img
+              src="/sigil.png"
+              alt="Providence"
+              className="h-8 w-8 rounded-lg shadow-lg"
+            />
+            <span className="font-bold text-xl text-white drop-shadow-lg">
+              Providence
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              {session ? (
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                {session ? (
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/bounty"
+                      className={getNavLinkClasses("/bounty")}
+                    >
+                      Bounty
+                    </Link>
+                  </NavigationMenuLink>
+                ) : (
+                  <SignInModal>
+                    <span
+                      className={
+                        getNavLinkClasses("/bounty") + " cursor-pointer"
+                      }
+                    >
+                      Bounty
+                    </span>
+                  </SignInModal>
+                )}
+              </NavigationMenuItem>
+              <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/bounty" className={getNavLinkClasses("/bounty")}>
-                    Bounty
+                  <Link
+                    href="/leaderboard"
+                    className={getNavLinkClasses("/leaderboard")}
+                  >
+                    Chronicles
                   </Link>
                 </NavigationMenuLink>
-              ) : (
-                <SignInModal>
-                  <span className={getNavLinkClasses("/bounty") + " cursor-pointer"}>Bounty</span>
-                </SignInModal>
-              )}
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/leaderboard" className={getNavLinkClasses("/leaderboard")}>
-                  Chronicles
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <span className="group inline-flex h-10 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-white/50 cursor-not-allowed relative">
-                Terminal
-                <span className="absolute -top-1 -right-1 text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-500/30">
-                  Soon
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <span className="group inline-flex h-10 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-white/50 cursor-not-allowed relative">
+                  Terminal
+                  <span className="absolute -top-1 -right-1 text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-500/30">
+                    Soon
+                  </span>
                 </span>
-              </span>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <span className="group inline-flex h-10 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-white/50 cursor-not-allowed relative">
-                Inventory
-                <span className="absolute -top-1 -right-1 text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-500/30">
-                  Soon
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <span className="group inline-flex h-10 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-white/50 cursor-not-allowed relative">
+                  Inventory
+                  <span className="absolute -top-1 -right-1 text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-500/30">
+                    Soon
+                  </span>
                 </span>
-              </span>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <span className="group inline-flex h-10 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-white/50 cursor-not-allowed relative">
-                Gate
-                <span className="absolute -top-1 -right-1 text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-500/30">
-                  Soon
-                </span>
-              </span>
-            </NavigationMenuItem>
-          </NavigationMenuList>
+              </NavigationMenuItem>
+            </NavigationMenuList>
           </NavigationMenu>
         </div>
 
@@ -112,7 +122,12 @@ export default function Header() {
             // style={{
             //   clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
             // }}
-            onClick={() => window.open("https://store.epicgames.com/tr/p/providence-2bff8d", "_blank")}
+            onClick={() =>
+              window.open(
+                "https://store.epicgames.com/tr/p/providence-2bff8d",
+                "_blank"
+              )
+            }
           >
             WISHLIST NOW
           </Button>
@@ -120,8 +135,15 @@ export default function Header() {
           {session?.user ? (
             <div className="flex items-center space-x-3">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
-                <AvatarFallback>{session.user.name?.charAt(0) || session.user.email?.charAt(0) || "U"}</AvatarFallback>
+                <AvatarImage
+                  src={session.user.image || ""}
+                  alt={session.user.name || ""}
+                />
+                <AvatarFallback>
+                  {session.user.name?.charAt(0) ||
+                    session.user.email?.charAt(0) ||
+                    "U"}
+                </AvatarFallback>
               </Avatar>
               <span className="hidden sm:inline-block text-sm font-medium text-white drop-shadow-md">
                 {session.user.name || session.user.email}
@@ -158,9 +180,14 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="p-0 h-auto">
                   <Avatar className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-white/20 transition-all">
-                    <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
+                    <AvatarImage
+                      src={session.user.image || ""}
+                      alt={session.user.name || ""}
+                    />
                     <AvatarFallback>
-                      {session.user.name?.charAt(0) || session.user.email?.charAt(0) || "U"}
+                      {session.user.name?.charAt(0) ||
+                        session.user.email?.charAt(0) ||
+                        "U"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -191,11 +218,26 @@ export default function Header() {
             className="text-white hover:bg-white/10"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               {mobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </Button>
@@ -216,18 +258,32 @@ export default function Header() {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/20">
-              <div className="flex items-center space-x-3">
-                <img src="/sigil.png" alt="Providence" className="h-8 w-8 rounded-lg shadow-lg" />
-                <span className="font-bold text-lg text-white">Menu</span>
-              </div>
+                <div className="flex items-center space-x-3">
+                  <img
+                    src="/sigil.png"
+                    alt="Providence"
+                    className="h-8 w-8 rounded-lg shadow-lg"
+                  />
+                  <span className="font-bold text-lg text-white">Menu</span>
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="text-white hover:bg-white/10"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </Button>
               </div>
@@ -278,15 +334,6 @@ export default function Header() {
                     </span>
                   </div>
                 </div>
-
-                <div className="px-4 py-4 text-white/50 text-lg">
-                  <div className="flex items-center justify-between">
-                    <span>Gate</span>
-                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full border border-yellow-500/30">
-                      Soon
-                    </span>
-                  </div>
-                </div>
               </div>
 
               {/* Footer Section */}
@@ -295,10 +342,14 @@ export default function Header() {
                   size="sm"
                   className="w-full bg-black text-white border border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-mono text-xs tracking-wider"
                   style={{
-                    clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
+                    clipPath:
+                      "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
                   }}
                   onClick={() => {
-                    window.open("https://store.epicgames.com/tr/p/providence-2bff8d", "_blank");
+                    window.open(
+                      "https://store.epicgames.com/tr/p/providence-2bff8d",
+                      "_blank"
+                    );
                     setMobileMenuOpen(false);
                   }}
                 >
@@ -309,9 +360,14 @@ export default function Header() {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-white/5">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
+                        <AvatarImage
+                          src={session.user.image || ""}
+                          alt={session.user.name || ""}
+                        />
                         <AvatarFallback>
-                          {session.user.name?.charAt(0) || session.user.email?.charAt(0) || "U"}
+                          {session.user.name?.charAt(0) ||
+                            session.user.email?.charAt(0) ||
+                            "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
@@ -339,7 +395,11 @@ export default function Header() {
                   </div>
                 ) : (
                   <SignInModal>
-                    <Button size="sm" className="w-full cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                    <Button
+                      size="sm"
+                      className="w-full cursor-pointer"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       Login
                     </Button>
                   </SignInModal>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CometCard } from "@/components/ui/comet-card";
 import { Badge } from "@/components/ui/badge";
 
@@ -11,16 +11,26 @@ interface CompactLootboxCardProps {
 }
 
 export function CompactLootboxCard({ className, isCompleted = false, specialReward = "Mystery Lootbox" }: CompactLootboxCardProps) {
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowIntro(false), 900);
+    return () => clearTimeout(t);
+  }, []);
   return (
     <CometCard className={className}>
       <div
-        className="flex w-160 h-96 cursor-pointer flex-row items-center rounded-[20px] border-0 bg-gradient-to-br from-purple-900/30 via-blue-900/30 to-indigo-900/30 p-6 backdrop-blur-sm gap-8"
+        className="relative overflow-hidden flex w-160 h-96 cursor-pointer flex-row items-center rounded-[20px] border-0 bg-gradient-to-br from-purple-900/30 via-blue-900/30 to-indigo-900/30 p-6 backdrop-blur-sm gap-8"
         style={{
           transformStyle: "preserve-3d",
           transform: "none",
           opacity: 1,
         }}
       >
+        {/* Intro tint overlay (fades out on mount) */}
+        <div
+          className={`pointer-events-none absolute inset-0 rounded-[20px] bg-gradient-to-br from-purple-500/20 via-indigo-500/20 to-blue-500/20 transition-opacity duration-700 ${showIntro ? "opacity-100" : "opacity-0"}`}
+        />
         {/* Sol taraf - Resim */}
         <div className="relative flex-shrink-0">
           <img
