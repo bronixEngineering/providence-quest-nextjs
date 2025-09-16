@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-visible w-full -mt-16 pt-16">
+    <section className="relative overflow-visible w-full h-[calc(100vh+80px)] -mt-16 pt-16">
       {/* Spline 3D Background */}
       <div className="absolute inset-0 w-screen max-h-[calc(100vh+4rem)]">
         <Spline
@@ -22,27 +22,18 @@ export default function Hero() {
       </div>
 
       {/* Content Overlay */}
-      <div className="relative z-10 w-full px-4 py-24 sm:py-32">
+      <div className="relative z-10 w-full h-full flex flex-col justify-between px-4 py-16 sm:py-20">
         <div className="mx-auto max-w-4xl text-center">
-          {/* Badge */}
-          <div className="mb-8 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-6 py-2 text-sm font-medium text-primary">
-            🎮 Level Up Your Game
-          </div>
-
           {/* Main Heading */}
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl drop-shadow-2xl">
-            Complete Quests,{" "}
+          <h1 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-2xl">
+            Embark on Providence
+            <br />
             <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-              Earn Epic Loot
+              Your Journey Starts Here
             </span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            Master challenges, unlock rare game assets, and dominate the
-            Providence Game universe. Every quest completed brings you closer to
-            legendary status.
-          </p>
+        
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
@@ -57,9 +48,11 @@ export default function Hero() {
               </Button>
             </Link>
           </div>
+        </div>
 
-          {/* Feature Cards */}
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-16">
+        {/* Feature Cards - Moved to bottom */}
+        <div className="mx-auto max-w-6xl w-full">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <Card className="border-white/20 bg-background/20 backdrop-blur-md">
               <CardContent className="p-6 text-center">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20 mx-auto backdrop-blur-sm">
