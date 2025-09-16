@@ -64,7 +64,6 @@ export function getLevelProgress(xp: number): {
   const nextLevelXP = getNextLevelXP(nextLevel);
   const progress = xp - currentLevelXP;
   const progressPercentage = (progress / (nextLevelXP - currentLevelXP)) * 100;
-  console.log(progress, nextLevelXP, currentLevelXP, "cccc");
 
   return {
     currentLevel,

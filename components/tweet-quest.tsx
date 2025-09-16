@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +19,7 @@ import { CheckCircle, Gift, Loader2, Trophy, Zap } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { LootboxCard } from "@/components/lootbox-card";
-import { CometLootboxCard } from "@/components/comet-lootbox-card";
+import Image from "next/image";
 import { CompactLootboxCard } from "@/components/compact-lootbox-card";
 
 // X (Twitter) Icon Component
@@ -169,6 +168,10 @@ export default function TweetQuest() {
   const [walletAddress, setWalletAddress] = useState("");
   const [hasPostedTweet, setHasPostedTweet] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [isCountdownActive, setIsCountdownActive] = useState(false);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Client-side validators
   const tweetUrlPattern =
@@ -187,14 +190,74 @@ export default function TweetQuest() {
     return `Come join me at Providence ${referralUrl}\n${defaultXUrl}`;
   };
 
+  const copyImageToClipboard = async () => {
+    try {
+      // Fetch the image
+      const response = await fetch("/lootbox.png");
+      const blob = await response.blob();
+
+      // Copy to clipboard
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob,
+        }),
+      ]);
+
+      toast.success("NFT image copied to clipboard! 🎨");
+    } catch (error) {
+      console.error("Failed to copy image:", error);
+      toast.error("Failed to copy image to clipboard");
+    }
+  };
+
   const handleOpenTwitter = () => {
+    console.log("🚀 handleOpenTwitter called");
+    
+    // Prevent multiple countdowns
+    if (isCountdownActive || countdownIntervalRef.current) {
+      console.log("🚀 Countdown already active, ignoring");
+      return;
+    }
+
     const tweetText = generateTweetText();
     if (tweetText) {
-      const encodedTweet = encodeURIComponent(tweetText);
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
-      window.open(twitterUrl, "_blank");
-      setHasPostedTweet(true);
-      setIsDialogOpen(true);
+      console.log("🚀 Starting countdown");
+      
+      // First copy the image
+      copyImageToClipboard();
+
+      // Show image modal first
+      setIsImageModalOpen(true);
+
+      // Set countdown active
+      setIsCountdownActive(true);
+      setCountdown(5);
+
+      countdownIntervalRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          console.log(`🚀 Countdown: ${prev}`);
+          if (prev === 1) {
+            console.log("🚀 Countdown reached 1, setting timeout");
+            if (countdownIntervalRef.current) {
+              clearInterval(countdownIntervalRef.current);
+              countdownIntervalRef.current = null;
+            }
+            setIsCountdownActive(false);
+            // Add 1 second delay before opening Twitter
+            setTimeout(() => {
+              console.log("🚀 Opening Twitter now!");
+              const encodedTweet = encodeURIComponent(tweetText);
+              const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
+              window.open(twitterUrl, "_blank");
+              setHasPostedTweet(true);
+              // Close modal when Twitter opens
+              setIsImageModalOpen(false);
+            }, 1000);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
       toast.error("Referral code not available");
     }
@@ -442,6 +505,60 @@ export default function TweetQuest() {
                       </DialogContent>
                     </Dialog>
                   )}
+
+                  {/* Image Copy Modal */}
+                  <Dialog
+                    open={isImageModalOpen}
+                    onOpenChange={setIsImageModalOpen}
+                  >
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>NFT Reward Ready! 🎁</DialogTitle>
+                        <DialogDescription>
+                          The NFT image has been copied to your clipboard. Paste
+                          it into your tweet and publish!
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <div className="flex justify-center mb-4">
+                          <Image
+                            src="/lootbox.png"
+                            alt="NFT Reward"
+                            width={128}
+                            height={128}
+                            className="object-contain rounded-lg border border-border"
+                          />
+                        </div>
+                        <div className="text-center space-y-3">
+                          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                            <p className="text-sm font-medium text-green-400">
+                              ✅ NFT image copied to clipboard!
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-sm text-muted-foreground">
+                              📝 Paste the image into your tweet
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              🚀 Publish your tweet and complete the quest
+                            </p>
+                          </div>
+                          {countdown > 0 && (
+                            <div className="mt-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                              <p className="text-lg font-bold text-blue-400">
+                                Opening Twitter in {countdown} seconds...
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <div className="text-center text-sm text-muted-foreground">
+                          Modal will close automatically when Twitter opens
+                        </div>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
 
