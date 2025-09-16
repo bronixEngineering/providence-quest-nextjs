@@ -192,8 +192,8 @@ export default function TweetQuest() {
 
   const copyImageToClipboard = async () => {
     try {
-      // Fetch the image
-      const response = await fetch("/lootbox.png");
+      // Fetch the image from Supabase
+      const response = await fetch("https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp");
       const blob = await response.blob();
 
       // Copy to clipboard
@@ -522,7 +522,7 @@ export default function TweetQuest() {
                       <div className="py-4">
                         <div className="flex justify-center mb-4">
                           <Image
-                            src="/lootbox.png"
+                            src="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"
                             alt="NFT Reward"
                             width={128}
                             height={128}

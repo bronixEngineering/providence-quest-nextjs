@@ -37,7 +37,7 @@ export function CompactLootboxCard({ className, isCompleted = false, specialRewa
             loading="lazy"
             className="w-80 h-80 object-contain rounded-xl"
             alt="Lootbox reward"
-            src="/lootbox.png"
+            src="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"
             style={{
               filter: "none",
             }}
