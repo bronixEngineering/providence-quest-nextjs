@@ -369,13 +369,6 @@ export default function TweetQuest() {
                 <Zap className="h-3 w-3 mr-1" />
                 {quest.xp_reward} XP
               </Badge>
-              <Badge
-                variant="outline"
-                className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-              >
-                <Trophy className="h-3 w-3 mr-1" />
-                {quest.token_reward} Tokens
-              </Badge>
               {quest.special_reward && (
                 <Badge
                   variant="outline"

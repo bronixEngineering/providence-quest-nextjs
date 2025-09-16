@@ -173,12 +173,6 @@ export default function DailyCheckin() {
                     </span>
                     <span className="text-slate-400">XP</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="font-bold text-amber-400">
-                      +{status.todayCheckin.tokens_earned}
-                    </span>
-                    <span className="text-slate-400">Tokens</span>
-                  </div>
                 </div>
               )}
             </div>

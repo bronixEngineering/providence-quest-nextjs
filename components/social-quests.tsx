@@ -281,9 +281,6 @@ export default function SocialQuests() {
                       <span className="text-cyan-400">
                         +{quest.xpReward} XP
                       </span>
-                      <span className="text-amber-400">
-                        +{quest.tokenReward} Tokens
-                      </span>
                     </div>
                     {quest.specialReward && (
                       <div className="text-xs text-slate-400 mt-1">

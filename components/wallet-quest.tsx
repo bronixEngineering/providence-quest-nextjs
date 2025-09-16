@@ -372,9 +372,6 @@ export default function WalletQuest() {
                   <span className="text-cyan-400">
                     +{walletData.quest.xpReward} XP
                   </span>
-                  <span className="text-amber-400">
-                    +{walletData.quest.tokenReward} Tokens
-                  </span>
                 </div>
                 {walletData.quest.specialReward && (
                   <div className="text-xs text-slate-400 mt-1">
