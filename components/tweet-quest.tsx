@@ -192,21 +192,70 @@ export default function TweetQuest() {
 
   const copyImageToClipboard = async () => {
     try {
+      console.log("🎨 Starting image copy process...");
+      
       // Fetch the image from Supabase
       const response = await fetch("https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp");
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const blob = await response.blob();
+      console.log("🎨 Image blob created:", blob.type, blob.size);
 
-      // Copy to clipboard
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          [blob.type]: blob,
-        }),
-      ]);
+      // Convert WebP to PNG using canvas
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        throw new Error("Failed to get canvas context");
+      }
+      const img = new Image();
+      
+      return new Promise((resolve, reject) => {
+        img.onload = async () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          
+          canvas.toBlob(async (pngBlob) => {
+            if (!pngBlob) {
+              reject(new Error("Failed to convert to PNG"));
+              return;
+            }
+            
+            console.log("🎨 PNG blob created:", pngBlob.type, pngBlob.size);
 
-      toast.success("NFT image copied to clipboard! 🎨");
+            // Check if clipboard API is supported
+            if (!navigator.clipboard || !navigator.clipboard.write) {
+              reject(new Error("Clipboard API not supported"));
+              return;
+            }
+
+            try {
+              // Copy PNG to clipboard
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  'image/png': pngBlob,
+                }),
+              ]);
+
+              console.log("🎨 Image copied successfully!");
+              toast.success("NFT image copied to clipboard! 🎨");
+              resolve(true);
+            } catch (clipError) {
+              console.error("Clipboard write failed:", clipError);
+              reject(clipError);
+            }
+          }, 'image/png');
+        };
+        
+        img.onerror = () => reject(new Error("Failed to load image"));
+        img.src = URL.createObjectURL(blob);
+      });
     } catch (error) {
       console.error("Failed to copy image:", error);
-      toast.error("Failed to copy image to clipboard");
+      toast.error(`Failed to copy image: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
