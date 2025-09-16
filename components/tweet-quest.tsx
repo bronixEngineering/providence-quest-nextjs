@@ -210,7 +210,7 @@ export default function TweetQuest() {
       if (!ctx) {
         throw new Error("Failed to get canvas context");
       }
-      const img = new Image();
+      const img = new window.Image();
       
       return new Promise((resolve, reject) => {
         img.onload = async () => {
