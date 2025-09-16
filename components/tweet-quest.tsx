@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +15,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckCircle, Gift, Loader2, Trophy, Zap } from "lucide-react";
+import { CheckCircle, Gift, Loader2, Zap } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import Image from "next/image";
 import { CompactLootboxCard } from "@/components/compact-lootbox-card";
 
 // X (Twitter) Icon Component
@@ -169,9 +168,6 @@ export default function TweetQuest() {
   const [hasPostedTweet, setHasPostedTweet] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const [isCountdownActive, setIsCountdownActive] = useState(false);
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Client-side validators
   const tweetUrlPattern =
@@ -192,39 +188,36 @@ export default function TweetQuest() {
 
   const copyImageToClipboard = async () => {
     try {
-      console.log("🎨 Starting image copy process...");
-      
       // Fetch the image from Supabase
-      const response = await fetch("https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp");
-      
+      const response = await fetch(
+        "https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"
+      );
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const blob = await response.blob();
-      console.log("🎨 Image blob created:", blob.type, blob.size);
 
       // Convert WebP to PNG using canvas
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
       if (!ctx) {
         throw new Error("Failed to get canvas context");
       }
       const img = new window.Image();
-      
+
       return new Promise((resolve, reject) => {
         img.onload = async () => {
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
-          
+
           canvas.toBlob(async (pngBlob) => {
             if (!pngBlob) {
               reject(new Error("Failed to convert to PNG"));
               return;
             }
-            
-            console.log("🎨 PNG blob created:", pngBlob.type, pngBlob.size);
 
             // Check if clipboard API is supported
             if (!navigator.clipboard || !navigator.clipboard.write) {
@@ -236,76 +229,50 @@ export default function TweetQuest() {
               // Copy PNG to clipboard
               await navigator.clipboard.write([
                 new ClipboardItem({
-                  'image/png': pngBlob,
+                  "image/png": pngBlob,
                 }),
               ]);
 
-              console.log("🎨 Image copied successfully!");
               toast.success("NFT image copied to clipboard! 🎨");
               resolve(true);
             } catch (clipError) {
               console.error("Clipboard write failed:", clipError);
               reject(clipError);
             }
-          }, 'image/png');
+          }, "image/png");
         };
-        
+
         img.onerror = () => reject(new Error("Failed to load image"));
         img.src = URL.createObjectURL(blob);
       });
     } catch (error) {
       console.error("Failed to copy image:", error);
-      toast.error(`Failed to copy image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(
+        `Failed to copy image: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   };
 
   const handleOpenTwitter = () => {
-    console.log("🚀 handleOpenTwitter called");
-    
-    // Prevent multiple countdowns
-    if (isCountdownActive || countdownIntervalRef.current) {
-      console.log("🚀 Countdown already active, ignoring");
-      return;
-    }
-
     const tweetText = generateTweetText();
     if (tweetText) {
-      console.log("🚀 Starting countdown");
-      
       // First copy the image
       copyImageToClipboard();
 
       // Show image modal first
       setIsImageModalOpen(true);
 
-      // Set countdown active
-      setIsCountdownActive(true);
-      setCountdown(5);
+      // Open Twitter immediately
+      const encodedTweet = encodeURIComponent(tweetText);
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
+      window.open(twitterUrl, "_blank");
+      setHasPostedTweet(true);
 
-      countdownIntervalRef.current = setInterval(() => {
-        setCountdown((prev) => {
-          console.log(`🚀 Countdown: ${prev}`);
-          if (prev === 1) {
-            console.log("🚀 Countdown reached 1, setting timeout");
-            if (countdownIntervalRef.current) {
-              clearInterval(countdownIntervalRef.current);
-              countdownIntervalRef.current = null;
-            }
-            setIsCountdownActive(false);
-            // Add 1 second delay before opening Twitter
-            setTimeout(() => {
-              console.log("🚀 Opening Twitter now!");
-              const encodedTweet = encodeURIComponent(tweetText);
-              const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
-              window.open(twitterUrl, "_blank");
-              setHasPostedTweet(true);
-              // Close modal when Twitter opens
-              setIsImageModalOpen(false);
-            }, 1000);
-            return 0;
-          }
-          return prev - 1;
-        });
+      // Close modal when Twitter opens
+      setTimeout(() => {
+        setIsImageModalOpen(false);
       }, 1000);
     } else {
       toast.error("Referral code not available");
@@ -563,12 +530,19 @@ export default function TweetQuest() {
                       </DialogHeader>
                       <div className="py-4">
                         <div className="flex justify-center mb-4">
-                          <Image
+                          <img
                             src="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"
                             alt="NFT Reward"
                             width={128}
                             height={128}
                             className="object-contain rounded-lg border border-border"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/lootbox.png"; // Fallback to local image
+                              toast.error(
+                                "Failed to load NFT image, using fallback"
+                              );
+                            }}
                           />
                         </div>
                         <div className="text-center space-y-3">
@@ -585,13 +559,6 @@ export default function TweetQuest() {
                               🚀 Publish your tweet and complete the quest
                             </p>
                           </div>
-                          {countdown > 0 && (
-                            <div className="mt-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-                              <p className="text-lg font-bold text-blue-400">
-                                Opening Twitter in {countdown} seconds...
-                              </p>
-                            </div>
-                          )}
                         </div>
                       </div>
                       <DialogFooter>

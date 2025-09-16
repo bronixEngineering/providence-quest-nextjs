@@ -43,6 +43,15 @@ export function CompactLootboxCard({ className, isCompleted = false, specialRewa
             style={{
               filter: "none",
             }}
+            onError={(e) => {
+              console.error("Lootbox image failed to load:", e);
+              // Fallback to a default image or show error state
+              const target = e.target as HTMLImageElement;
+              target.src = "/lootbox.png"; // Fallback to local image
+            }}
+            onLoad={() => {
+              console.log("Lootbox image loaded successfully");
+            }}
           />
           {/* Locked overlay - only small lock icon in corner */}
           {!isCompleted && (
