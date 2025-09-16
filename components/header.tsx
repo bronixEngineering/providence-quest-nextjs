@@ -249,12 +249,12 @@ export default function Header() {
         <>
           {/* Backdrop */}
           <div
-            className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+            className="md:hidden fixed inset-0 bg-black/90 backdrop-blur-md z-40"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Slide-in Menu */}
-          <div className="md:hidden fixed top-0 right-0 h-screen w-full bg-black border-l border-white/20 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
+          <div className="md:hidden fixed top-0 right-0 h-screen w-full max-w-sm bg-black border-l border-white/20 shadow-2xl z-50 transform transition-all duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/20">
@@ -262,14 +262,12 @@ export default function Header() {
                   <img
                     src="/sigil.png"
                     alt="Providence"
-                    className="h-8 w-8 rounded-lg shadow-lg"
+                    className="h-8 w-8 rounded-lg"
                   />
                   <span className="font-bold text-lg text-white">Menu</span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/10"
+                <div
+                  className="text-white hover:text-primary transition-colors duration-200 cursor-pointer p-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <svg
@@ -285,15 +283,15 @@ export default function Header() {
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                </Button>
+                </div>
               </div>
 
               {/* Navigation Links */}
-              <div className="flex-1 px-6 py-6 space-y-2">
+              <div className="flex-1 px-6 py-8 space-y-1 overflow-y-auto">
                 {session ? (
                   <Link
                     href="/bounty"
-                    className="flex items-center px-4 py-4 rounded-lg bg-transparent text-white hover:bg-white/10 transition-all duration-200 text-lg font-medium"
+                    className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Bounty
@@ -301,7 +299,7 @@ export default function Header() {
                 ) : (
                   <SignInModal>
                     <span
-                      className="flex items-center px-4 py-4 rounded-lg bg-transparent text-white hover:bg-white/10 transition-all duration-200 text-lg font-medium cursor-pointer"
+                      className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Bounty
@@ -309,27 +307,33 @@ export default function Header() {
                   </SignInModal>
                 )}
 
+                <div className="border-t border-white/10 my-2"></div>
+
                 <Link
                   href="/leaderboard"
-                  className="flex items-center px-4 py-4 rounded-lg bg-transparent text-white hover:bg-white/10 transition-all duration-200 text-lg font-medium"
+                  className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Chronicles
                 </Link>
 
-                <div className="px-4 py-4 text-white/50 text-lg">
+                <div className="border-t border-white/10 my-2"></div>
+
+                <div className="px-4 py-3 text-white/50 text-lg">
                   <div className="flex items-center justify-between">
                     <span>Terminal</span>
-                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full border border-yellow-500/30">
+                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30">
                       Soon
                     </span>
                   </div>
                 </div>
 
-                <div className="px-4 py-4 text-white/50 text-lg">
+                <div className="border-t border-white/10 my-2"></div>
+
+                <div className="px-4 py-3 text-white/50 text-lg">
                   <div className="flex items-center justify-between">
                     <span>Inventory</span>
-                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full border border-yellow-500/30">
+                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30">
                       Soon
                     </span>
                   </div>
@@ -338,13 +342,9 @@ export default function Header() {
 
               {/* Footer Section */}
               <div className="p-6 border-t border-white/20 space-y-4">
-                <Button
-                  size="sm"
-                  className="w-full bg-black text-white border border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-mono text-xs tracking-wider"
-                  style={{
-                    clipPath:
-                      "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
-                  }}
+                {/* Wishlist Text Button */}
+                <div
+                  className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
                   onClick={() => {
                     window.open(
                       "https://store.epicgames.com/tr/p/providence-2bff8d",
@@ -353,18 +353,24 @@ export default function Header() {
                     setMobileMenuOpen(false);
                   }}
                 >
-                  WISHLIST NOW
-                </Button>
+                  <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                  Wishlist Now
+                </div>
+
+                <div className="border-t border-white/10 my-2"></div>
 
                 {session?.user ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-white/5">
+                  <div className="space-y-4">
+                    {/* User Profile Section */}
+                    <div className="flex items-center space-x-4 px-4 py-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
                           src={session.user.image || ""}
                           alt={session.user.name || ""}
                         />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-primary/20 text-white font-bold">
                           {session.user.name?.charAt(0) ||
                             session.user.email?.charAt(0) ||
                             "U"}
@@ -374,12 +380,15 @@ export default function Header() {
                         <div className="text-sm font-medium text-white truncate">
                           {session.user.name || session.user.email}
                         </div>
+                        <div className="text-xs text-white/60">Logged In</div>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full cursor-pointer"
+                    
+                    <div className="border-t border-white/10 my-2"></div>
+                    
+                    {/* Sign Out Text Button */}
+                    <div
+                      className="flex items-center px-4 py-3 text-red-400 hover:text-red-300 transition-colors duration-200 text-lg font-medium cursor-pointer"
                       onClick={() => {
                         console.log("Sign out clicked");
                         try {
@@ -390,18 +399,23 @@ export default function Header() {
                         }
                       }}
                     >
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
                       Sign Out
-                    </Button>
+                    </div>
                   </div>
                 ) : (
                   <SignInModal>
-                    <Button
-                      size="sm"
-                      className="w-full cursor-pointer"
+                    <div
+                      className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
                       onClick={() => setMobileMenuOpen(false)}
                     >
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                      </svg>
                       Login
-                    </Button>
+                    </div>
                   </SignInModal>
                 )}
               </div>
