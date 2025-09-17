@@ -274,7 +274,7 @@ export default function TweetQuest() {
           if (prev <= 1) {
             clearInterval(countdownInterval);
             setIsCountdownActive(false);
-            
+
             // Open Twitter after countdown
             const encodedTweet = encodeURIComponent(tweetText);
             const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
@@ -285,7 +285,7 @@ export default function TweetQuest() {
             setTimeout(() => {
               setIsImageModalOpen(false);
             }, 1000);
-            
+
             return 0;
           }
           return prev - 1;
@@ -568,18 +568,19 @@ export default function TweetQuest() {
                               ✅ NFT image copied to clipboard!
                             </p>
                           </div>
-                          
+
                           {isCountdownActive && (
                             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                               <div className="text-2xl font-bold text-blue-400 mb-2">
                                 {countdown}
                               </div>
                               <p className="text-sm text-blue-300">
-                                Opening X in {countdown} second{countdown !== 1 ? 's' : ''}...
+                                Opening X in {countdown} second
+                                {countdown !== 1 ? "s" : ""}...
                               </p>
                             </div>
                           )}
-                          
+
                           <div className="space-y-2">
                             <p className="text-sm text-muted-foreground">
                               📝 Paste the image into your tweet
@@ -592,10 +593,11 @@ export default function TweetQuest() {
                       </div>
                       <DialogFooter>
                         <div className="text-center text-sm text-muted-foreground">
-                          {isCountdownActive 
-                            ? `Opening X in ${countdown} second${countdown !== 1 ? 's' : ''}...`
-                            : "Modal will close automatically when Twitter opens"
-                          }
+                          {isCountdownActive
+                            ? `Opening X in ${countdown} second${
+                                countdown !== 1 ? "s" : ""
+                              }...`
+                            : "Modal will close automatically when Twitter opens"}
                         </div>
                       </DialogFooter>
                     </DialogContent>
@@ -609,13 +611,15 @@ export default function TweetQuest() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mx-auto">
                     <CompactLootboxCard
                       isCompleted={false}
-                      specialReward="Instant Loot"
+                      specialReward="Lootbox"
+                      feature="Instant Loot"
                       className="w-full"
                     />
                     <CompactLootboxCard
                       isCompleted={false}
-                      specialReward="Lucky Draw"
+                      specialReward="F8 Genesis"
                       imageUrl="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/tb.webp"
+                      feature="Lucky Draw"
                       className="w-full"
                     />
                   </div>

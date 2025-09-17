@@ -9,9 +9,10 @@ interface CompactLootboxCardProps {
   isCompleted?: boolean;
   specialReward?: string;
   imageUrl?: string;
+  feature?: string;
 }
 
-export function CompactLootboxCard({ className, isCompleted = false, specialReward = "Mystery Lootbox", imageUrl }: CompactLootboxCardProps) {
+export function CompactLootboxCard({ className, isCompleted = false, specialReward = "Mystery Lootbox", imageUrl, feature }: CompactLootboxCardProps) {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
@@ -68,10 +69,18 @@ export function CompactLootboxCard({ className, isCompleted = false, specialRewa
         
         {/* Text overlay at bottom */}
         <div className="absolute bottom-1 left-1 right-1 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 rounded-b-[18px]">
-          <div className="text-center">
+          <div className="text-center space-y-2">
             <div className="text-lg text-white font-bold drop-shadow-lg">
               {specialReward}
             </div>
+            {feature && (
+              <Badge 
+                variant="secondary" 
+                className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs px-2 py-1"
+              >
+                {feature}
+              </Badge>
+            )}
           </div>
         </div>
       </div>
