@@ -168,6 +168,8 @@ export default function TweetQuest() {
   const [hasPostedTweet, setHasPostedTweet] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [isCountdownActive, setIsCountdownActive] = useState(false);
 
   // Client-side validators
   const tweetUrlPattern =
@@ -261,18 +263,33 @@ export default function TweetQuest() {
       // First copy the image
       copyImageToClipboard();
 
-      // Show image modal first
+      // Show image modal with countdown
       setIsImageModalOpen(true);
+      setIsCountdownActive(true);
+      setCountdown(5);
 
-      // Open Twitter immediately
-      const encodedTweet = encodeURIComponent(tweetText);
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
-      window.open(twitterUrl, "_blank");
-      setHasPostedTweet(true);
+      // Start countdown
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            setIsCountdownActive(false);
+            
+            // Open Twitter after countdown
+            const encodedTweet = encodeURIComponent(tweetText);
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
+            window.open(twitterUrl, "_blank");
+            setHasPostedTweet(true);
 
-      // Close modal when Twitter opens
-      setTimeout(() => {
-        setIsImageModalOpen(false);
+            // Close modal when Twitter opens
+            setTimeout(() => {
+              setIsImageModalOpen(false);
+            }, 1000);
+            
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
     } else {
       toast.error("Referral code not available");
@@ -551,6 +568,18 @@ export default function TweetQuest() {
                               ✅ NFT image copied to clipboard!
                             </p>
                           </div>
+                          
+                          {isCountdownActive && (
+                            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                              <div className="text-2xl font-bold text-blue-400 mb-2">
+                                {countdown}
+                              </div>
+                              <p className="text-sm text-blue-300">
+                                Opening X in {countdown} second{countdown !== 1 ? 's' : ''}...
+                              </p>
+                            </div>
+                          )}
+                          
                           <div className="space-y-2">
                             <p className="text-sm text-muted-foreground">
                               📝 Paste the image into your tweet
@@ -563,7 +592,10 @@ export default function TweetQuest() {
                       </div>
                       <DialogFooter>
                         <div className="text-center text-sm text-muted-foreground">
-                          Modal will close automatically when Twitter opens
+                          {isCountdownActive 
+                            ? `Opening X in ${countdown} second${countdown !== 1 ? 's' : ''}...`
+                            : "Modal will close automatically when Twitter opens"
+                          }
                         </div>
                       </DialogFooter>
                     </DialogContent>
