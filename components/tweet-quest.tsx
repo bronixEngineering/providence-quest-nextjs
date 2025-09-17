@@ -606,22 +606,18 @@ export default function TweetQuest() {
               {/* Lootbox Preview - Alt Satır */}
               {quest.special_reward && (
                 <div className="border-t border-border pt-4">
-                  <div className="flex justify-center gap-4 w-full">
-                    <div className="flex-1 max-w-md">
-                      <CompactLootboxCard
-                        isCompleted={false}
-                        specialReward={quest.special_reward}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="flex-1 max-w-md">
-                      <CompactLootboxCard
-                        isCompleted={false}
-                        specialReward="Epic Lootbox"
-                        imageUrl="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/tb.webp"
-                        className="w-full"
-                      />
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mx-auto">
+                    <CompactLootboxCard
+                      isCompleted={false}
+                      specialReward="Instant Loot"
+                      className="w-full"
+                    />
+                    <CompactLootboxCard
+                      isCompleted={false}
+                      specialReward="Lucky Draw"
+                      imageUrl="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/tb.webp"
+                      className="w-full"
+                    />
                   </div>
                 </div>
               )}

@@ -6,16 +6,16 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-visible w-full h-[calc(100vh+80px)] -mt-16 pt-16">
+    <section className="relative overflow-hidden w-full h-[calc(100vh+80px)] -mt-16 pt-16">
       {/* Spline 3D Background */}
-      <div className="absolute inset-0 w-screen max-h-[calc(100vh+4rem)]">
+      <div className="absolute inset-0 w-full max-h-[calc(100vh+4rem)]">
         <Spline
           scene="https://prod.spline.design/BNEF76NZdN2aN7JY/scene.splinecode"
           className="w-full h-full"
           style={{
             objectFit: "cover",
             objectPosition: "center",
-            width: "100vw",
+            width: "100%",
             height: "100%",
           }}
         />

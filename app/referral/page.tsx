@@ -121,7 +121,7 @@ export default function ReferralPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center flex flex-col justify-center items-center flex-1">
           <h1 className="text-4xl font-bold mb-4">Referral Program</h1>
@@ -134,7 +134,7 @@ export default function ReferralPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background overflow-x-hidden">
         <Header />
 
         <div className="container mx-auto px-4 py-24">
@@ -270,7 +270,7 @@ export default function ReferralPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Header />
 
       <div className="container mx-auto px-4 py-24">

@@ -185,9 +185,9 @@ export default function BountyPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       <Header />
-      <main className="flex-1 bg-gradient-to-br from-background via-background to-secondary/10 pt-24 pb-8">
+      <main className="flex-1 bg-gradient-to-br from-background via-background to-secondary/10 pt-24 pb-8 overflow-x-hidden">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sticky Profile Card */}

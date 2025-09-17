@@ -10,8 +10,8 @@ import {
 import { cn } from "@/lib/utils";
 
 export const CometCard = ({
-  rotateDepth = 17.5,
-  translateDepth = 20,
+  rotateDepth = 5,
+  translateDepth = 2,
   className,
   children,
 }: {
@@ -31,23 +31,23 @@ export const CometCard = ({
   const rotateX = useTransform(
     mouseYSpring,
     [-0.5, 0.5],
-    [`-${rotateDepth}deg`, `${rotateDepth}deg`],
+    [`-${rotateDepth}deg`, `${rotateDepth}deg`]
   );
   const rotateY = useTransform(
     mouseXSpring,
     [-0.5, 0.5],
-    [`${rotateDepth}deg`, `-${rotateDepth}deg`],
+    [`${rotateDepth}deg`, `-${rotateDepth}deg`]
   );
 
   const translateX = useTransform(
     mouseXSpring,
     [-0.5, 0.5],
-    [`-${translateDepth}px`, `${translateDepth}px`],
+    [`-${translateDepth}px`, `${translateDepth}px`]
   );
   const translateY = useTransform(
     mouseYSpring,
     [-0.5, 0.5],
-    [`${translateDepth}px`, `-${translateDepth}px`],
+    [`${translateDepth}px`, `-${translateDepth}px`]
   );
 
   const glareX = useTransform(mouseXSpring, [-0.5, 0.5], [0, 100]);
