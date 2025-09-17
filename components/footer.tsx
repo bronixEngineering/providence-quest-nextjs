@@ -8,7 +8,11 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center space-x-2">
-              <img src="/sigil.png" alt="Providence" className="h-8 w-8 rounded-lg" />
+              <img
+                src="/sigil.png"
+                alt="Providence"
+                className="h-8 w-8 rounded-lg"
+              />
               <span className="font-bold text-xl">Providence</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">
@@ -116,26 +120,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="https://playprovidence.io/"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="https://playprovidence.io/faq"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://playprovidence.io/"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Media Kit
                 </Link>
               </li>
             </ul>
@@ -157,7 +145,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="https://playprovidence.io/"
+                  href="https://playprovidence.io/careers"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Careers
@@ -165,7 +153,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="https://playprovidence.io/"
+                  href="https://playprovidence.io/press"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Press
@@ -191,14 +179,14 @@ export default function Footer() {
             </p>
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <Link
-                href="https://playprovidence.io/"
+                href="https://playprovidence.io/terms-of-use"
                 className="hover:text-primary transition-colors"
               >
                 Terms of Use
               </Link>
               <span>•</span>
               <Link
-                href="https://playprovidence.io/"
+                href="https://playprovidence.io/privacy-policy"
                 className="hover:text-primary transition-colors"
               >
                 Privacy Policy
