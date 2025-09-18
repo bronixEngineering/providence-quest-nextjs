@@ -68,10 +68,9 @@ export default function ReferralPage() {
 
   const shareReferralCode = async () => {
     if (referralStats?.referralCode) {
-      const defaultXUrl = "https://x.com/PlayProvidence/status/1965873649082315261";
       const shareData = {
         title: "Join Providence Quest!",
-        text: `Use my referral code: ${referralStats.referralCode} ${defaultXUrl}`,
+        text: `Use my referral code: ${referralStats.referralCode}`,
         url: `${window.location.origin}/referral-signin/${referralStats.referralCode}`,
       };
 
