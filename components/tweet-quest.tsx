@@ -235,7 +235,7 @@ export default function TweetQuest() {
                 }),
               ]);
 
-              toast.success("NFT image copied to clipboard! 🎨");
+              toast.success("Image copied to clipboard! 🎨");
               resolve(true);
             } catch (clipError) {
               console.error("Clipboard write failed:", clipError);
@@ -539,9 +539,9 @@ export default function TweetQuest() {
                   >
                     <DialogContent className="sm:max-w-[500px]">
                       <DialogHeader>
-                        <DialogTitle>NFT Reward Ready! 🎁</DialogTitle>
+                        <DialogTitle>Your Reward Ready! 🎁</DialogTitle>
                         <DialogDescription>
-                          The NFT image has been copied to your clipboard. Paste
+                          The image has been copied to your clipboard. Paste
                           it into your tweet and publish!
                         </DialogDescription>
                       </DialogHeader>
@@ -549,7 +549,7 @@ export default function TweetQuest() {
                         <div className="flex justify-center mb-4">
                           <img
                             src="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"
-                            alt="NFT Reward"
+                            alt=" Reward"
                             width={128}
                             height={128}
                             className="object-contain rounded-lg border border-border"
@@ -557,7 +557,7 @@ export default function TweetQuest() {
                               const target = e.target as HTMLImageElement;
                               target.src = "/lootbox.png"; // Fallback to local image
                               toast.error(
-                                "Failed to load NFT image, using fallback"
+                                "Failed to load image, using fallback"
                               );
                             }}
                           />
@@ -565,7 +565,7 @@ export default function TweetQuest() {
                         <div className="text-center space-y-3">
                           <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
                             <p className="text-sm font-medium text-green-400">
-                              ✅ NFT image copied to clipboard!
+                              ✅ Image copied to clipboard!
                             </p>
                           </div>
 
