@@ -273,21 +273,21 @@ export default function ReferralPage() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Header />
 
-      <div className="container mx-auto px-4 py-24">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4">
+      <div className="container mx-auto px-4 py-16 sm:py-24">
+        <div className="text-center mb-8 sm:mb-16">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-4">
             Referral{" "}
             <span className="bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">
               Program
             </span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Invite friends to Providence Quest and earn rewards together! Share your referral code and watch your
             network grow.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Main Referral Card */}
           <div className="lg:col-span-2">
             <Card className="border-secondary/20 bg-card">
@@ -303,12 +303,12 @@ export default function ReferralPage() {
                 {referralStats?.referralCode ? (
                   <>
                     <div className="text-center">
-                      <div className="text-6xl font-bold text-secondary mb-4 font-mono tracking-wider">
+                      <div className="text-4xl sm:text-6xl font-bold text-secondary mb-4 font-mono tracking-wider break-all">
                         {referralStats.referralCode}
                       </div>
                       <p className="text-sm text-muted-foreground mb-6">Share this code with friends to earn rewards</p>
 
-                      <div className="flex gap-3 justify-center">
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Button
                           onClick={copyReferralCode}
                           variant="outline"
@@ -337,8 +337,8 @@ export default function ReferralPage() {
                     {/* Referral Link */}
                     <div className="p-4 rounded-lg bg-secondary/5 border border-secondary/20">
                       <p className="text-sm text-muted-foreground mb-2">Referral Link:</p>
-                      <div className="flex items-center gap-2">
-                        <code className="flex-1 p-2 rounded bg-background border text-sm font-mono">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <code className="flex-1 p-2 rounded bg-background border text-xs sm:text-sm font-mono break-all overflow-hidden">
                           {`${window.location.origin}/refferral-signin/${referralStats.referralCode}`}
                         </code>
                         <Button
@@ -382,7 +382,7 @@ export default function ReferralPage() {
           </div>
 
           {/* Stats Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             {/* Total Referrals */}
             <Card className="border-secondary/20 bg-card">
               <CardHeader className="pb-3">
@@ -392,7 +392,7 @@ export default function ReferralPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-secondary">{referralStats?.totalReferrals || 0}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-secondary">{referralStats?.totalReferrals || 0}</div>
                 <p className="text-sm text-muted-foreground">Friends joined with your code</p>
               </CardContent>
             </Card>
@@ -406,7 +406,7 @@ export default function ReferralPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-secondary">{referralStats?.totalEarnedXP || 0} XP</div>
+                <div className="text-2xl sm:text-3xl font-bold text-secondary">{referralStats?.totalEarnedXP || 0} XP</div>
                 <p className="text-sm text-muted-foreground">From referral rewards</p>
               </CardContent>
             </Card>
@@ -471,7 +471,7 @@ export default function ReferralPage() {
 
         {/* Referrals List */}
         {referralStats && referralStats.referrals.length > 0 && (
-          <div className="mt-12">
+          <div className="mt-8 sm:mt-12">
             <Card className="border-secondary/20 bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
@@ -515,7 +515,7 @@ export default function ReferralPage() {
         )}
 
         {/* Use Referral Code */}
-        <div className="mt-12">
+        <div className="mt-8 sm:mt-12">
           <Card className={`border-secondary/20 bg-card ${referralStats?.hasUsedReferral ? "opacity-60" : ""}`}>
             <CardHeader>
               <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
@@ -541,19 +541,19 @@ export default function ReferralPage() {
                     Have a friend&apos;s referral code? Enter it below to earn bonus XP!
                   </p>
 
-                  <div className="flex gap-3 max-w-md mx-auto">
+                  <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                     <input
                       type="text"
                       placeholder="Enter referral code..."
                       value={referralInput}
                       onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
-                      className="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground"
+                      className="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground text-center sm:text-left"
                       maxLength={8}
                     />
                     <Button
                       onClick={useReferralCode}
                       disabled={usingReferral || !referralInput.trim()}
-                      className="bg-secondary hover:bg-secondary/90 text-white"
+                      className="w-full sm:w-auto bg-secondary hover:bg-secondary/90 text-white"
                     >
                       {usingReferral ? "Using..." : "Use Code"}
                     </Button>
@@ -581,37 +581,37 @@ export default function ReferralPage() {
         </div>
 
         {/* How It Works */}
-        <div className="mt-12">
+        <div className="mt-8 sm:mt-12">
           <Card className="border-secondary/20 bg-card">
             <CardHeader>
-              <CardTitle className="text-2xl text-center">How It Works</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl text-center">How It Works</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div className="grid sm:grid-cols-3 gap-4 sm:gap-6 text-center">
                 <div className="space-y-3">
-                  <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
-                    <span className="text-2xl font-bold text-secondary">1</span>
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
+                    <span className="text-xl sm:text-2xl font-bold text-secondary">1</span>
                   </div>
-                  <h3 className="font-semibold">Share Your Code</h3>
-                  <p className="text-sm text-muted-foreground">Copy and share your unique referral code with friends</p>
+                  <h3 className="text-sm sm:text-base font-semibold">Share Your Code</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Copy and share your unique referral code with friends</p>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
-                    <span className="text-2xl font-bold text-secondary">2</span>
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
+                    <span className="text-xl sm:text-2xl font-bold text-secondary">2</span>
                   </div>
-                  <h3 className="font-semibold">Friends Join</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-sm sm:text-base font-semibold">Friends Join</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     When they sign up using your code, you both get rewards
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
-                    <span className="text-2xl font-bold text-secondary">3</span>
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
+                    <span className="text-xl sm:text-2xl font-bold text-secondary">3</span>
                   </div>
-                  <h3 className="font-semibold">Earn Together</h3>
-                  <p className="text-sm text-muted-foreground">Complete quests together and unlock bonus rewards</p>
+                  <h3 className="text-sm sm:text-base font-semibold">Earn Together</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Complete quests together and unlock bonus rewards</p>
                 </div>
               </div>
             </CardContent>
