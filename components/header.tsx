@@ -122,7 +122,7 @@ export default function Header() {
             // }}
             onClick={() =>
               window.open(
-                "https://store.epicgames.com/tr/p/providence-2bff8d",
+                "https://store.epicgames.com/p/providence-2bff8d",
                 "_blank"
               )
             }
@@ -353,7 +353,7 @@ export default function Header() {
                   className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
                   onClick={() => {
                     window.open(
-                      "https://store.epicgames.com/tr/p/providence-2bff8d",
+                      "https://store.epicgames.com/p/providence-2bff8d",
                       "_blank"
                     );
                     setMobileMenuOpen(false);

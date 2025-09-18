@@ -193,7 +193,7 @@ export default function Footer() {
               </Link>
               <span>•</span>
               <Link
-                href="https://store.epicgames.com/tr/p/providence-2bff8d"
+                href="https://store.epicgames.com/p/providence-2bff8d"
                 className="hover:text-primary transition-colors"
               >
                 Early Access
