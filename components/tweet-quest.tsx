@@ -185,7 +185,7 @@ export default function TweetQuest() {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const referralUrl = `${origin}/referral-signin/${referralStats.referralCode}`;
     const defaultXUrl =
-      "https://x.com/PlayProvidence/status/1965873649082315261";
+      "https://x.com/PlayProvidence/status/1968690718765203583";
 //     return `Gamers first. Second to none.
 // Questing in @PlayProvidence — and you should too.
 // ${referralUrl}\n${defaultXUrl}`;
