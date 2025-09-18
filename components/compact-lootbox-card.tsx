@@ -10,19 +10,32 @@ interface CompactLootboxCardProps {
   specialReward?: string;
   imageUrl?: string;
   feature?: string;
+  variant?: 'default' | 'green';
 }
 
-export function CompactLootboxCard({ className, isCompleted = false, specialReward = "Mystery Lootbox", imageUrl, feature }: CompactLootboxCardProps) {
+export function CompactLootboxCard({ className, isCompleted = false, specialReward = "Mystery Lootbox", imageUrl, feature, variant = 'default' }: CompactLootboxCardProps) {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const t = setTimeout(() => setShowIntro(false), 900);
     return () => clearTimeout(t);
   }, []);
+
+  // Color schemes based on variant
+  const colorScheme = variant === 'green' ? {
+    background: 'from-green-900/30 via-emerald-900/30 to-teal-900/30',
+    intro: 'from-green-500/20 via-emerald-500/20 to-teal-500/20',
+    badge: 'bg-green-500/20 text-green-400 border-green-500/30'
+  } : {
+    background: 'from-purple-900/30 via-blue-900/30 to-indigo-900/30',
+    intro: 'from-purple-500/20 via-indigo-500/20 to-blue-500/20',
+    badge: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+  };
+
   return (
     <CometCard className={className}>
       <div
-        className="relative overflow-hidden flex w-full cursor-pointer flex-col rounded-[20px] border-0 bg-gradient-to-br from-purple-900/30 via-blue-900/30 to-indigo-900/30 backdrop-blur-sm h-80 p-1"
+        className={`relative overflow-hidden flex w-full cursor-pointer flex-col rounded-[20px] border-0 bg-gradient-to-br ${colorScheme.background} backdrop-blur-sm h-80 p-1`}
         style={{
           transformStyle: "preserve-3d",
           transform: "none",
@@ -31,7 +44,7 @@ export function CompactLootboxCard({ className, isCompleted = false, specialRewa
       >
         {/* Intro tint overlay (fades out on mount) */}
         <div
-          className={`pointer-events-none absolute inset-1 rounded-[18px] bg-gradient-to-br from-purple-500/20 via-indigo-500/20 to-blue-500/20 transition-opacity duration-700 ${showIntro ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-1 rounded-[18px] bg-gradient-to-br ${colorScheme.intro} transition-opacity duration-700 ${showIntro ? "opacity-100" : "opacity-0"}`}
         />
         
         {/* Background Image - fills card with small padding */}
@@ -76,7 +89,7 @@ export function CompactLootboxCard({ className, isCompleted = false, specialRewa
             {feature && (
               <Badge 
                 variant="secondary" 
-                className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs px-2 py-1"
+                className={`${colorScheme.badge} text-xs px-2 py-1`}
               >
                 {feature}
               </Badge>

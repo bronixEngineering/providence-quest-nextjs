@@ -186,8 +186,13 @@ export default function TweetQuest() {
     const referralUrl = `${origin}/referral-signin/${referralStats.referralCode}`;
     const defaultXUrl =
       "https://x.com/PlayProvidence/status/1965873649082315261";
-    return `Gamers first. Second to none.
-Questing in @PlayProvidence — and you should too.
+//     return `Gamers first. Second to none.
+// Questing in @PlayProvidence — and you should too.
+// ${referralUrl}\n${defaultXUrl}`;
+    return `I just secured my Providence Lootbox and entered the lucky draw for F8 Genesis, a 777 supply freemint from @PlayProvidence.
+
+The Lootbox is only available for a limited time ⏰
+Get yours here 👇
 ${referralUrl}\n${defaultXUrl}`;
   };
 
@@ -458,8 +463,7 @@ ${referralUrl}\n${defaultXUrl}`;
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex-1">
                   <p className="text-muted-foreground">
-                    Not only you will get points for each referral, but also a
-                    guaranteed, surprise lootbox for your first share!
+                  Completing this quest will grant a guaranteed Providence Lootbox and a chance to win one of the 777 F8 Genesis NFTs.
                   </p>
                   {!referralStats?.referralCode && (
                     <p className="text-xs text-muted-foreground mt-1">
@@ -659,8 +663,9 @@ ${referralUrl}\n${defaultXUrl}`;
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mx-auto">
                     <CompactLootboxCard
                       isCompleted={false}
-                      specialReward="Lootbox"
-                      feature="Instant Loot"
+                      specialReward="Providence Lootbox"
+                      feature="Guaranteed"
+                      variant="green"
                       className="w-full"
                     />
                     <CompactLootboxCard
