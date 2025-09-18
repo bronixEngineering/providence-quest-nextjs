@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Trophy, Medal, Star, Flame, Target } from "lucide-react";
+import { Trophy, Medal, Star, Target } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
@@ -114,7 +114,7 @@ export default function LeaderboardPage() {
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
                 <Trophy className="h-8 w-8 mx-auto mb-2 text-secondary" />
@@ -134,16 +134,6 @@ export default function LeaderboardPage() {
                 <div className="text-sm text-muted-foreground">
                   Highest Level
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border-border">
-              <CardContent className="p-4 text-center">
-                <Flame className="h-8 w-8 mx-auto mb-2 text-orange-400" />
-                <div className="text-2xl font-bold">
-                  {leaderboardData?.[0]?.longestStreak || 0}
-                </div>
-                <div className="text-sm text-muted-foreground">Best Streak</div>
               </CardContent>
             </Card>
           </div>
@@ -182,7 +172,7 @@ export default function LeaderboardPage() {
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0">
-                          <div className="font-semibold text-foreground truncate max-w-[200px] sm:max-w-none">
+                          <div className="font-semibold text-foreground">
                             {user.email}
                           </div>
                           <div className="text-sm text-muted-foreground whitespace-nowrap">

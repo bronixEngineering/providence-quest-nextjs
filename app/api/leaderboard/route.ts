@@ -22,10 +22,10 @@ export async function GET() {
 
     // Process the data to mask emails and format for display
     const leaderboardData = userStats?.map((user, index) => {
-      // Mask email: show first 3 characters and last 2 characters
+      // Mask email: show first 3 characters and mask the rest
       const email = user.user_email;
       const maskedEmail = email ? 
-        `${email.substring(0, 3)}***${email.substring(email.length - 2)}` : 
+        `${email.substring(0, 3)}*****` : 
         'Unknown';
 
       return {
