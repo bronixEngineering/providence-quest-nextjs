@@ -458,7 +458,8 @@ ${referralUrl}\n${defaultXUrl}`;
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex-1">
                   <p className="text-muted-foreground">
-                    Post your tweet on X and submit your wallet address
+                    Not only you will get points for each referral, but also a
+                    guaranteed, surprise lootbox for your first share!
                   </p>
                   {!referralStats?.referralCode && (
                     <p className="text-xs text-muted-foreground mt-1">
