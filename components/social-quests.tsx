@@ -4,25 +4,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  ExternalLink,
-  CheckCircle,
-  MessageSquare,
-  Loader2,
-  Gamepad2,
-} from "lucide-react";
+import { ExternalLink, CheckCircle, MessageSquare, Loader2, Gamepad2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession, signIn } from "next-auth/react";
 import { toast } from "sonner";
 
 // X (Twitter) Icon Component
 const XIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={className}
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>
 );
@@ -100,20 +89,19 @@ function useSocialVerify() {
     },
     onSuccess: (data) => {
       // Redirect to NextAuth verification
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         window.location.href = data.verifyUrl;
       }
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "Verification failed"
-      );
+      toast.error(error instanceof Error ? error.message : "Verification failed");
     },
   });
 }
 
 function useCompleteFollowQuest() {
   const queryClient = useQueryClient();
+  const session = useSession();
 
   return useMutation({
     mutationFn: async () => {
@@ -133,13 +121,10 @@ function useCompleteFollowQuest() {
     onSuccess: (data) => {
       toast.success(data.message || "Follow quest completed!");
       queryClient.invalidateQueries({ queryKey: ["social-status"] });
+      queryClient.invalidateQueries({ queryKey: ["user-stats", session?.data?.user?.email] });
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to complete follow quest"
-      );
+      toast.error(error instanceof Error ? error.message : "Failed to complete follow quest");
     },
   });
 }
@@ -182,10 +167,7 @@ export default function SocialQuests() {
 
   const handleFollow = () => {
     // Open Twitter follow modal in new tab
-    window.open(
-      "https://x.com/intent/follow?screen_name=PlayProvidence",
-      "_blank"
-    );
+    window.open("https://x.com/intent/follow?screen_name=PlayProvidence", "_blank");
 
     // Complete quest after 3 seconds
     setTimeout(() => {
@@ -223,12 +205,8 @@ export default function SocialQuests() {
       {/* Header with stats */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h3 className="text-lg font-semibold text-slate-100">
-            Social Quests
-          </h3>
-          <p className="text-sm text-slate-400">
-            Connect your accounts to earn rewards
-          </p>
+          <h3 className="text-lg font-semibold text-slate-100">Social Quests</h3>
+          <p className="text-sm text-slate-400">Connect your accounts to earn rewards</p>
         </div>
         <div className="flex items-center gap-4 text-sm text-slate-400">
           <span>{socialData.stats.totalConnections} connected</span>
@@ -239,10 +217,7 @@ export default function SocialQuests() {
       {/* Quest Cards */}
       <div className="grid gap-3">
         {socialData.quests.map((quest) => (
-                      <Card
-              key={quest.id}
-              className="border border-border bg-card shadow-lg"
-            >
+          <Card key={quest.id} className="border border-border bg-card shadow-lg">
             <CardContent className="p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 {/* Quest Info */}
@@ -256,20 +231,12 @@ export default function SocialQuests() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-medium text-slate-100">
-                        {quest.title}
-                      </h4>
-                      {quest.isCompleted && (
-                        <CheckCircle className="h-4 w-4 text-emerald-400" />
-                      )}
+                      <h4 className="font-medium text-slate-100">{quest.title}</h4>
+                      {quest.isCompleted && <CheckCircle className="h-4 w-4 text-emerald-400" />}
                     </div>
-                    <p className="text-sm text-slate-400">
-                      {quest.description}
-                    </p>
+                    <p className="text-sm text-slate-400">{quest.description}</p>
                     {quest.connection && (
-                      <p className="text-xs text-slate-500 mt-1">
-                        Connected as @{quest.connection.username}
-                      </p>
+                      <p className="text-xs text-slate-500 mt-1">Connected as @{quest.connection.username}</p>
                     )}
                   </div>
                 </div>
@@ -278,22 +245,15 @@ export default function SocialQuests() {
                 <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-4">
                   <div className="text-left sm:text-right text-sm min-w-0 flex-shrink-0">
                     <div className="flex items-center justify-start sm:justify-end gap-2 text-slate-300">
-                      <span className="text-cyan-400 font-medium">
-                        +{quest.xpReward} XP
-                      </span>
+                      <span className="text-cyan-400 font-medium">+{quest.xpReward} XP</span>
                     </div>
                     {quest.specialReward && (
-                      <div className="text-xs text-slate-400 mt-1 text-left sm:text-right">
-                        {quest.specialReward}
-                      </div>
+                      <div className="text-xs text-slate-400 mt-1 text-left sm:text-right">{quest.specialReward}</div>
                     )}
                   </div>
 
                   {quest.isCompleted ? (
-                    <Badge
-                      variant="secondary"
-                      className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                    >
+                    <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
                       Completed
                     </Badge>
                   ) : quest.category === "twitter_follow" ? (
