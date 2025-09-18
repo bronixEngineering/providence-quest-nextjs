@@ -438,7 +438,7 @@ export default function TweetQuest() {
                   )}
                 </div>
 
-                <div className="flex items-center gap-2">
+              <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center gap-2">
                   {!isXConnected ? (
                     <div className="text-center py-4">
                       <div className="text-sm text-muted-foreground mb-2">
@@ -446,7 +446,7 @@ export default function TweetQuest() {
                       </div>
                       <Button
                         disabled
-                        className="bg-gray-600 text-gray-400 px-4 py-2 border border-gray-700 cursor-not-allowed"
+                      className="w-full sm:w-auto bg-gray-600 text-gray-400 px-4 py-2 border border-gray-700 cursor-not-allowed"
                       >
                         <XIcon className="h-4 w-4 mr-2" />
                         Connect X First
@@ -456,7 +456,7 @@ export default function TweetQuest() {
                     <Button
                       onClick={handleOpenTwitter}
                       disabled={!referralStats?.referralCode}
-                      className="bg-gray-900 hover:bg-black text-white px-4 py-2 border border-gray-700"
+                    className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-4 py-2 border border-gray-700"
                     >
                       <XIcon className="h-4 w-4 mr-2" />
                       Post on X
@@ -466,7 +466,7 @@ export default function TweetQuest() {
                   {hasPostedTweet && (
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                       <DialogTrigger asChild>
-                        <Button className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-4 py-2">
+                        <Button className="w-full sm:w-auto bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-4 py-2">
                           <CheckCircle className="h-4 w-4 mr-2" />
                           Complete Quest
                         </Button>
@@ -513,7 +513,7 @@ export default function TweetQuest() {
                               !tweetUrl.trim() ||
                               !walletAddress.trim()
                             }
-                            className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white"
+                            className="w-full sm:w-auto bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white"
                           >
                             {completeMutation.isPending ? (
                               <>

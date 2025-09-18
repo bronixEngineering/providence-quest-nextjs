@@ -275,7 +275,7 @@ export default function SocialQuests() {
                 </div>
 
                 {/* Action & Rewards */}
-                <div className="flex items-center gap-4">
+                <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-4">
                   <div className="text-left sm:text-right text-sm">
                     <div className="flex items-center gap-2 text-slate-300">
                       <span className="text-cyan-400">
@@ -300,7 +300,7 @@ export default function SocialQuests() {
                     <Button
                       onClick={handleFollow}
                       disabled={completeFollowMutation.isPending}
-                      className="bg-gradient-to-r from-sky-600 to-blue-600 hover:opacity-90 border-0 text-white"
+                      className="w-full sm:w-auto bg-gradient-to-r from-sky-600 to-blue-600 hover:opacity-90 border-0 text-white"
                       size="sm"
                     >
                       {completeFollowMutation.isPending ? (
@@ -319,7 +319,7 @@ export default function SocialQuests() {
                     <Button
                       onClick={() => handleVerify(quest.platform)}
                       disabled={verifyMutation.isPending}
-                      className={`bg-gradient-to-r ${getPlatformColor(
+                      className={`w-full sm:w-auto bg-gradient-to-r ${getPlatformColor(
                         quest.platform
                       )} hover:opacity-90 border-0 text-white`}
                       size="sm"

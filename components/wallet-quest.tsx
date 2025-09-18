@@ -366,7 +366,7 @@ export default function WalletQuest() {
             </div>
 
             {/* Action & Rewards */}
-            <div className="flex items-center justify-between sm:justify-end gap-4">
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 sm:gap-4">
               <div className="text-left sm:text-right text-sm">
                 <div className="flex items-center gap-2 text-slate-300">
                   <span className="text-cyan-400">
@@ -393,7 +393,7 @@ export default function WalletQuest() {
                   {({ openConnectModal }) => (
                     <Button
                       onClick={openConnectModal}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 border-0 text-white"
+                      className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 border-0 text-white"
                       size="sm"
                     >
                       <Wallet className="h-3 w-3 mr-2" />
@@ -403,11 +403,11 @@ export default function WalletQuest() {
                 </ConnectButton.Custom>
               ) : address ? (
                 // Wallet connected - show verify/disconnect buttons
-                <div className="flex gap-2">
+                <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
                   <Button
                     onClick={handleVerify}
                     disabled={connectMutation.isPending || !!pendingConnection}
-                    className="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:opacity-90 border-0 text-white"
+                    className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-cyan-600 hover:opacity-90 border-0 text-white"
                     size="sm"
                   >
                     {connectMutation.isPending ? (
@@ -428,7 +428,7 @@ export default function WalletQuest() {
                 <Button
                   onClick={handleConnect}
                   disabled={connectMutation.isPending || !!pendingConnection}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 border-0 text-white"
+                  className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 border-0 text-white"
                   size="sm"
                 >
                   <Wallet className="h-3 w-3 mr-2" />

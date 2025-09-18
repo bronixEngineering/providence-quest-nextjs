@@ -260,7 +260,7 @@ export default function Header() {
           />
 
           {/* Slide-in Menu */}
-          <div className="md:hidden fixed top-0 right-0 h-screen w-full max-w-sm bg-black border-l border-white/20 shadow-2xl z-50 transform transition-all duration-300 ease-in-out">
+          <div className="md:hidden fixed top-0 right-0 h-[100svh] w-full max-w-sm bg-black border-l border-white/20 shadow-2xl z-50 transform transition-all duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/20">
