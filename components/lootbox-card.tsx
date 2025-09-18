@@ -42,7 +42,7 @@ export function LootboxCard({ className, isCompleted = false, specialReward = "M
         <CardItem translateZ="100" className="w-full mb-6">
           <div className="relative">
             <img
-              src="/lootbox.png"
+              src="/lootbox2.webp"
               height="200"
               width="200"
               className="h-48 w-full object-contain rounded-xl group-hover/card:shadow-xl transition-all duration-300"

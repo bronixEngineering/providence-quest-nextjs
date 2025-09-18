@@ -30,7 +30,7 @@ export function CometLootboxCard({ className, isCompleted = false, specialReward
               loading="lazy"
               className="absolute inset-0 h-full w-full rounded-[16px] object-contain p-4"
               alt="Lootbox reward"
-              src="/lootbox.png"
+              src="/lootbox2.webp"
               style={{
                 boxShadow: "rgba(0, 0, 0, 0.05) 0px 5px 6px 0px",
                 opacity: 1,

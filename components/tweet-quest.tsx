@@ -195,7 +195,7 @@ ${referralUrl}\n${defaultXUrl}`;
     try {
       // Fetch the image from Supabase
       const response = await fetch(
-        "https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"
+        "https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox2.webp"
       );
 
       if (!response.ok) {
@@ -578,14 +578,14 @@ ${referralUrl}\n${defaultXUrl}`;
                       <div className="py-4">
                         <div className="flex justify-center mb-4">
                           <img
-                            src="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"
+                            src="https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox2.webp"
                             alt=" Reward"
                             width={128}
                             height={128}
                             className="object-contain rounded-lg border border-border"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              target.src = "/lootbox.png"; // Fallback to local image
+                              target.src = "/lootbox2.webp"; // Fallback to local image
                               toast.error(
                                 "Failed to load image, using fallback"
                               );

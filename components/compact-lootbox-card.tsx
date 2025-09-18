@@ -40,7 +40,7 @@ export function CompactLootboxCard({ className, isCompleted = false, specialRewa
             loading="lazy"
             className="w-full h-full object-cover rounded-[18px]"
             alt="Lootbox reward"
-            src={imageUrl || "https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox.webp"}
+            src={imageUrl || "https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/lootbox2.webp"}
             style={{
               filter: "none",
             }}
@@ -48,7 +48,7 @@ export function CompactLootboxCard({ className, isCompleted = false, specialRewa
               console.error("Lootbox image failed to load:", e);
               // Fallback to a default image or show error state
               const target = e.target as HTMLImageElement;
-              target.src = "/lootbox.png"; // Fallback to local image
+              target.src = "/lootbox2.webp"; // Fallback to local image
             }}
             onLoad={() => {
               console.log("Lootbox image loaded successfully");
