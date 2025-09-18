@@ -80,6 +80,9 @@ export default function BountyPage() {
   // Calculate level progress
   const levelProgress = userStats ? getLevelProgress(userStats.total_xp) : null;
 
+  // Prefer connected X (Twitter) profile image when available
+  const xProfileImage = (socialConnections as any)?.twitter?.data?.image || (socialConnections as any)?.x?.data?.image || null;
+
   // Helper function to get display name
   const getDisplayName = () => {
     if (profile?.name) return profile.name;
@@ -196,7 +199,7 @@ export default function BountyPage() {
                 <CardHeader className="text-center">
                   <Avatar className="h-20 w-20 mx-auto mb-4">
                     <AvatarImage
-                      src={profile?.avatar_url || session.user?.image || ""}
+                      src={xProfileImage || profile?.avatar_url || session.user?.image || ""}
                       alt={getDisplayName()}
                     />
                     <AvatarFallback className="bg-primary/20 text-primary text-xl">
