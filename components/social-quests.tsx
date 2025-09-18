@@ -276,14 +276,14 @@ export default function SocialQuests() {
 
                 {/* Action & Rewards */}
                 <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-4">
-                  <div className="text-left sm:text-right text-sm">
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <span className="text-cyan-400">
+                  <div className="text-left sm:text-right text-sm min-w-0 flex-shrink-0">
+                    <div className="flex items-center justify-start sm:justify-end gap-2 text-slate-300">
+                      <span className="text-cyan-400 font-medium">
                         +{quest.xpReward} XP
                       </span>
                     </div>
                     {quest.specialReward && (
-                      <div className="text-xs text-slate-400 mt-1">
+                      <div className="text-xs text-slate-400 mt-1 text-left sm:text-right">
                         {quest.specialReward}
                       </div>
                     )}

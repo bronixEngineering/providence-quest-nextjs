@@ -166,12 +166,11 @@ export default function DailyCheckin() {
               </div>
 
               {status.todayCheckin && (
-                <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-4 text-sm min-w-0 flex-shrink-0">
                   <div className="flex items-center gap-1">
-                    <span className="font-bold text-cyan-400">
-                      +{status.todayCheckin.total_xp}
+                    <span className="font-medium text-cyan-400">
+                      +{status.todayCheckin.total_xp} XP
                     </span>
-                    <span className="text-slate-400">XP</span>
                   </div>
                 </div>
               )}
@@ -196,14 +195,14 @@ export default function DailyCheckin() {
                 )}
               </Button>
 
-              <div className="flex items-center flex-wrap gap-3 text-xs text-slate-400">
+              <div className="flex items-center flex-wrap gap-3 text-xs text-slate-400 min-w-0 flex-shrink-0">
                 <span className="flex items-center gap-1">
                   <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
-                  10 XP
+                  <span className="font-medium text-cyan-400">10 XP</span>
                 </span>
                 <span className="flex items-center gap-1">
-                  <div className="w-1 h-1 bg-amber-400 rounded-full"></div>5
-                  Tokens
+                  <div className="w-1 h-1 bg-amber-400 rounded-full"></div>
+                  <span className="text-slate-400">5 Tokens</span>
                 </span>
                 {nextReward.target && (
                   <span className="text-slate-500">
