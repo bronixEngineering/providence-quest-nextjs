@@ -40,7 +40,7 @@ function ReferralSuccessInner() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      if (refId) router.replace(`/refferral-signin/${encodeURIComponent(refId)}`)
+      if (refId) router.replace(`/referral-signin/${encodeURIComponent(refId)}`)
       else router.replace("/bounty")
     }
     if (status === "authenticated" && refId && !useReferral.isPending && !useReferral.isSuccess && !useReferral.isError) {

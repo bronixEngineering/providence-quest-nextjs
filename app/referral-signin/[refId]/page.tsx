@@ -27,7 +27,7 @@ export default function ReferralSigninPage() {
       router.replace("/bounty")
       return
     }
-    await signIn("google", { callbackUrl: `/refferral-success?refId=${encodeURIComponent(refId)}` })
+    await signIn("google", { callbackUrl: `/referral-success?refId=${encodeURIComponent(refId)}` })
   }
 
   return (

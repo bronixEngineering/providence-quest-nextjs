@@ -72,7 +72,7 @@ export default function ReferralPage() {
       const shareData = {
         title: "Join Providence Quest!",
         text: `Use my referral code: ${referralStats.referralCode} ${defaultXUrl}`,
-        url: `${window.location.origin}/refferral-signin/${referralStats.referralCode}`,
+        url: `${window.location.origin}/referral-signin/${referralStats.referralCode}`,
       };
 
       if (navigator.share) {
@@ -339,7 +339,7 @@ export default function ReferralPage() {
                       <p className="text-sm text-muted-foreground mb-2">Referral Link:</p>
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <code className="flex-1 p-2 rounded bg-background border text-xs sm:text-sm font-mono break-all overflow-hidden">
-                          {`${window.location.origin}/refferral-signin/${referralStats.referralCode}`}
+                          {`${window.location.origin}/referral-signin/${referralStats.referralCode}`}
                         </code>
                         <Button
                           size="sm"
@@ -347,7 +347,7 @@ export default function ReferralPage() {
                           onClick={async () => {
                             try {
                               await navigator.clipboard.writeText(
-                                `${window.location.origin}/refferral-signin/${referralStats.referralCode}`
+                                `${window.location.origin}/referral-signin/${referralStats.referralCode}`
                               );
                               setLinkCopied(true);
                               setTimeout(() => setLinkCopied(false), 2000);

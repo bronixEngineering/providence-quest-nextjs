@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: "I invite you to Providence Quest! 🚀",
       description: "Join me on Providence Quest and start your extraordinary journey! Complete quests, earn rewards, and level up your Trailblazer status.",
       type: "website",
-      url: `https://hub.playprovidence.io/refferral-signin/${refId}`,
+      url: `https://hub.playprovidence.io/referral-signin/${refId}`,
       images: [
         {
           url: "https://urdsxlylixebqhvmsaeu.supabase.co/storage/v1/object/public/public-assets/providence-avatar.png",
