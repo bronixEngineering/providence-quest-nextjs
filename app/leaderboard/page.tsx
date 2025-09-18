@@ -111,6 +111,10 @@ export default function LeaderboardPage() {
               Compete with other Trailblazers and climb the ranks. Complete
               quests, earn XP, and dominate the leaderboard!
             </p>
+            <p className="text-sm text-muted-foreground/80 max-w-2xl mx-auto mt-2">
+              * Raw scores are currently displayed. Final rankings will be
+              calculated with Discord exclusive role multipliers.
+            </p>
           </div>
 
           {/* Stats Overview */}
@@ -176,7 +180,8 @@ export default function LeaderboardPage() {
                             {user.email}
                           </div>
                           <div className="text-sm text-muted-foreground whitespace-nowrap">
-                            Level {user.level} • {user.questsCompleted} quests completed
+                            Level {user.level} • {user.questsCompleted} quests
+                            completed
                           </div>
                         </div>
                       </div>
@@ -188,14 +193,18 @@ export default function LeaderboardPage() {
                         <div className="text-base sm:text-lg font-bold text-primary leading-tight">
                           {user.totalXp.toLocaleString()}
                         </div>
-                        <div className="text-xs text-muted-foreground">Total XP</div>
+                        <div className="text-xs text-muted-foreground">
+                          Total XP
+                        </div>
                       </div>
 
                       <div className="text-left sm:text-right">
                         <div className="text-sm font-semibold text-foreground leading-tight">
                           {user.dailyStreak}
                         </div>
-                        <div className="text-xs text-muted-foreground">Day Streak</div>
+                        <div className="text-xs text-muted-foreground">
+                          Day Streak
+                        </div>
                       </div>
 
                       <Badge

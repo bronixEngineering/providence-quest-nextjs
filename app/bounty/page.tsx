@@ -80,7 +80,10 @@ export default function BountyPage() {
   const levelProgress = userStats ? getLevelProgress(userStats.total_xp) : null;
 
   // Prefer connected X (Twitter) profile image when available
-  const xProfileImage = (socialConnections as any)?.twitter?.data?.image || (socialConnections as any)?.x?.data?.image || null;
+  const xProfileImage =
+    (socialConnections as any)?.twitter?.data?.image ||
+    (socialConnections as any)?.x?.data?.image ||
+    null;
 
   // Helper function to get display name
   const getDisplayName = () => {
@@ -172,8 +175,8 @@ export default function BountyPage() {
                   Sign in to access your bounty quests and start earning
                   rewards.
                 </p>
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   size="lg"
                   onClick={() => signIn("google")}
                 >
@@ -200,7 +203,12 @@ export default function BountyPage() {
                 <CardHeader className="text-center">
                   <Avatar className="h-20 w-20 mx-auto mb-4">
                     <AvatarImage
-                      src={xProfileImage || profile?.avatar_url || session.user?.image || ""}
+                      src={
+                        xProfileImage ||
+                        profile?.avatar_url ||
+                        session.user?.image ||
+                        ""
+                      }
                       alt={getDisplayName()}
                     />
                     <AvatarFallback className="bg-primary/20 text-primary text-xl">

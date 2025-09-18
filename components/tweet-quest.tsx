@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { CheckCircle, Gift, Loader2, Zap } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { CompactLootboxCard } from "@/components/compact-lootbox-card";
 
@@ -471,14 +471,14 @@ ${referralUrl}\n${defaultXUrl}`;
                   {!isXConnected ? (
                     <div className="text-center py-4">
                       <div className="text-sm text-muted-foreground mb-2">
-                        Connect your X account first in Social Quests
+                        Connect your X account to unlock this quest
                       </div>
                       <Button
-                        disabled
-                        className="w-full sm:w-auto bg-gray-600 text-gray-400 px-4 py-2 border border-gray-700 cursor-not-allowed"
+                        onClick={() => signIn("twitter")}
+                        className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-4 py-2 border border-gray-700"
                       >
                         <XIcon className="h-4 w-4 mr-2" />
-                        Connect X First
+                        Connect X Account
                       </Button>
                     </div>
                   ) : (

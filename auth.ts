@@ -49,7 +49,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              "Authorization": `Basic ${btoa(`${process.env.EPIC_CLIENT_ID}:${process.env.EPIC_CLIENT_SECRET}`)}`,
+              Authorization: `Basic ${btoa(
+                `${process.env.EPIC_CLIENT_ID}:${process.env.EPIC_CLIENT_SECRET}`
+              )}`,
             },
             body: new URLSearchParams({
               grant_type: "authorization_code",
@@ -68,13 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       userinfo: {
         url: "https://api.epicgames.dev/epic/oauth/v2/userInfo",
-        async request({
-          tokens,
-          provider,
-        }: {
-          tokens: any;
-          provider: any;
-        }) {
+        async request({ tokens, provider }: { tokens: any; provider: any }) {
           const response = await fetch(provider.userinfo.url, {
             headers: {
               Authorization: `Bearer ${tokens.access_token}`,
@@ -150,7 +146,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async signIn({ user, account, profile }) {
       try {
-
         if (account?.provider === "google" && user.email) {
           // Check if profile already exists by email (primary identifier)
           const { data: existingProfile, error: fetchError } =
@@ -217,8 +212,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 "✅ NextAuth - Profile created/updated successfully:",
                 newProfile?.id
               );
-
-
             }
           } else {
             console.log(
