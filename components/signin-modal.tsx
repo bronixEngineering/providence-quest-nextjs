@@ -14,9 +14,10 @@ import { signIn } from "next-auth/react";
 
 interface SignInModalProps {
   children: React.ReactNode;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function SignInModal({ children }: SignInModalProps) {
+export function SignInModal({ children, onOpenChange }: SignInModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,8 +33,15 @@ export function SignInModal({ children }: SignInModalProps) {
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
