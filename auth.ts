@@ -8,6 +8,9 @@ import { supabaseAdmin } from "@/lib/supabase";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: true,
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/bounty",
+  },
   providers: [
     Google,
     Twitter({
