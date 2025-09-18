@@ -24,6 +24,7 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [signInModalOpen, setSignInModalOpen] = useState(false);
 
   const isActivePage = (path: string) => {
     if (path === "/bounty" && pathname === "/bounty") return true;
@@ -250,7 +251,12 @@ export default function Header() {
           {/* Backdrop */}
           <div
             className="md:hidden fixed inset-0 bg-black/90 backdrop-blur-md z-40"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(e) => {
+              // Only close if clicking on the backdrop itself, not on child elements
+              if (e.target === e.currentTarget) {
+                setMobileMenuOpen(false);
+              }
+            }}
           />
 
           {/* Slide-in Menu */}
@@ -297,17 +303,15 @@ export default function Header() {
                     Bounty
                   </Link>
                 ) : (
-                  <SignInModal onOpenChange={(open) => {
-                    if (open) {
+                  <span
+                    className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
+                    onClick={() => {
                       setMobileMenuOpen(false);
-                    }
-                  }}>
-                    <span
-                      className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
-                    >
-                      Bounty
-                    </span>
-                  </SignInModal>
+                      setSignInModalOpen(true);
+                    }}
+                  >
+                    Bounty
+                  </span>
                 )}
 
                 <div className="border-t border-white/10 my-2"></div>
@@ -429,6 +433,11 @@ export default function Header() {
           </div>
         </>
       )}
+
+      {/* Sign In Modal */}
+      <SignInModal open={signInModalOpen} onOpenChange={setSignInModalOpen}>
+        <div style={{ display: 'none' }} />
+      </SignInModal>
     </header>
   );
 }

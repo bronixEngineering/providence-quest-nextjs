@@ -15,11 +15,15 @@ import { signIn } from "next-auth/react";
 interface SignInModalProps {
   children: React.ReactNode;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
 }
 
-export function SignInModal({ children, onOpenChange }: SignInModalProps) {
+export function SignInModal({ children, onOpenChange, open }: SignInModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Use external open state if provided, otherwise use internal state
+  const modalOpen = open !== undefined ? open : isOpen;
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -34,14 +38,22 @@ export function SignInModal({ children, onOpenChange }: SignInModalProps) {
   };
 
   const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    if (onOpenChange) {
-      onOpenChange(open);
+    if (open !== undefined) {
+      // External control
+      if (onOpenChange) {
+        onOpenChange(open);
+      }
+    } else {
+      // Internal control
+      setIsOpen(open);
+      if (onOpenChange) {
+        onOpenChange(open);
+      }
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={modalOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
