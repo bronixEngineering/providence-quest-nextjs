@@ -225,17 +225,11 @@ export default function BountyPage() {
 
                   {/* Social Connections Badges */}
                   {socialConnections &&
-                  Object.keys(socialConnections).length > 0 ? (
+                  Object.keys(socialConnections).length > 0 && (
                     <div className="flex items-center justify-center gap-2 mb-3">
                       {Object.entries(socialConnections).map(([platform]) => (
                         <SocialBadge key={platform} platform={platform} />
                       ))}
-                    </div>
-                  ) : (
-                    // Temporary test badges - remove this in production
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <SocialBadge platform="twitter" />
-                      <SocialBadge platform="discord" />
                     </div>
                   )}
 
