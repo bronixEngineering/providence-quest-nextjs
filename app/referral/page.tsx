@@ -468,50 +468,6 @@ export default function ReferralPage() {
           </div>
         </div>
 
-        {/* Referrals List */}
-        {referralStats && referralStats.referrals.length > 0 && (
-          <div className="mt-8 sm:mt-12">
-            <Card className="border-secondary/20 bg-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Users className="h-6 w-6 text-secondary" />
-                  Your Referrals ({referralStats.totalReferrals})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  {referralStats.referrals.map((referral, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 p-3 rounded-lg bg-background/50 border border-border"
-                    >
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={referral.avatar_url || ""} />
-                        <AvatarFallback className="bg-secondary/20 text-secondary">
-                          {referral.name?.charAt(0) || referral.email?.charAt(0) || "?"}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1">
-                        <div className="font-medium">
-                          {referral.name || referral.email?.split("@")[0] || "Anonymous"}
-                        </div>
-                        <div className="text-sm text-muted-foreground flex items-center gap-2">
-                          <Calendar className="h-3 w-3" />
-                          Joined {new Date(referral.joinedAt).toLocaleDateString()}
-                        </div>
-                      </div>
-
-                      <Badge variant="secondary" className="bg-secondary/20 text-secondary">
-                        +20 XP
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Use Referral Code */}
         <div className="mt-8 sm:mt-12">
