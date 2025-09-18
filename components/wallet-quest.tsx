@@ -144,9 +144,7 @@ function useWalletVerify() {
       queryClient.invalidateQueries({ queryKey: ["user-stats"] });
 
       if (data.questCompleted && data.rewards) {
-        toast.success(
-          `Wallet connected! +${data.rewards.xp} XP, +${data.rewards.tokens} Tokens`
-        );
+        toast.success(`Wallet connected! +${data.rewards.xp} XP`);
       } else {
         toast.success("Wallet connected successfully!");
       }

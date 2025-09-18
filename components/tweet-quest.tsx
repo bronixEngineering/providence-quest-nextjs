@@ -143,7 +143,7 @@ function useCompleteTweetQuest() {
     },
     onSuccess: (data) => {
       toast.success("Tweet quest completed! 🎉", {
-        description: `Earned ${data.rewards.xp} XP and ${data.rewards.tokens} tokens!`,
+        description: `Earned ${data.rewards.xp} XP !`,
       });
       queryClient.invalidateQueries({ queryKey: ["tweet-quest"] });
       queryClient.invalidateQueries({ queryKey: ["user-stats"] });

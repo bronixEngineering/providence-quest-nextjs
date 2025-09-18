@@ -110,12 +110,12 @@ export default function DailyCheckin() {
     if (streak >= 30)
       return { target: null, reward: "Monthly Master achieved!" };
     if (streak >= 14)
-      return { target: 30, reward: "Monthly Master (👑 +100 XP, +50 Tokens)" };
+      return { target: 30, reward: "Monthly Master (👑 +100 XP)" };
     if (streak >= 7)
-      return { target: 14, reward: "Bi-Weekly Beast (🦁 +40 XP, +25 Tokens)" };
+      return { target: 14, reward: "Bi-Weekly Beast (🦁 +40 XP)" };
     if (streak >= 3)
-      return { target: 7, reward: "Weekly Warrior (⚔️ +25 XP, +15 Tokens)" };
-    return { target: 3, reward: "3-Day Streak (🔥 +15 XP, +8 Tokens)" };
+      return { target: 7, reward: "Weekly Warrior (⚔️ +25 XP)" };
+    return { target: 3, reward: "3-Day Streak (🔥 +15 XP)" };
   };
 
   const nextReward = getNextReward(status.currentStreak);
