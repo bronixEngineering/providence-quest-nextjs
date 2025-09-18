@@ -104,16 +104,30 @@ export async function POST(request: NextRequest) {
 
     console.log(milestoneBonus, currentReferrals?.length, "milestoneBonus");
 
-    const { error: xpError } = await supabase
-      .from("user_stats")
-      .update({
-        total_xp: (referrerStats?.total_xp || 0) + totalXpToAdd,
-        total_quests_completed: (referrerStats?.total_quests_completed || 0) + 1,
-      })
-      .eq("user_email", referrerProfile.email);
+    // Eğer referrer'ın stats'ı yoksa, yeni bir kayıt oluştur
+    if (!referrerStats) {
+      const { error: createReferrerError } = await supabase.from("user_stats").insert({
+        user_email: referrerProfile.email,
+        total_xp: totalXpToAdd,
+        total_quests_completed: 1,
+      });
 
-    if (xpError) {
-      console.error("Failed to add XP to referrer:", xpError);
+      if (createReferrerError) {
+        console.error("Failed to create stats for referrer:", createReferrerError);
+      }
+    } else {
+      // Mevcut stats'ı güncelle
+      const { error: xpError } = await supabase
+        .from("user_stats")
+        .update({
+          total_xp: (referrerStats.total_xp || 0) + totalXpToAdd,
+          total_quests_completed: (referrerStats.total_quests_completed || 0) + 1,
+        })
+        .eq("user_email", referrerProfile.email);
+
+      if (xpError) {
+        console.error("Failed to add XP to referrer:", xpError);
+      }
     }
 
     // Referred user'a da +10 XP bonus
@@ -123,16 +137,30 @@ export async function POST(request: NextRequest) {
       .eq("user_email", currentProfile.email)
       .single();
 
-    const { error: bonusError } = await supabase
-      .from("user_stats")
-      .update({
-        total_xp: (referredStats?.total_xp || 0) + 10,
-        total_quests_completed: (referredStats?.total_quests_completed || 0) + 1,
-      })
-      .eq("user_email", currentProfile.email);
+    // Eğer referred user'ın stats'ı yoksa, yeni bir kayıt oluştur
+    if (!referredStats) {
+      const { error: createError } = await supabase.from("user_stats").insert({
+        user_email: currentProfile.email,
+        total_xp: 10,
+        total_quests_completed: 1,
+      });
 
-    if (bonusError) {
-      console.error("Failed to add bonus XP to referred user:", bonusError);
+      if (createError) {
+        console.error("Failed to create stats for referred user:", createError);
+      }
+    } else {
+      // Mevcut stats'ı güncelle
+      const { error: bonusError } = await supabase
+        .from("user_stats")
+        .update({
+          total_xp: (referredStats.total_xp || 0) + 10,
+          total_quests_completed: (referredStats.total_quests_completed || 0) + 1,
+        })
+        .eq("user_email", currentProfile.email);
+
+      if (bonusError) {
+        console.error("Failed to add bonus XP to referred user:", bonusError);
+      }
     }
 
     return NextResponse.json({
