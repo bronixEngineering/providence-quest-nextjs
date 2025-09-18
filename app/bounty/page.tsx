@@ -3,7 +3,7 @@
 "use client";
 
 import React from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserStats, getLevelProgress } from "@/hooks/useUserStats";
 import { useUserBadges } from "@/hooks/useUserBadges";
@@ -23,7 +23,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { SignInModal } from "@/components/signin-modal";
 import DailyCheckin from "@/components/daily-checkin";
 import SocialQuests from "@/components/social-quests";
 import WalletQuest from "@/components/wallet-quest";
@@ -173,11 +172,13 @@ export default function BountyPage() {
                   Sign in to access your bounty quests and start earning
                   rewards.
                 </p>
-                <SignInModal>
-                  <Button className="w-full" size="lg">
-                    Sign In to Continue
-                  </Button>
-                </SignInModal>
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  onClick={() => signIn("google")}
+                >
+                  Sign In to Continue
+                </Button>
               </CardContent>
             </Card>
           </div>

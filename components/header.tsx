@@ -17,14 +17,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SignInModal } from "@/components/signin-modal";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 
 export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [signInModalOpen, setSignInModalOpen] = useState(false);
 
   const isActivePage = (path: string) => {
     if (path === "/bounty" && pathname === "/bounty") return true;
@@ -73,15 +71,14 @@ export default function Header() {
                     </Link>
                   </NavigationMenuLink>
                 ) : (
-                  <SignInModal>
-                    <span
-                      className={
-                        getNavLinkClasses("/bounty") + " cursor-pointer"
-                      }
-                    >
-                      Bounty
-                    </span>
-                  </SignInModal>
+                  <span
+                    className={
+                      getNavLinkClasses("/bounty") + " cursor-pointer"
+                    }
+                    onClick={() => signIn("google")}
+                  >
+                    Bounty
+                  </span>
                 )}
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -166,11 +163,13 @@ export default function Header() {
               </Button>
             </div>
           ) : (
-            <SignInModal>
-              <Button size="sm" className="cursor-pointer">
-                Login
-              </Button>
-            </SignInModal>
+            <Button 
+              size="sm" 
+              className="cursor-pointer"
+              onClick={() => signIn("google")}
+            >
+              Login
+            </Button>
           )}
         </div>
 
@@ -307,7 +306,7 @@ export default function Header() {
                     className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      setSignInModalOpen(true);
+                      signIn("google");
                     }}
                   >
                     Bounty
@@ -417,7 +416,7 @@ export default function Header() {
                     className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium cursor-pointer"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      setSignInModalOpen(true);
+                      signIn("google");
                     }}
                   >
                     <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -432,10 +431,6 @@ export default function Header() {
         </>
       )}
 
-      {/* Sign In Modal */}
-      <SignInModal open={signInModalOpen} onOpenChange={setSignInModalOpen}>
-        <div style={{ display: 'none' }} />
-      </SignInModal>
     </header>
   );
 }
