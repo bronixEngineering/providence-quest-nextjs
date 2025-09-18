@@ -186,7 +186,9 @@ export default function TweetQuest() {
     const referralUrl = `${origin}/refferral-signin/${referralStats.referralCode}`;
     const defaultXUrl =
       "https://x.com/PlayProvidence/status/1965873649082315261";
-    return `Come join me at Providence ${referralUrl}\n${defaultXUrl}`;
+    return `Gamers first. Second to none.
+Questing in @PlayProvidence — and you should too.
+${referralUrl}\n${defaultXUrl}`;
   };
 
   const copyImageToClipboard = async () => {
@@ -284,7 +286,9 @@ export default function TweetQuest() {
             if (!win) {
               setIsPopupBlocked(true);
             } else {
-              try { win.focus?.(); } catch {}
+              try {
+                win.focus?.();
+              } catch {}
             }
             setHasPostedTweet(true);
 
@@ -313,7 +317,9 @@ export default function TweetQuest() {
       setIsPopupBlocked(true);
       toast.error("Popup blocked. Please allow popups and try again.");
     } else {
-      try { win.focus?.(); } catch {}
+      try {
+        win.focus?.();
+      } catch {}
       setIsPopupBlocked(false);
     }
     setHasPostedTweet(true);
@@ -461,7 +467,7 @@ export default function TweetQuest() {
                   )}
                 </div>
 
-              <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center gap-2">
+                <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center gap-2">
                   {!isXConnected ? (
                     <div className="text-center py-4">
                       <div className="text-sm text-muted-foreground mb-2">
@@ -469,7 +475,7 @@ export default function TweetQuest() {
                       </div>
                       <Button
                         disabled
-                      className="w-full sm:w-auto bg-gray-600 text-gray-400 px-4 py-2 border border-gray-700 cursor-not-allowed"
+                        className="w-full sm:w-auto bg-gray-600 text-gray-400 px-4 py-2 border border-gray-700 cursor-not-allowed"
                       >
                         <XIcon className="h-4 w-4 mr-2" />
                         Connect X First
@@ -479,7 +485,7 @@ export default function TweetQuest() {
                     <Button
                       onClick={handleOpenTwitter}
                       disabled={!referralStats?.referralCode}
-                    className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-4 py-2 border border-gray-700"
+                      className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-4 py-2 border border-gray-700"
                     >
                       <XIcon className="h-4 w-4 mr-2" />
                       Post on X
@@ -564,8 +570,8 @@ export default function TweetQuest() {
                       <DialogHeader>
                         <DialogTitle>Your Reward Ready! 🎁</DialogTitle>
                         <DialogDescription>
-                          The image has been copied to your clipboard. Paste
-                          it into your tweet and publish!
+                          The image has been copied to your clipboard. Paste it
+                          into your tweet and publish!
                         </DialogDescription>
                       </DialogHeader>
                       <div className="py-4">
@@ -608,7 +614,8 @@ export default function TweetQuest() {
                             <div className="space-y-2">
                               {isPopupBlocked && (
                                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-amber-300 text-sm">
-                                  It looks like your browser blocked the popup. Use the button below.
+                                  It looks like your browser blocked the popup.
+                                  Use the button below.
                                 </div>
                               )}
                               <Button
@@ -634,7 +641,9 @@ export default function TweetQuest() {
                       <DialogFooter>
                         <div className="text-center text-sm text-muted-foreground">
                           {isCountdownActive
-                            ? `Opening X in ${countdown} second${countdown !== 1 ? "s" : ""}...`
+                            ? `Opening X in ${countdown} second${
+                                countdown !== 1 ? "s" : ""
+                              }...`
                             : "You can close this dialog after posting. If Twitter didn't open, use the button above."}
                         </div>
                       </DialogFooter>
