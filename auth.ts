@@ -239,12 +239,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           try {
             // Pull current app session (Google) to get stable user_id
             const current = await auth();
-            const ownerUserId = (current as any)?.user?.appUserId || null;
+            let ownerUserId = (current as any)?.user?.appUserId || null;
             const ownerEmail =
               current?.user?.email ||
               (user as any)?.email ||
               (profile as any)?.email ||
               null;
+
+            // If no ownerUserId from session, try to get from profiles table
+            if (!ownerUserId && ownerEmail) {
+              const { data: profileData } = await supabaseAdmin
+                .from("profiles")
+                .select("id")
+                .eq("email", ownerEmail)
+                .single();
+              
+              if (profileData) {
+                ownerUserId = profileData.id;
+                console.log(`🔍 NextAuth - Found user_id from profiles: ${ownerUserId}`);
+              }
+            }
             if (!ownerEmail) {
               console.log(
                 `⚠️ NextAuth - Missing email for ${account.provider} verification; skipping DB write`
@@ -287,26 +301,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             );
 
             // Update or create social connection
+            const connectionData: any = {
+              user_email: ownerEmail,
+              platform: account.provider,
+              platform_user_id: platformUserId, // Use the real platform user ID
+              platform_username: platformUsername, // Use the correct platform username
+              platform_data: {
+                image: user.image,
+                email: ownerEmail,
+                connectedAt: new Date().toISOString(),
+              },
+              is_verified: true,
+              verified_at: new Date().toISOString(),
+            };
+
+            // Only include user_id if it exists (to avoid foreign key constraint violation)
+            if (ownerUserId) {
+              connectionData.user_id = ownerUserId;
+            }
+
             const { data: socialConnection, error: socialError } =
               await supabaseAdmin
                 .from("user_social_connections")
                 .upsert(
-                  [
-                    {
-                      user_email: ownerEmail,
-                      user_id: ownerUserId,
-                      platform: account.provider,
-                      platform_user_id: platformUserId, // Use the real platform user ID
-                      platform_username: platformUsername, // Use the correct platform username
-                      platform_data: {
-                        image: user.image,
-                        email: ownerEmail,
-                        connectedAt: new Date().toISOString(),
-                      },
-                      is_verified: true,
-                      verified_at: new Date().toISOString(),
-                    },
-                  ],
+                  [connectionData],
                   {
                     onConflict: ownerUserId
                       ? "user_id,platform"
