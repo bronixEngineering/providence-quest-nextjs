@@ -11,7 +11,7 @@ export async function GET() {
     // Fetch top user stats ordered by total XP descending (limit to top 20)
     const { data: userStats, error } = await supabase
       .from('user_stats')
-      .select('user_email, total_xp, level, total_quests_completed, current_daily_streak, longest_daily_streak, badges')
+      .select('user_email, total_xp, level, daily_quests_completed, social_quests_completed, web3_quests_completed, current_daily_streak, longest_daily_streak, badges')
       .order('total_xp', { ascending: false })
       .limit(20); // Top 20 users
 
@@ -19,6 +19,7 @@ export async function GET() {
       console.error('Supabase error:', error);
       return NextResponse.json({ error: 'Failed to fetch leaderboard data' }, { status: 500 });
     }
+
 
     // Process the data to mask emails and format for display
     const leaderboardData = userStats?.map((user, index) => {
@@ -28,12 +29,17 @@ export async function GET() {
         `${email.substring(0, 3)}*****` : 
         'Unknown';
 
+      // Compute quests completed from type columns (exclude referral-specific counters)
+      const totalQuestsCompleted = (user.daily_quests_completed || 0)
+        + (user.social_quests_completed || 0)
+        + (user.web3_quests_completed || 0);
+
       return {
         rank: index + 1,
         email: maskedEmail,
         totalXp: user.total_xp || 0,
         level: user.level || 1,
-        questsCompleted: user.total_quests_completed || 0,
+        questsCompleted: totalQuestsCompleted,
         dailyStreak: user.current_daily_streak || 0,
         longestStreak: user.longest_daily_streak || 0,
         badges: user.badges || []

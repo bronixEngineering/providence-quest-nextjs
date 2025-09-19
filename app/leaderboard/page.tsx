@@ -111,36 +111,14 @@ export default function LeaderboardPage() {
               Compete with other Trailblazers and climb the ranks. Complete
               quests, earn XP, and dominate the leaderboard!
             </p>
-            <p className="text-sm text-muted-foreground/80 max-w-2xl mx-auto mt-2">
+            <p className="text-sm text-muted-foreground/80 max-w-2xl mx-auto mt-1">
               * Raw scores are currently displayed. Final rankings will be
               calculated with Discord exclusive role multipliers.
             </p>
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <Card className="bg-card border-border">
-              <CardContent className="p-4 text-center">
-                <Trophy className="h-8 w-8 mx-auto mb-2 text-secondary" />
-                <div className="text-2xl font-bold">
-                  {leaderboardData?.[0]?.totalXp || 0}
-                </div>
-                <div className="text-sm text-muted-foreground">Top XP</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border-border">
-              <CardContent className="p-4 text-center">
-                <Star className="h-8 w-8 mx-auto mb-2 text-secondary" />
-                <div className="text-2xl font-bold">
-                  {leaderboardData?.[0]?.level || 1}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Highest Level
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Removed Top XP card per request */}
 
           {/* Leaderboard Table */}
           <Card className="bg-card border-border">
@@ -180,8 +158,7 @@ export default function LeaderboardPage() {
                             {user.email}
                           </div>
                           <div className="text-sm text-muted-foreground whitespace-nowrap">
-                            Level {user.level} • {user.questsCompleted} quests
-                            completed
+                            {/* Level hidden per request */}
                           </div>
                         </div>
                       </div>
