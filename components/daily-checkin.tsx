@@ -113,8 +113,7 @@ export default function DailyCheckin() {
       return { target: 30, reward: "Monthly Master (👑 +100 XP)" };
     if (streak >= 7)
       return { target: 14, reward: "Bi-Weekly Beast (🦁 +40 XP)" };
-    if (streak >= 3)
-      return { target: 7, reward: "Weekly Warrior (⚔️ +25 XP)" };
+    if (streak >= 3) return { target: 7, reward: "Weekly Warrior (⚔️ +25 XP)" };
     return { target: 3, reward: "3-Day Streak (🔥 +15 XP)" };
   };
 
@@ -200,10 +199,7 @@ export default function DailyCheckin() {
                   <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
                   <span className="font-medium text-cyan-400">10 XP</span>
                 </span>
-                <span className="flex items-center gap-1">
-                  <div className="w-1 h-1 bg-amber-400 rounded-full"></div>
-                  <span className="text-slate-400">5 Tokens</span>
-                </span>
+
                 {nextReward.target && (
                   <span className="text-slate-500">
                     {status.currentStreak}/{nextReward.target} to next
