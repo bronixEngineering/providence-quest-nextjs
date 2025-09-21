@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useProfile } from "@/hooks/useProfile";
@@ -64,31 +64,34 @@ function useSocialConnections() {
   });
 }
 
+// Error handler component that uses searchParams
+function ErrorHandler({ onError }: { onError: () => void }) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'social_already_linked') {
+      onError();
+    }
+  }, [searchParams, onError]);
+
+  return null;
+}
+
 export default function BountyPage() {
   const { data: session, status } = useSession();
-  const searchParams = useSearchParams();
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   
   const {
     data: profile,
     isLoading: profileLoading,
-    error: profileError,
   } = useProfile();
   const {
     data: userStats,
     isLoading: statsLoading,
-    error: statsError,
   } = useUserStats();
   const { data: socialConnections } = useSocialConnections();
   const { data: userBadges } = useUserBadges();
-
-  // Check for social linking error
-  useEffect(() => {
-    const error = searchParams.get('error');
-    if (error === 'social_already_linked') {
-      setShowErrorDialog(true);
-    }
-  }, [searchParams]);
 
   // Calculate level progress
   const levelProgress = userStats ? getLevelProgress(userStats.total_xp) : null;
@@ -455,6 +458,11 @@ export default function BountyPage() {
         </div>
       </main>
       <Footer />
+      
+      {/* Error Handler with Suspense */}
+      <Suspense fallback={null}>
+        <ErrorHandler onError={() => setShowErrorDialog(true)} />
+      </Suspense>
       
       {/* Error Dialog */}
       <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
