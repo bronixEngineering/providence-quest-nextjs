@@ -137,13 +137,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           // PGRST116 = no rows returned (profile doesn't exist)
           if (fetchError && fetchError.code !== "PGRST116") {
-            console.error("❌ NextAuth - Unexpected error checking profile:", fetchError);
             return true; // Continue with sign in even if DB error
           }
 
           if (!existingProfile) {
-            console.log("🆕 NextAuth - No profile found, creating new one for email:", user.email);
-
             const profileData = {
               user_id: user.id || `email_${user.email?.replace(/[@.]/g, "_")}`, // Fallback if user.id is null
               email: user.email,
@@ -151,10 +148,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               avatar_url: user.image,
             };
 
-            console.log("📝 NextAuth - Profile data to insert:", profileData);
-
             // Use upsert to handle race conditions (conflict on email)
-            const { data: newProfile, error: createError } = await supabaseAdmin
+            await supabaseAdmin
               .from("profiles")
               .upsert([profileData], {
                 onConflict: "email",
@@ -162,42 +157,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               })
               .select("*")
               .single();
-
-            console.log("📊 NextAuth - Profile creation result:", {
-              newProfile: newProfile,
-              createError: createError,
-              errorCode: createError?.code,
-              errorMessage: createError?.message,
-            });
-
-            if (createError) {
-              console.error("❌ NextAuth - Failed to create profile:", createError);
-              // Check if it's a duplicate key error
-              if (createError.code === "23505") {
-                console.log("⚠️ NextAuth - Profile already exists (duplicate key), continuing...");
-              }
-            } else {
-              console.log("✅ NextAuth - Profile created/updated successfully:", newProfile?.id);
-            }
-          } else {
-            console.log(
-              "✅ NextAuth - Profile already exists:",
-              existingProfile.id,
-              "for email:",
-              existingProfile.email,
-              "- skipping update"
-            );
           }
         }
 
         // Handle social verification for Twitter/Discord/Epic (tie to current user)
         if (account?.provider === "twitter" || account?.provider === "discord" || account?.provider === "epic") {
-          console.log("🔑 SignIn - Account debug:", {
-            provider: account.provider,
-            hasAccessToken: !!account.access_token,
-            accessTokenPreview: account.access_token?.slice(0, 20) + "...",
-            accountKeys: Object.keys(account),
-          });
           try {
             // Pull current app session (Google) to get stable user_id
             const current = await auth();
@@ -214,19 +178,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
               if (profileData) {
                 ownerUserId = profileData.id;
-                console.log(`🔍 NextAuth - Found user_id from profiles: ${ownerUserId}`);
               }
             }
             if (!ownerEmail) {
-              console.log(`⚠️ NextAuth - Missing email for ${account.provider} verification; skipping DB write`);
               return "/bounty";
             }
 
-            // Get the real platform user ID from the account object
-            const platformUserId =
-              account.provider === "discord"
-                ? (account as any).providerAccountId // Discord's real user ID
-                : user.id; // For Twitter/Epic, use user.id
+            // Get the real platform user ID from the provider
+            const platformUserIdRaw = (account as any).providerAccountId || user.id;
+            const platformUserId = String(platformUserIdRaw || "");
 
             // Get the correct platform username
             let platformUsername = user.name || ownerEmail;
@@ -239,22 +199,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               platformUsername = user.name || ownerEmail;
             }
 
-            console.log(`🎯 NextAuth - Verifying ${account.provider} account for existing user:`, {
-              ownerEmail,
-              ownerUserId,
-              platformUserId,
-              platformUsername,
-              userFromProvider: user.id,
-              accountProviderAccountId: (account as any).providerAccountId,
-              accountScreenName: (account as any).screen_name,
-              profileDataUsername: (profile as any)?.data?.username,
-            });
+            // Username check for Twitter and Discord - block if already linked
+            if ((account.provider === "twitter" || account.provider === "discord") && platformUsername) {
+              console.log(`🔍 DEBUG ${account.provider} Check - Username: ${platformUsername}`);
+              
+              const { data: rows } = await supabaseAdmin
+                .from("user_social_connections")
+                .select("id")
+                .eq("platform", account.provider)
+                .eq("platform_username", platformUsername)
+                .limit(1);
+              
+              console.log(`🔍 DEBUG ${account.provider} Check - Found rows:`, rows);
+              console.log(`🔍 DEBUG ${account.provider} Check - Rows length:`, rows?.length || 0);
+              
+              if ((rows?.length || 0) > 0) {
+                console.log(`🚫 BLOCKING ${account.provider} username already linked:`, platformUsername);
+                return "/bounty?error=social_already_linked";
+              }
+              
+              console.log(`✅ ${account.provider} username check passed, proceeding with connection`);
+            }
 
             // Update or create social connection
             const connectionData: any = {
               user_email: ownerEmail,
               platform: account.provider,
-              platform_user_id: platformUserId, // Use the real platform user ID
+              platform_user_id: platformUserId, // Prefer providerAccountId when present
               platform_username: platformUsername, // Use the correct platform username
               platform_data: {
                 image: user.image,
@@ -270,7 +241,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               connectionData.user_id = ownerUserId;
             }
 
-            const { data: socialConnection, error: socialError } = await supabaseAdmin
+            const { error: socialError } = await supabaseAdmin
               .from("user_social_connections")
               .upsert([connectionData], {
                 onConflict: ownerUserId ? "user_id,platform" : "user_email,platform",
@@ -279,11 +250,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               .select("*")
               .single();
 
-            if (socialError) {
-              console.log(`❌ NextAuth - Failed to create ${account.provider} connection:`, socialError);
-            } else {
-              console.log(`✅ NextAuth - ${account.provider} connection created:`, socialConnection);
-
+            if (!socialError) {
               // Check and complete social quest
               const { data: socialQuest, error: questError } = await supabaseAdmin
                 .from("quest_definitions")
@@ -295,7 +262,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
               if (socialQuest && !questError) {
                 // Check if already completed (allow 0 rows without error)
-                const { data: existingCompletion, error: existingErr } = await supabaseAdmin
+              const { data: existingCompletion } = await supabaseAdmin
                   .from("user_quest_completions")
                   .select("id")
                   .eq(ownerUserId ? "user_id" : "user_email", ownerUserId || ownerEmail)
@@ -321,13 +288,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   ]);
 
                   if (!completionError) {
-                    const { error: statsError } = await supabaseAdmin.rpc("update_user_stats_after_quest", {
+                    await supabaseAdmin.rpc("update_user_stats_after_quest", {
                       p_user_email: ownerEmail,
                       p_quest_type: "social",
                       p_xp_earned: socialQuest.xp_reward,
                       p_tokens_earned: socialQuest.token_reward,
                     });
-                    console.log(`🎉 NextAuth - ${account.provider} social quest completed!`);
                   }
                 }
               }
@@ -337,12 +303,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
           // Prevent provider from becoming the active session – bounce back to bounty
           return "/bounty";
-        } else {
-          console.log("⚠️ NextAuth - Skipping profile creation - missing required data:", {
-            provider: account?.provider,
-            hasUserId: !!user.id,
-            hasEmail: !!user.email,
-          });
         }
 
         return true;

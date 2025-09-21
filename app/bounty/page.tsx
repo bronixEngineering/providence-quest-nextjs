@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserStats, getLevelProgress } from "@/hooks/useUserStats";
 import { useUserBadges } from "@/hooks/useUserBadges";
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
   Trophy,
   Lock,
@@ -19,6 +21,7 @@ import {
   Gamepad2,
   Clock,
   MessageSquare,
+  AlertCircle,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
@@ -63,6 +66,9 @@ function useSocialConnections() {
 
 export default function BountyPage() {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  
   const {
     data: profile,
     isLoading: profileLoading,
@@ -75,6 +81,14 @@ export default function BountyPage() {
   } = useUserStats();
   const { data: socialConnections } = useSocialConnections();
   const { data: userBadges } = useUserBadges();
+
+  // Check for social linking error
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'social_already_linked') {
+      setShowErrorDialog(true);
+    }
+  }, [searchParams]);
 
   // Calculate level progress
   const levelProgress = userStats ? getLevelProgress(userStats.total_xp) : null;
@@ -441,6 +455,26 @@ export default function BountyPage() {
         </div>
       </main>
       <Footer />
+      
+      {/* Error Dialog */}
+      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-red-500" />
+              Account Already Connected
+            </DialogTitle>
+            <DialogDescription>
+              This social media account is already connected to another profile. Each account can only be linked once.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end">
+            <Button onClick={() => setShowErrorDialog(false)}>
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
