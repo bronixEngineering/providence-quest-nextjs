@@ -46,6 +46,23 @@ export const CardContainer = ({
     setIsMouseEntered(false);
     containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`;
   };
+
+  // Idle tilt animation when not hovered
+  useEffect(() => {
+    let raf: number;
+    const start = performance.now();
+    const tick = (t: number) => {
+      if (containerRef.current && !isMouseEntered) {
+        const elapsed = (t - start) / 1000;
+        const rx = Math.cos(elapsed * 1.2) * 6; // more aggressive idle tilt
+        const ry = Math.sin(elapsed * 1.5) * 6;
+        containerRef.current.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isMouseEntered]);
   return (
     <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
       <div

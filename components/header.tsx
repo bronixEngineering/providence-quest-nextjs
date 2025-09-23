@@ -27,6 +27,7 @@ export default function Header() {
   const isActivePage = (path: string) => {
     if (path === "/bounty" && pathname === "/bounty") return true;
     if (path === "/leaderboard" && pathname === "/leaderboard") return true;
+    if (path === "/sale" && pathname === "/sale") return true;
     return false;
   };
 
@@ -88,6 +89,16 @@ export default function Header() {
                     className={getNavLinkClasses("/leaderboard")}
                   >
                     Chronicles
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/sale"
+                    className={getNavLinkClasses("/sale")}
+                  >
+                    Sale
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -321,6 +332,16 @@ export default function Header() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Chronicles
+                </Link>
+
+                <div className="border-t border-white/10 my-2"></div>
+
+                <Link
+                  href="/sale"
+                  className="flex items-center px-4 py-3 text-white hover:text-primary transition-colors duration-200 text-lg font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sale
                 </Link>
 
                 <div className="border-t border-white/10 my-2"></div>
