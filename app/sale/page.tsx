@@ -18,7 +18,10 @@ import {
   Clock,
   Shield,
   Gamepad2,
-  Trophy
+  Trophy,
+  TrendingUp,
+  Target,
+  Users
 } from "lucide-react";
 
 // Mock data - replace with real data later
@@ -29,7 +32,17 @@ const SALE_DATA = {
   minPurchase: 100,
   maxPurchase: 10000,
   saleEnds: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+  raiseTarget: 1000000, // $1M USDT target
+  currentRaised: 350000, // Current amount raised
 };
+
+// Mock bid data
+const MOCK_BIDS = [
+  { id: 1, wallet: "0x1234...5678", amount: 50000, price: 0.1, timestamp: new Date(Date.now() - 3600000) },
+  { id: 2, wallet: "0x9abc...def0", amount: 25000, price: 0.1, timestamp: new Date(Date.now() - 7200000) },
+  { id: 3, wallet: "0x5555...9999", amount: 100000, price: 0.095, timestamp: new Date(Date.now() - 10800000) },
+  { id: 4, wallet: "0xaaaa...bbbb", amount: 75000, price: 0.1, timestamp: new Date(Date.now() - 14400000) },
+];
 
 // Investor logos
 const INVESTORS = [
@@ -154,80 +167,122 @@ export default function SalePage() {
             </motion.p>
           </div>
 
-          {/* Layout: Left (progress & stats) | Right (sticky purchase) */}
+
+          {/* Layout: Left (What is Providence + Stats + Orders) | Right (sticky purchase) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8 order-2 lg:order-1">
-          {/* Sale Progress Card - Prominent & Animated */}
+
+          {/* What is Providence - Move to Left Side */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+          >
+            <Card className="border-primary/20 bg-card backdrop-blur-md">
+              <CardHeader>
+                <CardTitle className="text-white text-xl">What is Providence?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  Providence is a next-generation gaming ecosystem that combines blockchain technology with immersive gameplay experiences. 
+                  Our platform enables players to truly own their in-game assets, participate in decentralized governance, and earn rewards 
+                  through skilled gameplay. With Providence, we&apos;re building the future of gaming where players have real ownership, 
+                  meaningful choices, and the ability to shape the worlds they inhabit.
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+          {/* Total Raise Target */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
             className="mb-8"
           >
-            <Card className="relative overflow-hidden border-primary/20 bg-card backdrop-blur-md shadow-2xl">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(1000px_600px_at_0%_0%,rgba(255,255,255,0.08),transparent_60%)]" />
-              <CardHeader className="pb-4">
-                <CardTitle className="text-white flex items-center gap-3">
-                  <span className="text-white/90">Allocation Progress</span>
-                  <Badge variant="outline" className="border-white/20 text-white/80">
-                    {animatedProgress.toFixed(1)}% complete
-                  </Badge>
+            <Card className="border-primary/20 bg-card backdrop-blur-md">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Total Raise Target
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  <div className="flex items-baseline justify-between">
-                    <div className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
-                      {animatedProgress.toFixed(1)}%
+              <CardContent>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="text-3xl font-bold text-white">
+                      ${SALE_DATA.currentRaised.toLocaleString()} USDT
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {SALE_DATA.soldTokens.toLocaleString()} of {SALE_DATA.totalTokens.toLocaleString()} allocated • Network: Avalanche (AVAX)
+                      of ${SALE_DATA.raiseTarget.toLocaleString()} USDT target
                     </div>
                   </div>
-                  <div className="relative">
-                    <div className="w-full bg-muted rounded-full h-3 overflow-hidden border border-white/10">
-                      <motion.div
-                        className="h-full bg-white/70"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${animatedProgress}%` }}
-                        transition={{ duration: 0.8 }}
-                      />
-                      {/* Glowing indicator at the edge */}
-                      <motion.div
-                        className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.6)] border border-white/60"
-                        style={{ left: `calc(${animatedProgress}% - 8px)` }}
-                        animate={{ opacity: [0.9, 0.6, 0.9] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      />
-                      {/* Sparks */}
-                      {sparks.map((s) => (
-                        <motion.div
-                          key={s.id}
-                          initial={{ opacity: 0.7, y: 0, scale: 0.6 }}
-                          animate={{ opacity: 0, y: -14, scale: 1 }}
-                          transition={{ duration: 0.9 }}
-                          className="absolute h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                          style={{ left: `calc(${animatedProgress}% + ${s.offsetPx}px)`, top: '50%' }}
-                        />
-                      ))}
+                  <div className="text-right">
+                    <div className="text-lg font-semibold text-primary">
+                      {((SALE_DATA.currentRaised / SALE_DATA.raiseTarget) * 100).toFixed(1)}%
                     </div>
+                    <div className="text-sm text-muted-foreground">Complete</div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 rounded-lg bg-muted/30 border border-white/10">
-                    <p className="text-muted-foreground text-sm mb-1">Sold</p>
-                    <p className="text-2xl font-bold text-white">
-                      {SALE_DATA.soldTokens.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="text-center p-4 rounded-lg bg-muted/30 border border-white/10">
-                    <p className="text-muted-foreground text-sm mb-1">Remaining</p>
-                    <p className="text-2xl font-bold text-white">
-                      {remainingTokens.toLocaleString()}
-                    </p>
+                <div className="w-full bg-secondary/20 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all duration-1000"
+                    style={{ width: `${(SALE_DATA.currentRaised / SALE_DATA.raiseTarget) * 100}%` }}
+                  />
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Target can be exceeded - no hard cap limit
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Recent Purchase Orders - Left Side Small Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+            className="mb-8"
+          >
+            <Card className="border-primary/20 bg-card backdrop-blur-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-white text-lg flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Live Orders
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {MOCK_BIDS.slice(0, 3).map((bid, index) => (
+                    <motion.div 
+                      key={bid.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 + index * 0.1 }}
+                      className="flex items-center justify-between p-2 rounded border border-white/5 bg-muted/5 hover:bg-muted/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
+                          <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                        </div>
+                        <div className="text-xs">
+                          <div className="text-white font-mono">{bid.wallet.slice(0, 6)}...{bid.wallet.slice(-4)}</div>
+                        </div>
+                      </div>
+                      <div className="text-right text-xs">
+                        <div className="text-white font-semibold">{(bid.amount / 1000).toFixed(0)}K</div>
+                        <div className="text-muted-foreground">${bid.price}</div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="mt-3 pt-2 border-t border-white/10">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Total Volume</span>
+                    <span className="text-white font-semibold">
+                      ${MOCK_BIDS.reduce((sum, bid) => sum + (bid.amount * bid.price), 0).toLocaleString()}
+                    </span>
                   </div>
                 </div>
-                
               </CardContent>
             </Card>
           </motion.div>
@@ -431,6 +486,72 @@ export default function SalePage() {
               </CardContent>
             </Card>
           </motion.div>
+
+          {/* Price Trajectory Chart - Small, Under Purchase */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+            className="mt-6"
+          >
+            <Card className="border-primary/20 bg-card backdrop-blur-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-white text-lg flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Price Trajectory - 1st Sale
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-3">
+                  <p className="text-muted-foreground text-xs mb-1">
+                    Current: <span className="text-white font-semibold">${SALE_DATA.pricePerToken}</span> per PRV
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    Price increases exponentially with demand. Early access advantage.
+                  </p>
+                </div>
+                
+                {/* Enhanced bonding curve visualization */}
+                <div className="relative h-24 bg-gradient-to-r from-primary/5 to-accent/5 rounded border border-white/10 overflow-hidden">
+                  <svg className="w-full h-full" viewBox="0 0 300 96">
+                    <defs>
+                      <linearGradient id="bondingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style={{stopColor: 'rgba(255,255,255,0.15)', stopOpacity: 1}} />
+                        <stop offset="100%" style={{stopColor: 'rgba(255,255,255,0.02)', stopOpacity: 1}} />
+                      </linearGradient>
+                    </defs>
+                    {/* More realistic bonding curve */}
+                    <path
+                      d="M 0,85 C 30,82 60,75 90,65 C 120,52 150,35 180,22 C 210,12 240,6 270,3 L 300,2 L 300,96 L 0,96 Z"
+                      fill="url(#bondingGradient)"
+                      stroke="rgba(255,255,255,0.4)"
+                      strokeWidth="1.5"
+                    />
+                    {/* Current position with pulse */}
+                    <motion.circle 
+                      cx="25" 
+                      cy="83" 
+                      r="3" 
+                      fill="white"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    <text x="30" y="80" fill="white" fontSize="8" className="font-medium">
+                      You are here
+                    </text>
+                    {/* Future price points */}
+                    <circle cx="90" cy="65" r="2" fill="rgba(255,255,255,0.6)" />
+                    <circle cx="150" cy="35" r="2" fill="rgba(255,255,255,0.4)" />
+                    <circle cx="210" cy="12" r="2" fill="rgba(255,255,255,0.3)" />
+                  </svg>
+                </div>
+                
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Early participants secure the lowest entry prices
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
           </div>
           </div>
           </div>
@@ -484,11 +605,12 @@ export default function SalePage() {
             </div>
           </motion.div>
 
+
           {/* Utility / How to use section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1, duration: 0.6 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
             className="mt-12"
           >
             <Card className="border-primary/20 bg-card backdrop-blur-md">
