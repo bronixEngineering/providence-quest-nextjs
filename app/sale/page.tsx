@@ -31,6 +31,21 @@ const SALE_DATA = {
   saleEnds: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
 };
 
+// Investor logos
+const INVESTORS = [
+  "Copy of Avalanche.png",
+  "Copy of Bitscale.png", 
+  "Copy of BlizzardFund_Logo.png",
+  "Copy of CoinFund.png",
+  "Copy of CSI_GLOBAL_main_logo-1.png",
+  "Copy of Id-theory-1.png",
+  "Copy of Infinite Capital.png",
+  "Copy of PermanentVentures_Logo.png",
+  "Copy of Ready Player.png",
+  "Copy of red-logo-IOSG-PNG.png",
+  "Copy of Three Body.png"
+];
+
 export default function SalePage() {
   const { isConnected } = useAccount();
   const { connect } = useConnect();
@@ -287,15 +302,15 @@ export default function SalePage() {
           <div className="lg:col-span-1 order-1 lg:order-2">
           <div className="lg:sticky top-24">
           {/* Minimal 3D Token (tight to content, no outer card) */}
-          <div className="mb-6">
-            <CardContainer containerClassName="py-4" className="w-full">
-              <CardBody className="h-36 w-36 mx-auto rounded-xl relative overflow-visible">
+          <div className="mb-6 flex justify-center">
+            <CardContainer containerClassName="py-4" className="w-36">
+              <CardBody className="h-36 w-36 rounded-xl relative overflow-visible flex items-center justify-center">
                 {/* pulsing glow ring */}
                 <CardItem translateZ={10} className="absolute inset-0 flex items-center justify-center">
                   <div className="h-28 w-28 rounded-full blur-2xl bg-white/20 animate-[pulse_1.6s_ease-in-out_infinite] shadow-[0_0_50px_rgba(255,255,255,0.35)]" />
                 </CardItem>
                 {/* token */}
-                <CardItem translateZ={30} className="absolute inset-0 flex items-center justify-center">
+                <CardItem translateZ={30} className="flex items-center justify-center">
                   <img src="/sigil.png" alt="PRV Token" className="h-20 w-20 opacity-95 drop-shadow-[0_0_45px_rgba(255,255,255,0.5)]" />
                 </CardItem>
               </CardBody>
@@ -420,6 +435,55 @@ export default function SalePage() {
           </div>
           </div>
 
+          {/* Investors Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.6 }}
+            className="mt-12"
+          >
+            <div className="mt-8">
+              <h3 className="text-2xl font-semibold text-center mb-8 text-white/90">
+                Backed by Leading Investors
+              </h3>
+              <div className="relative overflow-hidden group">
+                {/* Gradient overlays */}
+                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black/80 to-transparent z-10" />
+                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black/80 to-transparent z-10" />
+                
+                {/* Marquee container */}
+                <div 
+                  className="flex space-x-12 py-8 marquee-scroll"
+                  style={{
+                    animation: 'marquee 25s linear infinite',
+                    width: 'calc(200% + 3rem)'
+                  }}
+                >
+                  {/* First set of logos */}
+                  {INVESTORS.map((logo, index) => (
+                    <div key={`first-${index}`} className="flex-shrink-0">
+                      <img
+                        src={`/assets/investors/${logo}`}
+                        alt={`Investor ${index + 1}`}
+                        className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity duration-300 filter brightness-0 invert"
+                      />
+                    </div>
+                  ))}
+                  {/* Duplicate set for seamless loop */}
+                  {INVESTORS.map((logo, index) => (
+                    <div key={`second-${index}`} className="flex-shrink-0">
+                      <img
+                        src={`/assets/investors/${logo}`}
+                        alt={`Investor ${index + 1}`}
+                        className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity duration-300 filter brightness-0 invert"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Utility / How to use section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -457,6 +521,7 @@ export default function SalePage() {
                 </div>
               </CardContent>
             </Card>
+
             {/* Centered Avalanche badge */}
             <div className="mt-8 flex justify-center">
               <div className="bg-white rounded-md px-5 py-3 border border-white/20">

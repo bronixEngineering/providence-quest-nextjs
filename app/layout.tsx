@@ -23,6 +23,7 @@ export default function RootLayout({
       <body
         className={`${exo2.variable} antialiased font-exo2`}
         style={{ fontFamily: "var(--font-exo2), system-ui, sans-serif" }}
+        suppressHydrationWarning
       >
         <Providers>{children}</Providers>
       </body>

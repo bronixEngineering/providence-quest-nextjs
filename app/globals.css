@@ -1,6 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Marquee animation for investors */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Hover to pause marquee */
+.group:hover .marquee-scroll {
+  animation-play-state: paused !important;
+}
+
 /* Override Tailwind's default font families */
 @layer base {
   :root {
