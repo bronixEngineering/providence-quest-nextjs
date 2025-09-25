@@ -27,6 +27,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import DailyCheckin from "@/components/daily-checkin";
+import DailyLinkQuests from "@/components/daily-link-quests";
 import SocialQuests from "@/components/social-quests";
 import WalletQuest from "@/components/wallet-quest";
 import TweetQuest from "@/components/tweet-quest";
@@ -408,13 +409,14 @@ export default function BountyPage() {
               {/* Tweet Quest - Featured at the top */}
               <TweetQuest />
 
-              {/* Daily Check-in Quest */}
+              {/* Daily Check-in + Daily Link Quests */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />
                   <h2 className="text-2xl font-bold">Daily Quests</h2>
                 </div>
                 <DailyCheckin />
+                <DailyLinkQuests />
               </div>
 
               {/* Wallet Quest */}
